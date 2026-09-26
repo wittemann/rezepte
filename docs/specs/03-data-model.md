@@ -1,80 +1,126 @@
 # 03 – Data model
 
-> **TODO (Airtable):** inspect the existing base (needs `AIRTABLE_TOKEN` + `AIRTABLE_BASE_ID`) and fill in the mapping below.
-> **TODO (design):** the ingredient structure is defined by the design.
+Source: the Airtable base **Kochbuch** (`applSRjoVJrqAFQhT`), table **Rezepte**, inspected 2026-09-26 (95 recipes). Ingredient and step format come from the design handoff (`design/README.md`, "Regeln & Logik").
 
 ## Domain types (draft)
 
 Pages and components only use these types. The Airtable shape stays inside `lib/recipes`.
 
+Ingredients and steps stay **free text** in Airtable (one line per ingredient, numbered steps). The app parses them for display, the serving scaler and cooking mode. The raw text is kept for the edit form, so editing never loses what the parser doesn't understand.
+
 ```ts
 type RecipeId = string; // Airtable record id
+
+type Meal = 'Frühstück' | 'Mittag & Abend' | 'Backen';
 
 interface Recipe {
   id: RecipeId;
   title: string;
-  description?: string;
-  servings?: number;
-  prepMinutes?: number;
-  cookMinutes?: number;
-  tags: string[];
-  ingredients: Ingredient[]; // shape depends on the design, see below
-  steps: string[]; // or rich text; decided by the design
+  category?: string; // one of CATEGORIES normally; unknown values are shown with a neutral color
+  meals: Meal[];
+  servings?: number; // base for the serving scaler; missing → no scaler
+  workMinutes?: number; // "Arbeitszeit"
+  totalMinutes?: number; // "Gesamtzeit"
+  caloriesPerServing?: number; // read-only (Airtable formula)
+  ingredientsText: string; // raw, for editing
+  stepsText: string; // raw, for editing
+  ingredients: IngredientLine[]; // parsed from ingredientsText
+  method: Method; // parsed from stepsText
+  hasInstructions: boolean; // false → "stub" (an idea without instructions)
   images: RecipeImage[];
-  source?: string; // URL or book reference
+  source?: string; // "Chefkoch", "YouTube", …
+  sourceUrl?: string;
   notes?: string;
   createdAt: string;
-  updatedAt: string;
 }
 
-// Option A – free text: one line per ingredient ("200 g Mehl")
-type IngredientText = { text: string };
+type IngredientLine =
+  | { kind: 'heading'; text: string } // "Für den Teig:"
+  | { kind: 'item'; text: string; quantity?: Quantity }; // "250 g Mehl"
 
-// Option B – structured: needed for the serving scaler and the shopping list
-type IngredientStructured = {
-  amount?: number;
-  unit?: string; // g, ml, EL, TL, Stück, Prise …
-  name: string;
-  note?: string; // "fein gehackt"
-  group?: string; // "Für den Teig"
-};
+interface Quantity {
+  min: number; // "2–3" → min 2, max 3
+  max?: number;
+  unit?: string; // g, kg, ml, l, EL, TL, Pck., Prise, …
+  approx?: boolean; // "ca.", "knapp", "etwa"
+  rest: string; // the text after amount and unit: "Mehl (Type 550)"
+}
 
-type Ingredient = IngredientText | IngredientStructured; // pick one after the design
+interface Method {
+  sections: { title?: string; steps: Step[] }[]; // title from lines like "Teig:"
+  hint?: string; // paragraphs after the last numbered step
+}
+
+interface Step {
+  text: string;
+  timerMinutes?: number; // from "25 Minuten", "1,5 Std."; ranges use the lower number
+}
 
 interface RecipeImage {
-  id: string;
+  id: string; // Airtable attachment id
   url: string; // app-internal URL, see ADR 0005; never the raw Airtable URL
   width?: number;
   height?: number;
-  alt?: string;
 }
 ```
 
+Constants (from the design): `CATEGORIES` = Hauptgericht, Beilage, Salat, Suppe, Grillen, Dessert, Backen, Grundrezept; `MEALS` as in the type above.
+
+**Not in Airtable:** favorites are stored **per device** in `localStorage` (design decision), not in the base.
+
 ## Airtable mapping
 
-Filled in with the output of `npm run airtable:schema`. The code uses the **field ID** (ADR 0002); the name is for humans.
+Table `Rezepte` = `tblsuZ3AUOqkpY1vk`. The code uses the **field ID** (ADR 0002); the name is for humans. Durations come from the API in **seconds**.
 
-| Domain field | Airtable field name | Field ID | Type | Notes |
-| ------------ | ------------------- | -------- | ---- | ----- |
-| _TODO_       |                     |          |      |       |
+| Domain field                      | Airtable field       | Field ID            | Type                     | App writes?                |
+| --------------------------------- | -------------------- | ------------------- | ------------------------ | -------------------------- |
+| `title`                           | Name                 | `fldCRBNH34d7JR7OC` | singleLineText (primary) | yes, required              |
+| `category`                        | Kategorie            | `fldqzw4p8KhQ5s4l8` | singleSelect             | yes                        |
+| `meals`                           | Mahlzeit             | `fldj4rzvZS4HBehTQ` | multipleSelects          | yes                        |
+| `servings`                        | Portionen            | `fldahLlPF8xIsZD0Q` | number                   | yes                        |
+| `workMinutes`                     | Arbeitszeit          | `fldjztn4ZPOpPCz90` | duration (`h:mm`)        | yes                        |
+| `totalMinutes`                    | Gesamtzeit           | `fldf7iHYnrUpyX5SB` | duration (`h:mm`)        | yes                        |
+| `ingredientsText` → `ingredients` | Zutaten              | `fldG4ZG49PFX7YMb9` | multilineText            | yes                        |
+| `stepsText` → `method`            | Zubereitung          | `fldOK5mDwNTRgjzmQ` | multilineText            | yes                        |
+| –                                 | Kalorien gesamt      | `fldBz3DRCMbeL1qvF` | number (whole recipe)    | no (not in the edit form)  |
+| `caloriesPerServing`              | Kalorien pro Portion | `fldbfkuTs6teEZiz3` | **formula**              | **never**                  |
+| `images`                          | Foto                 | `fldshOL4NdmkjPqXe` | multipleAttachments      | via upload only (ADR 0005) |
+| `source`                          | Quelle               | `fldFlH3z4ScSU3oJz` | singleSelect             | yes                        |
+| `sourceUrl`                       | Original-Link        | `fldqeCigWMnW400lN` | url                      | yes                        |
+| –                                 | Meine Bewertung      | `fldNQWaV85W4mRwgu` | rating                   | no (not used by the app)   |
+| `notes`                           | Notizen              | `fldavsvzGmItYK5Va` | multilineText            | yes                        |
+
+`Mahlzeit` and the category `Grillen` were added on 2026-09-26 for the design, filled with the suggestions from `design/Mahlzeit-Zuordnung.csv` (6 recipes moved to `Grillen`; 15 recipes have no meal).
 
 ## Data conventions (contract for all writers)
 
 The app, manual edits in Airtable and Claude sessions all write to the same base. To keep the data readable by the app, every writer follows these rules:
 
-> **TODO:** fill in after inspecting the base and the design, for example: ingredient format, units (g, ml, EL, TL, Stück, Prise), step format, tag spelling, required fields.
+**Fields**
 
-- Title is required; everything else is optional
-- Use existing tags and categories where possible; new ones are allowed (the app creates them via `typecast`)
-- Never write computed fields
+- **Name** is required; everything else is optional
+- **Kategorie:** exactly one of Hauptgericht, Beilage, Salat, Suppe, Grillen, Dessert, Backen, Grundrezept. New categories are possible, but the design has colors and icons only for these
+- **Mahlzeit:** any of `Frühstück`, `Mittag & Abend`, `Backen`. Empty = the recipe doesn't appear in the start page suggestions
+- **Portionen:** the number the ingredient amounts are written for. Leave empty if that makes no sense (e.g. a marinade); the app then hides the serving scaler
+- **Arbeitszeit / Gesamtzeit:** Airtable duration `h:mm`
+- **Never write** `Kalorien pro Portion` (formula). Don't write fields the app doesn't know; use `PATCH`, never `PUT`
 
-Questions to answer while inspecting the base:
+**Zutaten** (one ingredient per line)
 
-- Which tables exist (one recipe table, or separate ingredient/tag tables)?
-- How are ingredients stored today? If the design needs structured ingredients and they're stored as free text, plan a one-time migration.
-- Which fields are linked records, multi-select or attachments?
-- Are there fields the app must never overwrite (formulas, lookups)?
+- Amount first, then unit, then the rest: `250 g Mehl`, `1,5 EL Zucker`, `½ TL Salz`, `2–3 Zehen Knoblauch`, `ca. 200 g Kartoffeln`
+- Amounts: whole numbers, decimal comma (`1,5`), fractions `½ ¼ ¾` or `1/2`, ranges with an en dash `2–3`, optional prefix `ca.`, `knapp`, `etwa`
+- Units the scaler understands: `g kg ml l cl dl EL TL Pck. Prise Tasse Becher Dose Stück Bund Zehe Scheibe Msp. Glas Würfel Tüte`
+- Lines without an amount (`Salz, Pfeffer`) are fine; they're never scaled
+- A line ending in `:` is a sub-heading: `Für den Teig:`
+
+**Zubereitung**
+
+- Steps numbered `1.`, `2.`, … one step per paragraph
+- A line ending in `:` starts a section: `Teig:`. Numbering may restart per section
+- Paragraphs after the last numbered step are shown as a hint
+- Times written as `25 Minuten`, `10 Min.`, `1 Stunde`, `2 Std.` (ranges `5–6 Minuten`) get a timer button in cooking mode
+- Empty = the recipe is an idea ("Noch ohne Anleitung") and invites completing it
 
 ## Validation
 
-Every record read from Airtable passes a zod schema. Invalid records are logged and skipped in lists, so one broken record doesn't break the page.
+Every record read from Airtable passes a zod schema. Invalid records are logged and skipped in lists, so one broken record doesn't break the page. The text parsers never fail: a line they don't understand is shown as plain text and simply isn't scaled.

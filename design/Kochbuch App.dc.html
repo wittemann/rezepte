@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kochbuch">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Instrument+Sans:wght@400;500;600&family=Young+Serif&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Geist:wght@400;500;600&family=Unbounded:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fredoka:wght@500;600&family=Baloo+2:wght@500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>html,body{margin:0;height:100%;-webkit-tap-highlight-color:transparent}*{box-sizing:border-box}*::-webkit-scrollbar{display:none}a{color:inherit;text-decoration:underline}a:hover{opacity:.75}input,textarea{outline:none}</style>
+</helmet>
+<div style="height: {{ rootHeight }}; display: flex; flex-direction: column; background: {{ t.bg }}; color: {{ t.ink }}; font-family: {{ t.body }}; position: relative; overflow: hidden; -webkit-font-smoothing: antialiased;">
+
+  <sc-if value="{{ inFrame }}">
+    <div style="height: 50px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 6px 30px 0 34px; font-family: -apple-system, system-ui, sans-serif; font-weight: 600; font-size: 16px;">
+      <span>9:41</span>
+      <div style="display: flex; gap: 6px; align-items: center;">
+        <div style="width: 17px; height: 11px; border-radius: 2px; background: {{ t.ink }}; opacity: .85;"></div>
+        <div style="width: 25px; height: 12px; border-radius: 4px; border: 1.5px solid {{ t.ink }}; padding: 1.5px;"><div style="width: 70%; height: 100%; background: {{ t.ink }}; border-radius: 1.5px;"></div></div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ notFrame }}"><div style="height: env(safe-area-inset-top); flex: none;"></div></sc-if>
+
+  <sc-if value="{{ isClassic }}" hint-placeholder-val="{{ true }}">
+  <!-- TABS -->
+  <sc-if value="{{ isTabs }}" hint-placeholder-val="{{ true }}">
+    <div ref="{{ scrollRef }}" style="flex: 1; min-height: 0; overflow-y: auto;">
+
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <!-- Editorial home -->
+        <sc-if value="{{ isEd }}">
+          <div style="padding: 12px 20px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: {{ t.muted }};">
+              <span>{{ dateLine }}</span>
+              
+            </div>
+            <div style="font-family: {{ t.display }}; font-size: 52px; line-height: 1; letter-spacing: -0.02em; margin-top: 2px;">Unser Kochbuch</div>
+            <div style="height: 2px; background: {{ t.ink }}; margin-top: 16px;"></div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: {{ t.muted }}; padding: 7px 0; border-bottom: 1px solid {{ t.line }};">
+              <span>{{ countLine }}</span><span>Familienausgabe</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- Warm home -->
+        <sc-if value="{{ isWarm }}">
+          <div style="padding: 14px 20px 0; display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="font-size: 15px; color: {{ t.muted }};">{{ greeting }}</div>
+              <div style="font-family: {{ t.display }}; font-size: 30px; line-height: 1.15; text-wrap: balance;">{{ mealHeadline }}</div>
+            </div>
+            
+          </div>
+        </sc-if>
+
+        <!-- Minimal home -->
+        <sc-if value="{{ isMin }}">
+          <div style="padding: 10px 20px 0; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.03em;">Kochbuch</div>
+            
+          </div>
+          <div style="padding: 10px 20px 0;">
+            <div onClick="{{ goSearch }}" style="height: 44px; border-radius: 10px; background: {{ t.sunk }}; display: flex; align-items: center; gap: 10px; padding: 0 14px; color: {{ t.muted }}; font-size: 16px; cursor: pointer;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ t.muted }}" stroke-width="1.8"><path d="M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M15.5 15.5L20 20"></path></svg>
+              Rezepte oder Zutaten suchen
+            </div>
+          </div>
+          <div style="padding: 22px 20px 0; font-size: 22px; font-weight: 600; letter-spacing: -0.02em;">{{ mealHeadline }}</div>
+        </sc-if>
+
+        <!-- Mahlzeit-Modul (klassische Varianten) -->
+        <div style="padding: 14px 20px 0; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; gap: 2px; padding: 3px; background: {{ t.sunk }}; border-radius: {{ t.segRadius }};">
+            <sc-for list="{{ mealTabs }}" as="m" hint-placeholder-count="3">
+              <div onClick="{{ m.onClick }}" style="flex: 1; height: 40px; border-radius: {{ t.segItemRadius }}; background: {{ m.sbg }}; color: {{ m.sfg }}; box-shadow: {{ m.sshadow }}; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; cursor: pointer;">{{ m.label }}</div>
+            </sc-for>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; color: {{ t.muted }};">
+            <span>{{ contextLabel }}</span>
+            <span onClick="{{ toggleWeekend }}" style="color: {{ t.accent }}; font-weight: 600; padding: 8px 0; cursor: pointer; white-space: nowrap;">{{ contextToggle }} →</span>
+          </div>
+        </div>
+        <sc-if value="{{ hasSugg }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; gap: 10px; overflow-x: auto; padding: 4px 20px 30px; scroll-snap-type: x mandatory; scroll-padding: 0 20px;">
+            <sc-for list="{{ sugg }}" as="r" hint-placeholder-count="3">
+              <div onClick="{{ r.open }}" style="flex: none; width: 276px; min-height: 196px; background: {{ r.cbg }}; color: {{ r.cfg }}; border: 1px solid {{ r.cborder }}; border-radius: {{ t.sugRadius }}; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; scroll-snap-align: start; cursor: pointer;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: {{ r.cmuted }};"><span>{{ r.kategorie }}</span><span>{{ r.timeShort }}</span></div>
+                  <div style="font-family: {{ t.display }}; font-size: 24px; font-weight: {{ t.titleWeight }}; letter-spacing: {{ t.titleSpacing }}; line-height: 1.15; text-wrap: pretty;">{{ r.name }}</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                  <span style="font-size: 13px; color: {{ r.cmuted }};">{{ r.meta }}</span>
+                  <span style="flex: none; background: {{ r.btnBg }}; color: {{ r.btnFg }}; font-size: 14px; font-weight: 700; padding: 10px 16px; border-radius: {{ t.btnRadius }};">Ansehen</span>
+                </div>
+              </div>
+            </sc-for>
+            <div onClick="{{ reshuffle }}" style="flex: none; width: 132px; border: 1.5px dashed {{ t.line }}; border-radius: {{ t.sugRadius }}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: {{ t.muted }}; font-size: 14px; font-weight: 600; text-align: center; scroll-snap-align: start; cursor: pointer;">
+              <span style="font-size: 26px; color: {{ t.accent }};">↻</span>Andere Vorschläge
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ suggEmpty }}">
+          <div style="margin: 4px 20px 28px; padding: 20px; border-radius: {{ t.sugRadius }}; background: {{ t.sunk }}; font-size: 15px; line-height: 1.5; color: {{ t.muted }};">Keine passenden Rezepte. Ordne Rezepten beim Bearbeiten eine Mahlzeit zu oder wechsle auf „{{ contextToggle }}“.</div>
+        </sc-if>
+        <sc-if value="{{ isWarm }}">
+          <div style="display: flex; gap: 8px; overflow-x: auto; padding: 0 20px 26px;">
+            <sc-for list="{{ catList }}" as="c" hint-placeholder-count="5">
+              <div onClick="{{ c.open }}" style="flex: none; display: flex; gap: 6px; align-items: center; padding: 10px 16px; border-radius: 999px; background: {{ t.surface }}; font-size: 14px; font-weight: 600; cursor: pointer;">{{ c.name }}<span style="color: {{ t.muted }}; font-weight: 400;">{{ c.count }}</span></div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- Futuristic home -->
+        <sc-if value="{{ isFut }}">
+          <div style="padding: 10px 20px 0; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: {{ t.muted }};">{{ countLine }}</div>
+            
+          </div>
+          <div style="padding: 8px 20px 0; font-family: {{ t.display }}; font-size: 34px; font-weight: 500; line-height: 1.08; letter-spacing: -0.03em;">Was kochen wir heute?</div>
+          <div style="padding: 22px 20px 30px;">
+            <div style="background: {{ t.surface }}; border: 1px solid {{ t.line }}; border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: {{ t.accent }};">
+                <div style="width: 7px; height: 7px; border-radius: 4px; background: {{ t.accent }};"></div>Vorschlag des Tages
+              </div>
+              <div style="font-family: {{ t.display }}; font-size: 24px; font-weight: 500; line-height: 1.15; letter-spacing: -0.02em; text-wrap: pretty;">{{ hero.name }}</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                <div style="font-family: {{ t.eyeFont }}; font-size: 12px; padding: 6px 10px; border-radius: 999px; background: {{ t.sunk }}; color: {{ t.muted }};">{{ hero.kategorie }}</div>
+                <div style="font-family: {{ t.eyeFont }}; font-size: 12px; padding: 6px 10px; border-radius: 999px; background: {{ t.sunk }}; color: {{ t.muted }};">{{ hero.meta }}</div>
+              </div>
+              <div onClick="{{ hero.open }}" style="height: 50px; border-radius: 14px; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 16px; font-weight: 700; cursor: pointer;"><span>Rezept öffnen</span><span>→</span></div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-for list="{{ homeSections }}" as="g" hint-placeholder-count="2">
+          <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px 28px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; font-family: {{ t.secFont }}; font-size: {{ t.secSize }}; text-transform: {{ t.secCase }}; letter-spacing: {{ t.secSpacing }}; color: {{ t.secColor }}; font-weight: {{ t.secWeight }}; padding-bottom: {{ t.secPad }}; border-bottom: {{ t.secBorder }};">
+              <span>{{ g.title }}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: {{ t.listGap }};">
+              <sc-for list="{{ g.items }}" as="r" hint-placeholder-count="3">
+                <div onClick="{{ r.open }}" style="display: flex; align-items: center; gap: 14px; padding: {{ t.rowPad }}; background: {{ t.rowBg }}; border-radius: {{ t.cardRadius }}; border-bottom: {{ t.rowBorder }}; cursor: pointer;">
+                  <sc-if value="{{ r.noImg }}"><sc-if value="{{ t.showIndex }}"><div style="font-family: {{ t.display }}; font-style: italic; font-size: 16px; color: {{ t.muted }}; width: 24px; flex: none;">{{ r.num }}</div></sc-if></sc-if>
+                  <sc-if value="{{ r.showImg }}"><img src="{{ r.foto }}" onError="{{ r.onImgError }}" alt="{{ r.name }}" style="width: 64px; height: 64px; flex: none; object-fit: cover; border-radius: {{ t.thumbRadius }}; background: {{ t.sunk }};"></sc-if>
+                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;">
+                    <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: {{ t.eyeSpacing }}; text-transform: {{ t.eyeCase }}; color: {{ t.eyeColor }}; font-weight: 600;">{{ r.kategorie }}</div>
+                    <div style="font-family: {{ t.display }}; font-size: {{ t.rowTitleSize }}; font-weight: {{ t.titleWeight }}; letter-spacing: {{ t.titleSpacing }}; line-height: 1.2; text-wrap: pretty;">{{ r.name }}</div>
+                    <div style="font-size: 13px; color: {{ t.muted }};">{{ r.meta }}</div>
+                  </div>
+                  <sc-if value="{{ r.fav }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{ t.accent }}" stroke="none"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+
+        <sc-if value="{{ isEd }}">
+          <div style="padding: 0 20px 32px; display: flex; flex-direction: column;">
+            <div style="font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: {{ t.muted }}; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid {{ t.ink }};">Register</div>
+            <sc-for list="{{ catList }}" as="c" hint-placeholder-count="7">
+              <div onClick="{{ c.open }}" style="display: flex; justify-content: space-between; align-items: baseline; padding: 13px 0; border-bottom: 1px solid {{ t.line }}; cursor: pointer;">
+                <span style="font-family: {{ t.display }}; font-size: 21px;">{{ c.name }}</span>
+                <span style="font-family: {{ t.display }}; font-style: italic; color: {{ t.muted }}; font-size: 16px;">{{ c.count }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isGridCats }}">
+          <div style="padding: 0 20px 32px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-family: {{ t.secFont }}; font-size: {{ t.secSize }}; text-transform: {{ t.secCase }}; letter-spacing: {{ t.secSpacing }}; font-weight: 600; color: {{ t.muted }}; padding-bottom: 4px;">Kategorien</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <sc-for list="{{ catList }}" as="c" hint-placeholder-count="6">
+                <div onClick="{{ c.open }}" style="background: {{ t.sunk }}; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 2px; cursor: pointer;">
+                  <span style="font-size: 15px; font-weight: 600;">{{ c.name }}</span>
+                  <span style="font-size: 13px; color: {{ t.muted }};">{{ c.count }} Rezepte</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- LIST SCREENS -->
+      <sc-if value="{{ isList }}">
+        <div style="padding: 10px 20px 14px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div style="font-family: {{ t.display }}; font-size: {{ t.pageTitle }}; font-weight: {{ t.titleWeight }}; letter-spacing: {{ t.titleSpacing }}; line-height: 1.05;">{{ listTitle }}</div>
+            <div style="font-size: 13px; color: {{ t.muted }};">{{ listSub }}</div>
+          </div>
+          <sc-if value="{{ isAll }}">
+            <div onClick="{{ newRecipe }}" style="height: 44px; padding: 0 16px; border-radius: {{ t.btnRadius }}; background: {{ t.ink }}; color: {{ t.bg }}; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; flex: none; cursor: pointer;">+ Neu</div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ isSearch }}">
+          <div style="padding: 0 20px 12px;">
+            <div style="height: 46px; border-radius: {{ t.inputRadius }}; background: {{ t.inputBg }}; border: 1px solid {{ t.line }}; display: flex; align-items: center; gap: 10px; padding: 0 14px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ t.muted }}" stroke-width="1.8"><path d="M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M15.5 15.5L20 20"></path></svg>
+              <input ref="{{ searchRef }}" value="{{ q }}" onChange="{{ onQ }}" placeholder="Gericht oder Zutat, z. B. Quark" style="flex: 1; min-width: 0; border: none; background: transparent; font-size: 16px; color: {{ t.ink }}; font-family: {{ t.body }};">
+              <sc-if value="{{ q }}"><div onClick="{{ clearQ }}" style="font-size: 14px; color: {{ t.muted }}; padding: 8px 0 8px 8px; cursor: pointer;">Löschen</div></sc-if>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ chips.length }}">
+          <div style="display: flex; gap: 8px; overflow-x: auto; padding: 0 20px 18px;">
+            <sc-for list="{{ chips }}" as="c" hint-placeholder-count="5">
+              <div onClick="{{ c.onClick }}" style="flex: none; padding: 9px 14px; border-radius: {{ t.chipRadius }}; font-size: 14px; font-weight: 500; background: {{ c.bg }}; color: {{ c.fg }}; border: 1px solid {{ c.border }}; white-space: nowrap; cursor: pointer;">{{ c.label }}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ listEmpty }}">
+          <div style="padding: 48px 32px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+            <div style="font-family: {{ t.display }}; font-size: 22px;">{{ emptyTitle }}</div>
+            <div style="font-size: 15px; color: {{ t.muted }}; max-width: 260px; text-wrap: pretty;">{{ emptyText }}</div>
+          </div>
+        </sc-if>
+        <sc-for list="{{ listGroups }}" as="g" hint-placeholder-count="1">
+          <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px 26px;">
+            <sc-if value="{{ g.title }}">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; font-family: {{ t.secFont }}; font-size: {{ t.secSize }}; text-transform: {{ t.secCase }}; letter-spacing: {{ t.secSpacing }}; color: {{ t.secColor }}; font-weight: {{ t.secWeight }}; padding-bottom: {{ t.secPad }}; border-bottom: {{ t.secBorder }};">
+                <span>{{ g.title }}</span><span style="font-weight: 400;">{{ g.count }}</span>
+              </div>
+            </sc-if>
+            <div style="display: flex; flex-direction: column; gap: {{ t.listGap }};">
+              <sc-for list="{{ g.items }}" as="r" hint-placeholder-count="6">
+                <div onClick="{{ r.open }}" style="display: flex; align-items: center; gap: 14px; padding: {{ t.rowPad }}; background: {{ t.rowBg }}; border-radius: {{ t.cardRadius }}; border-bottom: {{ t.rowBorder }}; cursor: pointer;">
+                  <sc-if value="{{ r.noImg }}"><sc-if value="{{ t.showIndex }}"><div style="font-family: {{ t.display }}; font-style: italic; font-size: 16px; color: {{ t.muted }}; width: 24px; flex: none;">{{ r.num }}</div></sc-if></sc-if>
+                  <sc-if value="{{ r.showImg }}"><img src="{{ r.foto }}" onError="{{ r.onImgError }}" alt="{{ r.name }}" style="width: 64px; height: 64px; flex: none; object-fit: cover; border-radius: {{ t.thumbRadius }}; background: {{ t.sunk }};"></sc-if>
+                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;">
+                    <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: {{ t.eyeSpacing }}; text-transform: {{ t.eyeCase }}; color: {{ t.eyeColor }}; font-weight: 600;">{{ r.kategorie }}</div>
+                    <div style="font-family: {{ t.display }}; font-size: {{ t.rowTitleSize }}; font-weight: {{ t.titleWeight }}; letter-spacing: {{ t.titleSpacing }}; line-height: 1.2; text-wrap: pretty;">{{ r.name }}</div>
+                    <div style="font-size: 13px; color: {{ t.muted }};">{{ r.meta }}</div>
+                  </div>
+                  <sc-if value="{{ r.fav }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{ t.accent }}" stroke="none"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </sc-if>
+    </div>
+
+    <div style="flex: none; display: flex; background: {{ t.tabBg }}; border-top: 1px solid {{ t.line }}; padding: 6px 8px {{ safeBottom }};">
+      <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="4">
+        <div onClick="{{ tab.onClick }}" style="flex: 1; height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: {{ tab.color }}; font-size: 11px; font-weight: 600; cursor: pointer;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ tab.fill }}" stroke="{{ tab.color }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ tab.d }}"></path></svg>
+          <span>{{ tab.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- DETAIL -->
+  <sc-if value="{{ isDetail }}">
+    <div style="flex: none; height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; border-bottom: 1px solid {{ t.line }};">
+      <div onClick="{{ back }}" style="height: 44px; padding: 0 12px; display: flex; align-items: center; gap: 4px; font-size: 16px; cursor: pointer;">‹ Zurück</div>
+      <div style="display: flex; align-items: center;">
+        <div onClick="{{ d.toggleFav }}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="22" height="22" viewBox="0 0 24 24" fill="{{ d.favFill }}" stroke="{{ d.favStroke }}" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></div>
+        <div onClick="{{ d.edit }}" style="height: 44px; padding: 0 12px; display: flex; align-items: center; font-size: 16px; color: {{ t.accent }}; font-weight: 600; cursor: pointer;">Bearbeiten</div>
+      </div>
+    </div>
+    <div ref="{{ scrollRef }}" style="flex: 1; min-height: 0; overflow-y: auto;">
+      <sc-if value="{{ d.showPhoto }}">
+        <img src="{{ d.foto }}" onError="{{ d.onImgError }}" alt="{{ d.name }}" style="display: block; width: 100%; height: 260px; object-fit: cover;">
+      </sc-if>
+      <div style="padding: 24px 20px 8px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-family: {{ t.eyeFont }}; font-size: 12px; letter-spacing: {{ t.eyeSpacing }}; text-transform: {{ t.eyeCase }}; color: {{ t.eyeColor }}; font-weight: 600;">{{ d.kategorie }}</div>
+        <div style="font-family: {{ t.display }}; font-size: {{ t.detailTitle }}; font-weight: {{ t.titleWeight }}; letter-spacing: {{ t.titleSpacing }}; line-height: 1.05; text-wrap: pretty;">{{ d.name }}</div>
+        <sc-if value="{{ d.quelle }}">
+          <div style="font-size: 14px; color: {{ t.muted }};">Quelle: <sc-if value="{{ d.link }}"><a href="{{ d.link }}" target="_blank" style="color: {{ t.muted }};">{{ d.quelle }}</a></sc-if><sc-if value="{{ d.noLink }}">{{ d.quelle }}</sc-if></div>
+        </sc-if>
+      </div>
+      <sc-if value="{{ d.metaCells.length }}">
+        <div style="margin: 14px 20px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: {{ t.metaGap }}; border-top: {{ t.metaBorder }}; border-bottom: {{ t.metaBorder }};">
+          <sc-for list="{{ d.metaCells }}" as="m" hint-placeholder-count="3">
+            <div style="background: {{ t.metaBg }}; border-radius: {{ t.metaRadius }}; padding: {{ t.metaPad }}; display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 12px; color: {{ t.muted }};">{{ m.label }}</span>
+              <span style="font-family: {{ t.display }}; font-size: 18px; font-weight: {{ t.titleWeight }};">{{ m.value }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ d.isStub }}">
+        <div style="margin: 20px 20px 0; padding: 18px; border-radius: {{ t.cardRadius }}; background: {{ t.sunk }}; display: flex; flex-direction: column; gap: 12px;">
+          <div style="font-size: 15px; line-height: 1.45;">Für dieses Gericht gibt es noch keine Anleitung.</div>
+          <div onClick="{{ d.edit }}" style="align-self: flex-start; height: 44px; padding: 0 18px; border-radius: {{ t.btnRadius }}; background: {{ t.ink }}; color: {{ t.bg }}; display: flex; align-items: center; font-size: 15px; font-weight: 600; cursor: pointer;">Rezept ergänzen</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ d.ingredients.length }}">
+        <div style="padding: 32px 20px 0; display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid {{ t.line }};">
+            <div style="font-family: {{ t.display }}; font-size: 24px; font-weight: {{ t.titleWeight }}; letter-spacing: {{ t.titleSpacing }};">Zutaten</div>
+            <sc-if value="{{ d.canScale }}">
+              <div style="display: flex; align-items: center; gap: 4px; background: {{ t.sunk }}; border-radius: {{ t.btnRadius }}; padding: 2px;">
+                <div onClick="{{ d.less }}" style="width: 44px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer;">−</div>
+                <div style="font-size: 14px; font-weight: 600; min-width: 84px; text-align: center; font-variant-numeric: tabular-nums;">{{ d.servingsLabel }}</div>
+                <div onClick="{{ d.more }}" style="width: 44px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer;">+</div>
+              </div>
+            </sc-if>
+          </div>
+          <sc-for list="{{ d.ingredients }}" as="i" hint-placeholder-count="6">
+            <sc-if value="{{ i.isGroup }}">
+              <div style="font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: {{ t.accent }}; font-weight: 600; padding: 20px 0 6px;">{{ i.text }}</div>
+            </sc-if>
+            <sc-if value="{{ i.isItem }}">
+              <div style="display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px solid {{ t.line }}; font-size: 16px; line-height: 1.35;">
+                <div style="width: 86px; flex: none; font-weight: 600; font-variant-numeric: tabular-nums;">{{ i.amount }}</div>
+                <div style="flex: 1; min-width: 0;">{{ i.rest }}</div>
+              </div>
+            </sc-if>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ d.steps.length }}">
+        <div style="padding: 36px 20px 0; display: flex; flex-direction: column; gap: 20px;">
+          <div style="font-family: {{ t.display }}; font-size: 24px; font-weight: {{ t.titleWeight }}; letter-spacing: {{ t.titleSpacing }}; padding-bottom: 12px; border-bottom: 1px solid {{ t.line }};">Zubereitung</div>
+          <sc-for list="{{ d.steps }}" as="s" hint-placeholder-count="4">
+            <sc-if value="{{ s.group }}"><div style="font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: {{ t.accent }}; font-weight: 600; padding-top: 6px;">{{ s.group }}</div></sc-if>
+            <div style="display: flex; gap: 14px;">
+              <div style="font-family: {{ t.display }}; font-size: 26px; line-height: 1; color: {{ t.accent }}; width: 28px; flex: none;">{{ s.n }}</div>
+              <div style="flex: 1; font-size: 16px; line-height: 1.55; text-wrap: pretty;">{{ s.text }}</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ d.hinweis }}">
+            <div style="font-family: {{ t.display }}; font-style: {{ t.noteStyle }}; font-size: 17px; line-height: 1.5; color: {{ t.muted }}; white-space: pre-line;">{{ d.hinweis }}</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ d.notizen }}">
+        <div style="padding: 32px 20px 0;">
+          <div onClick="{{ d.toggleNotes }}" style="display: flex; justify-content: space-between; align-items: center; min-height: 48px; border-top: 1px solid {{ t.line }}; border-bottom: 1px solid {{ t.line }}; cursor: pointer;">
+            <span style="font-size: 16px; font-weight: 600;">Notizen &amp; Tipps</span>
+            <span style="font-size: 14px; color: {{ t.muted }};">{{ d.notesToggle }}</span>
+          </div>
+          <sc-if value="{{ d.notesOpen }}">
+            <div style="font-size: 15px; line-height: 1.55; color: {{ t.muted }}; white-space: pre-line; padding: 14px 0 0;">{{ d.notizen }}</div>
+          </sc-if>
+        </div>
+      </sc-if>
+      <div style="height: 120px;"></div>
+    </div>
+    <sc-if value="{{ d.steps.length }}">
+      <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 20px {{ safeBottom }}; background: linear-gradient(to top, {{ t.bg }} 65%, transparent);">
+        <div onClick="{{ d.cook }}" style="height: 54px; border-radius: {{ t.btnRadius }}; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 600; cursor: pointer;">Kochmodus starten</div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <!-- COOK -->
+  <sc-if value="{{ isCook }}">
+    <div style="flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; height: 52px;">
+      <div onClick="{{ back }}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer;">✕</div>
+      <div style="font-size: 14px; font-weight: 600; color: {{ t.muted }};">{{ c.label }}</div>
+      <div onClick="{{ c.toggleIng }}" style="height: 44px; padding: 0 12px; display: flex; align-items: center; font-size: 15px; font-weight: 600; color: {{ t.accent }}; cursor: pointer;">Zutaten</div>
+    </div>
+    <div style="display: flex; gap: 4px; padding: 0 20px;">
+      <sc-for list="{{ c.progress }}" as="p" hint-placeholder-count="5"><div style="flex: 1; height: 3px; border-radius: 2px; background: {{ p.bg }};"></div></sc-for>
+    </div>
+    <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 36px 24px 24px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="font-size: 13px; color: {{ t.muted }};">{{ c.title }}</div>
+      <sc-if value="{{ c.isStep }}" hint-placeholder-val="{{ true }}">
+        <div style="font-family: {{ t.display }}; font-size: 72px; line-height: .9; color: {{ t.accent }};">{{ c.n }}</div>
+        <div style="font-family: {{ t.display }}; font-size: 27px; line-height: 1.35; font-weight: {{ t.cookWeight }}; letter-spacing: {{ t.titleSpacing }}; text-wrap: pretty;">{{ c.text }}</div>
+      </sc-if>
+      <sc-if value="{{ c.isPhoto }}">
+        <div style="font-family: {{ t.display }}; font-size: 30px; line-height: 1.2; font-weight: {{ t.titleWeight }}; letter-spacing: {{ t.titleSpacing }}; text-wrap: pretty;">Fertig! Mach noch ein Foto für das Kochbuch.</div>
+        <div style="font-size: 16px; line-height: 1.5; color: {{ t.muted }}; text-wrap: pretty;">Dieses Rezept hat noch kein Bild. Dein Foto wird im Rezept und in der Liste angezeigt.</div>
+        <sc-if value="{{ c.hasNew }}">
+          <img src="{{ c.foto }}" alt="{{ c.title }}" style="width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: {{ t.cardRadius }};">
+        </sc-if>
+        <label style="height: 56px; border-radius: {{ t.btnRadius }}; border: 1.5px dashed {{ t.accent }}; color: {{ t.accent }}; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 17px; font-weight: 600; cursor: pointer;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ t.accent }}" stroke-width="1.7" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4zM12 10a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0-7"></path></svg>
+          <sc-if value="{{ c.noNew }}"><span>Foto aufnehmen</span></sc-if><sc-if value="{{ c.hasNew }}"><span>Anderes Foto wählen</span></sc-if>
+          <input type="file" accept="image/*" capture="environment" onChange="{{ c.onPhoto }}" style="display: none;">
+        </label>
+      </sc-if>
+    </div>
+    <div style="flex: none; padding: 12px 20px {{ safeBottom }}; display: flex; flex-direction: column; gap: 10px;">
+      <div style="font-size: 12px; color: {{ t.muted }}; text-align: center;">Bildschirm bleibt während des Kochens an</div>
+      <div style="display: flex; gap: 10px;">
+        <div onClick="{{ c.prev }}" style="flex: 1; height: 56px; border-radius: {{ t.btnRadius }}; border: 1px solid {{ t.line }}; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 600; opacity: {{ c.prevOpacity }}; cursor: pointer;">Zurück</div>
+        <div onClick="{{ c.next }}" style="flex: 2; height: 56px; border-radius: {{ t.btnRadius }}; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 600; cursor: pointer;">{{ c.nextLabel }}</div>
+      </div>
+    </div>
+    <sc-if value="{{ c.showIng }}">
+      <div onClick="{{ c.toggleIng }}" style="position: absolute; inset: 0; background: rgba(0,0,0,.35);"></div>
+      <div style="position: absolute; left: 0; right: 0; bottom: 0; max-height: 72%; overflow-y: auto; background: {{ t.surface }}; border-radius: 22px 22px 0 0; padding: 10px 20px {{ safeBottom }};">
+        <div style="width: 36px; height: 5px; border-radius: 3px; background: {{ t.line }}; margin: 0 auto 14px;"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px;">
+          <div style="font-family: {{ t.display }}; font-size: 22px; font-weight: {{ t.titleWeight }};">Zutaten</div>
+          <div style="font-size: 14px; color: {{ t.muted }};">{{ d.servingsLabel }}</div>
+        </div>
+        <sc-for list="{{ d.ingredients }}" as="i" hint-placeholder-count="5">
+          <sc-if value="{{ i.isGroup }}"><div style="font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: {{ t.accent }}; font-weight: 600; padding: 16px 0 4px;">{{ i.text }}</div></sc-if>
+          <sc-if value="{{ i.isItem }}">
+            <div style="display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid {{ t.line }}; font-size: 16px;">
+              <div style="width: 86px; flex: none; font-weight: 600;">{{ i.amount }}</div>
+              <div style="flex: 1;">{{ i.rest }}</div>
+            </div>
+          </sc-if>
+        </sc-for>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  </sc-if>
+
+  <sc-if value="{{ isFut }}">
+    <!-- F · TABS -->
+    <sc-if value="{{ isTabs }}">
+      <div ref="{{ scrollRef }}" style="flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 120px;">
+        <sc-if value="{{ isHome }}">
+          <div style="padding: 8px 20px 0; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .1em; color: {{ t.muted }};">{{ statusLine }}</div>
+            
+          </div>
+          <div style="padding: 4px 20px 0; font-family: {{ t.display }}; font-size: 30px; font-weight: 500; line-height: 1.1; letter-spacing: -0.035em; text-wrap: balance;">{{ mealHeadline }}</div>
+          <div style="padding: 16px 16px 0;">
+            <div style="display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: {{ t.surface }}; border: 1px solid {{ t.line }};">
+              <sc-for list="{{ mealTabs }}" as="m" hint-placeholder-count="3">
+                <div onClick="{{ m.onClick }}" style="flex: 1; height: 44px; border-radius: 22px; background: {{ m.fbg }}; color: {{ m.ffg }}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; cursor: pointer;">{{ m.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="padding: 10px 24px 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .04em; color: {{ t.muted }};">
+            <span>{{ contextLabel }}</span>
+            <span onClick="{{ toggleWeekend }}" style="color: {{ t.accent }}; padding: 10px 0; cursor: pointer; white-space: nowrap;">{{ contextToggle }} ↗</span>
+          </div>
+          <sc-if value="{{ hasSugg }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; gap: 10px; overflow-x: auto; padding: 4px 16px 8px; scroll-snap-type: x mandatory; scroll-padding: 0 16px;">
+              <sc-for list="{{ sugg }}" as="r" hint-placeholder-count="2">
+                <div onClick="{{ r.open }}" style="flex: none; width: 300px; border-radius: 36px; background: {{ t.surface }}; border: 1px solid {{ t.line }}; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; scroll-snap-align: start; cursor: pointer;">
+                  <div style="align-self: stretch; display: flex; justify-content: space-between; font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;">
+                    <span style="color: {{ t.accent }};">● {{ r.kategorie }}</span><span style="color: {{ t.muted }};">{{ r.num }}</span>
+                  </div>
+                  <div style="position: relative; width: 150px; height: 150px;">
+                    <svg width="150" height="150" viewBox="0 0 150 150" style="transform: rotate(-90deg); display: block;">
+                      <circle cx="75" cy="75" r="58" fill="none" stroke="{{ t.sunk }}" stroke-width="12"></circle>
+                      <circle cx="75" cy="75" r="58" fill="none" stroke="{{ t.accent }}" stroke-width="12" stroke-linecap="round" stroke-dasharray="{{ r.dash }}"></circle>
+                    </svg>
+                    <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+                      <div style="font-family: {{ t.display }}; font-size: 30px; font-weight: 500; letter-spacing: -0.04em;">{{ r.time }}</div>
+                      <div style="font-family: {{ t.eyeFont }}; font-size: 9px; letter-spacing: .12em; color: {{ t.muted }};">GESAMTZEIT</div>
+                    </div>
+                  </div>
+                  <div style="font-family: {{ t.display }}; font-size: 19px; font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; text-align: center; text-wrap: balance; min-height: 46px;">{{ r.name }}</div>
+                  <div style="align-self: stretch; height: 52px; border-radius: 26px; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; justify-content: space-between; padding: 0 6px 0 20px; font-size: 15px; font-weight: 700;">
+                    <span>Rezept öffnen</span>
+                    <div style="width: 40px; height: 40px; border-radius: 20px; background: {{ t.onAccent }}; color: {{ t.accent }}; display: flex; align-items: center; justify-content: center; font-size: 18px;">→</div>
+                  </div>
+                </div>
+              </sc-for>
+              <div onClick="{{ reshuffle }}" style="flex: none; width: 120px; border-radius: 36px; border: 1px dashed {{ t.muted }}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; scroll-snap-align: start; cursor: pointer;">
+                <div style="width: 52px; height: 52px; border-radius: 26px; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; justify-content: center; font-size: 22px;">↻</div>
+                <span style="font-family: {{ t.eyeFont }}; font-size: 10px; letter-spacing: .1em; color: {{ t.muted }}; text-align: center;">NEU<br>MISCHEN</span>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ suggEmpty }}">
+            <div style="margin: 8px 16px; padding: 24px; border-radius: 28px; border: 1px dashed {{ t.muted }}; font-size: 15px; line-height: 1.5; color: {{ t.muted }};">Keine passenden Rezepte. Ordne Rezepten beim Bearbeiten eine Mahlzeit zu oder wechsle auf „{{ contextToggle }}“.</div>
+          </sc-if>
+
+          <sc-for list="{{ homeSections }}" as="g" hint-placeholder-count="2">
+            <div style="padding: 24px 0 0; display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 0 20px; font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: {{ t.muted }};">{{ g.title }}</div>
+              <div style="display: flex; gap: 10px; overflow-x: auto; padding: 0 20px; scroll-snap-type: x mandatory;">
+                <sc-for list="{{ g.items }}" as="r" hint-placeholder-count="3">
+                  <div onClick="{{ r.open }}" style="flex: none; width: 164px; height: 196px; border-radius: 28px; background: {{ t.surface }}; border: {{ r.tileBorder }}; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; scroll-snap-align: start; position: relative; overflow: hidden; cursor: pointer;">
+                    <sc-if value="{{ r.showImg }}"><img src="{{ r.foto }}" onError="{{ r.onImgError }}" alt="{{ r.name }}" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35;"></sc-if>
+                    <div style="position: relative; display: flex; justify-content: space-between; align-items: center;">
+                      <div style="position: relative; width: 34px; height: 34px;">
+                        <svg width="34" height="34" viewBox="0 0 34 34" style="transform: rotate(-90deg); display: block;"><circle cx="17" cy="17" r="13" fill="none" stroke="{{ t.sunk }}" stroke-width="4"></circle><circle cx="17" cy="17" r="13" fill="none" stroke="{{ t.accent }}" stroke-width="4" stroke-linecap="round" stroke-dasharray="{{ r.ring }}"></circle></svg>
+                      </div>
+                      <div style="font-family: {{ t.eyeFont }}; font-size: 12px; color: {{ t.ink }};">{{ r.timeShort }}</div>
+                    </div>
+                    <div style="position: relative; display: flex; flex-direction: column; gap: 6px;">
+                      <div style="font-family: {{ t.eyeFont }}; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: {{ t.accent }};">{{ r.kategorie }}</div>
+                      <div style="font-family: {{ t.display }}; font-size: 15px; font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">{{ r.name }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+
+          <div style="padding: 28px 16px 0; display: flex; flex-direction: column; gap: 12px;">
+            <div style="padding: 0 4px; font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: {{ t.muted }};">Kategorien</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 92px; gap: 10px;">
+              <sc-for list="{{ bento }}" as="c" hint-placeholder-count="7">
+                <div onClick="{{ c.open }}" style="grid-row: {{ c.span }}; border-radius: 26px; background: {{ t.surface }}; border: 1px solid {{ t.line }}; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="font-family: {{ t.eyeFont }}; font-size: 12px; color: {{ t.muted }};">{{ c.count }}</div>
+                    <div style="width: 28px; height: 28px; border-radius: 14px; border: 1px solid {{ t.line }}; display: flex; align-items: center; justify-content: center; font-size: 13px;">↗</div>
+                  </div>
+                  <sc-if value="{{ c.big }}"><div style="font-family: {{ t.display }}; font-size: 22px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.1;">{{ c.name }}</div></sc-if>
+                  <sc-if value="{{ c.small }}"><div style="font-family: {{ t.display }}; font-size: 14px; font-weight: 500; letter-spacing: -0.02em;">{{ c.name }}</div></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isList }}">
+          <div style="padding: 8px 20px 16px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: {{ t.muted }};">{{ listSub }}</div>
+              <div style="font-family: {{ t.display }}; font-size: 30px; font-weight: 500; letter-spacing: -0.035em; line-height: 1;">{{ listTitle }}</div>
+            </div>
+            <sc-if value="{{ isAll }}">
+              <div onClick="{{ newRecipe }}" style="width: 52px; height: 52px; border-radius: 26px; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 400; flex: none; cursor: pointer;">+</div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ isSearch }}">
+            <div style="padding: 0 16px 14px;">
+              <div style="height: 60px; border-radius: 30px; background: {{ t.surface }}; border: 1px solid {{ t.line }}; display: flex; align-items: center; gap: 12px; padding: 0 8px 0 20px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ t.accent }}" stroke-width="2"><path d="M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M15.5 15.5L20 20"></path></svg>
+                <input ref="{{ searchRef }}" value="{{ q }}" onChange="{{ onQ }}" placeholder="Gericht oder Zutat" style="flex: 1; min-width: 0; border: none; background: transparent; font-size: 17px; color: {{ t.ink }}; font-family: {{ t.body }};">
+                <sc-if value="{{ q }}"><div onClick="{{ clearQ }}" style="width: 44px; height: 44px; border-radius: 22px; background: {{ t.sunk }}; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer;">✕</div></sc-if>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ chips.length }}">
+            <div style="padding: 0 16px 18px;">
+              <div style="display: flex; gap: 4px; overflow-x: auto; background: {{ t.sunk }}; border-radius: 999px; padding: 4px;">
+                <sc-for list="{{ chips }}" as="c" hint-placeholder-count="5">
+                  <div onClick="{{ c.onClick }}" style="flex: none; height: 38px; padding: 0 14px; border-radius: 19px; display: flex; align-items: center; font-size: 13px; font-weight: 600; background: {{ c.fbg }}; color: {{ c.ffg }}; white-space: nowrap; cursor: pointer;">{{ c.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ listEmpty }}">
+            <div style="margin: 20px 16px; padding: 40px 24px; border-radius: 28px; border: 1px dashed {{ t.line }}; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+              <div style="font-family: {{ t.display }}; font-size: 18px; font-weight: 500;">{{ emptyTitle }}</div>
+              <div style="font-size: 15px; color: {{ t.muted }}; max-width: 260px; text-wrap: pretty;">{{ emptyText }}</div>
+            </div>
+          </sc-if>
+          <sc-for list="{{ listGroups }}" as="g" hint-placeholder-count="1">
+            <div style="padding: 0 16px 24px; display: flex; flex-direction: column; gap: 10px;">
+              <sc-if value="{{ g.title }}">
+                <div style="padding: 0 4px; display: flex; justify-content: space-between; font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: {{ t.muted }};"><span>{{ g.title }}</span><span>{{ g.count }}</span></div>
+              </sc-if>
+              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+                <sc-for list="{{ g.items }}" as="r" hint-placeholder-count="6">
+                  <div onClick="{{ r.open }}" style="min-height: 168px; border-radius: 26px; background: {{ t.surface }}; border: {{ r.tileBorder }}; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; position: relative; overflow: hidden; cursor: pointer;">
+                    <sc-if value="{{ r.showImg }}"><img src="{{ r.foto }}" onError="{{ r.onImgError }}" alt="{{ r.name }}" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35;"></sc-if>
+                    <div style="position: relative; display: flex; justify-content: space-between; align-items: center;">
+                      <svg width="30" height="30" viewBox="0 0 34 34" style="transform: rotate(-90deg); display: block;"><circle cx="17" cy="17" r="13" fill="none" stroke="{{ t.sunk }}" stroke-width="4"></circle><circle cx="17" cy="17" r="13" fill="none" stroke="{{ t.accent }}" stroke-width="4" stroke-linecap="round" stroke-dasharray="{{ r.ring }}"></circle></svg>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <sc-if value="{{ r.fav }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="{{ t.accent }}"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></sc-if>
+                        <span style="font-family: {{ t.eyeFont }}; font-size: 12px;">{{ r.timeShort }}</span>
+                      </div>
+                    </div>
+                    <div style="position: relative; display: flex; flex-direction: column; gap: 6px;">
+                      <div style="font-family: {{ t.eyeFont }}; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: {{ t.accent }};">{{ r.kategorie }}</div>
+                      <div style="font-family: {{ t.display }}; font-size: 14px; font-weight: 500; line-height: 1.25; letter-spacing: -0.02em; text-wrap: pretty;">{{ r.name }}</div>
+                      <sc-if value="{{ r.isStub }}"><div style="font-family: {{ t.eyeFont }}; font-size: 10px; color: {{ t.muted }};">OHNE ANLEITUNG</div></sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </sc-if>
+      </div>
+
+      <div style="position: absolute; left: 50%; bottom: {{ dockBottom }}; transform: translateX(-50%); display: flex; gap: 4px; padding: 6px; border-radius: 999px; background: {{ t.surface }}; border: 1px solid {{ t.line }}; box-shadow: 0 12px 32px rgba(0,0,0,.28); backdrop-filter: blur(20px);">
+        <sc-for list="{{ dock }}" as="tab" hint-placeholder-count="4">
+          <div onClick="{{ tab.onClick }}" style="height: 48px; min-width: 48px; width: {{ tab.w }}; padding: {{ tab.pad }}; border-radius: 24px; background: {{ tab.bg }}; color: {{ tab.fg }}; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; cursor: pointer;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="{{ tab.fill }}" stroke="{{ tab.fg }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ tab.d }}"></path></svg>
+            <sc-if value="{{ tab.on }}"><span>{{ tab.label }}</span></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- F · DETAIL -->
+    <sc-if value="{{ isDetail }}">
+      <div ref="{{ scrollRef }}" style="flex: 1; min-height: 0; overflow-y: auto;">
+        <sc-if value="{{ d.showPhoto }}">
+          <div style="padding: 8px 12px 0;"><img src="{{ d.foto }}" onError="{{ d.onImgError }}" alt="{{ d.name }}" style="display: block; width: 100%; height: 300px; object-fit: cover; border-radius: 32px;"></div>
+        </sc-if>
+        <div style="padding: 64px 20px 0; display: flex; flex-direction: column; gap: 12px;">
+          <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: {{ t.accent }};">● {{ d.kategorie }}</div>
+          <div style="font-family: {{ t.display }}; font-size: 28px; font-weight: 500; line-height: 1.12; letter-spacing: -0.035em; text-wrap: pretty;">{{ d.name }}</div>
+          <sc-if value="{{ d.quelle }}">
+            <div style="font-family: {{ t.eyeFont }}; font-size: 12px; color: {{ t.muted }};">QUELLE → <sc-if value="{{ d.link }}"><a href="{{ d.link }}" target="_blank" style="color: {{ t.ink }};">{{ d.quelle }}</a></sc-if><sc-if value="{{ d.noLink }}">{{ d.quelle }}</sc-if></div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ d.gauges.length }}">
+          <div style="padding: 20px 16px 0; display: flex; gap: 8px;">
+            <sc-for list="{{ d.gauges }}" as="g" hint-placeholder-count="3">
+              <div style="flex: 1; min-width: 0; border-radius: 24px; background: {{ t.surface }}; border: 1px solid {{ t.line }}; padding: 14px 8px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <div style="position: relative; width: 60px; height: 60px;">
+                  <svg width="60" height="60" viewBox="0 0 60 60" style="transform: rotate(-90deg); display: block;"><circle cx="30" cy="30" r="24" fill="none" stroke="{{ t.sunk }}" stroke-width="6"></circle><circle cx="30" cy="30" r="24" fill="none" stroke="{{ t.accent }}" stroke-width="6" stroke-linecap="round" stroke-dasharray="{{ g.dash }}"></circle></svg>
+                  <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: {{ t.eyeFont }}; font-size: 12px; font-weight: 500;">{{ g.value }}</div>
+                </div>
+                <div style="font-family: {{ t.eyeFont }}; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: {{ t.muted }};">{{ g.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ d.isStub }}">
+          <div style="margin: 20px 16px 0; padding: 20px; border-radius: 28px; border: 1px dashed {{ t.muted }}; display: flex; flex-direction: column; gap: 14px;">
+            <div style="font-size: 15px; line-height: 1.45;">Für dieses Gericht gibt es noch keine Anleitung.</div>
+            <div onClick="{{ d.edit }}" style="align-self: flex-start; height: 48px; padding: 0 20px; border-radius: 24px; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; font-size: 15px; font-weight: 700; cursor: pointer;">Rezept ergänzen</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ d.canScale }}">
+          <div style="margin: 12px 16px 0; border-radius: 28px; background: {{ t.surface }}; border: 1px solid {{ t.line }}; padding: 10px; display: flex; align-items: center; justify-content: space-between;">
+            <div onClick="{{ d.less }}" style="width: 56px; height: 56px; border-radius: 28px; background: {{ t.sunk }}; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer;">−</div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+              <div style="font-family: {{ t.display }}; font-size: 34px; font-weight: 500; letter-spacing: -0.04em; line-height: 1;">{{ d.servingsNum }}</div>
+              <div style="font-family: {{ t.eyeFont }}; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: {{ t.muted }};">{{ d.servingsUnit }}</div>
+            </div>
+            <div onClick="{{ d.more }}" style="width: 56px; height: 56px; border-radius: 28px; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer;">+</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ d.ingredients.length }}">
+          <div style="margin: 12px 16px 0; border-radius: 28px; background: {{ t.surface }}; border: 1px solid {{ t.line }}; padding: 18px 18px 8px;">
+            <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: {{ t.muted }}; padding-bottom: 6px;">Zutaten</div>
+            <sc-for list="{{ d.ingredients }}" as="i" hint-placeholder-count="6">
+              <sc-if value="{{ i.isGroup }}"><div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: {{ t.accent }}; padding: 16px 0 4px;">{{ i.text }}</div></sc-if>
+              <sc-if value="{{ i.isItem }}">
+                <div style="display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid {{ t.line }}; font-size: 16px; line-height: 1.35;">
+                  <div style="flex: 1; min-width: 0;">{{ i.rest }}</div>
+                  <div style="flex: none; font-family: {{ t.eyeFont }}; font-size: 14px; color: {{ t.accent }}; text-align: right;">{{ i.amount }}</div>
+                </div>
+              </sc-if>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ d.steps.length }}">
+          <div style="padding: 32px 20px 0; display: flex; flex-direction: column;">
+            <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: {{ t.muted }}; padding-bottom: 16px;">Zubereitung</div>
+            <sc-for list="{{ d.steps }}" as="s" hint-placeholder-count="4">
+              <sc-if value="{{ s.group }}"><div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: {{ t.accent }}; padding: 4px 0 12px 46px;">{{ s.group }}</div></sc-if>
+              <div style="display: flex; gap: 14px;">
+                <div style="width: 32px; flex: none; display: flex; flex-direction: column; align-items: center;">
+                  <div style="width: 32px; height: 32px; border-radius: 16px; border: 1.5px solid {{ t.accent }}; color: {{ t.accent }}; display: flex; align-items: center; justify-content: center; font-family: {{ t.eyeFont }}; font-size: 12px; flex: none;">{{ s.n }}</div>
+                  <div style="flex: 1; width: 1.5px; background: {{ t.line }}; margin: 4px 0;"></div>
+                </div>
+                <div style="flex: 1; font-size: 16px; line-height: 1.55; padding: 5px 0 22px; text-wrap: pretty;">{{ s.text }}</div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ d.hinweis }}">
+              <div style="margin-top: 4px; padding: 16px 18px; border-radius: 22px; background: {{ t.sunk }}; font-size: 15px; line-height: 1.5; white-space: pre-line;">{{ d.hinweis }}</div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ d.notizen }}">
+          <div style="margin: 20px 16px 0; border-radius: 28px; border: 1px solid {{ t.line }}; padding: 4px 18px;">
+            <div onClick="{{ d.toggleNotes }}" style="display: flex; justify-content: space-between; align-items: center; min-height: 52px; cursor: pointer;">
+              <span style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;">Notizen &amp; Tipps</span>
+              <span style="font-size: 13px; color: {{ t.accent }}; font-weight: 700;">{{ d.notesToggle }}</span>
+            </div>
+            <sc-if value="{{ d.notesOpen }}"><div style="font-size: 15px; line-height: 1.55; color: {{ t.muted }}; white-space: pre-line; padding: 0 0 16px;">{{ d.notizen }}</div></sc-if>
+          </div>
+        </sc-if>
+        <div style="height: 130px;"></div>
+      </div>
+
+      <div style="position: absolute; top: {{ floatTop }}; left: 12px; right: 12px; display: flex; justify-content: space-between; pointer-events: none;">
+        <div onClick="{{ back }}" style="pointer-events: auto; width: 48px; height: 48px; border-radius: 24px; background: {{ t.surface }}; border: 1px solid {{ t.line }}; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer;">←</div>
+        <div style="pointer-events: auto; display: flex; gap: 4px; padding: 4px; border-radius: 28px; background: {{ t.surface }}; border: 1px solid {{ t.line }};">
+          <div onClick="{{ d.toggleFav }}" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="{{ d.favFill }}" stroke="{{ d.favStroke }}" stroke-width="1.8"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></div>
+          <div onClick="{{ d.edit }}" style="height: 44px; padding: 0 14px; border-radius: 22px; background: {{ t.sunk }}; display: flex; align-items: center; font-size: 14px; font-weight: 700; cursor: pointer;">Bearbeiten</div>
+        </div>
+      </div>
+
+      <sc-if value="{{ d.steps.length }}">
+        <div style="position: absolute; left: 16px; right: 16px; bottom: {{ dockBottom }};">
+          <div onClick="{{ d.cook }}" style="height: 64px; border-radius: 32px; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 24px; font-size: 17px; font-weight: 700; box-shadow: 0 12px 32px rgba(0,0,0,.3); cursor: pointer;">
+            <span>Kochmodus starten</span>
+            <div style="width: 48px; height: 48px; border-radius: 24px; background: {{ t.onAccent }}; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{ t.accent }}"><path d="M7 4l13 8-13 8z"></path></svg></div>
+          </div>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <!-- F · COOK -->
+    <sc-if value="{{ isCook }}">
+      <div style="flex: none; display: flex; justify-content: space-between; align-items: center; padding: 4px 12px;">
+        <div onClick="{{ back }}" style="width: 48px; height: 48px; border-radius: 24px; border: 1px solid {{ t.line }}; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer;">✕</div>
+        <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .1em; color: {{ t.muted }};">BILDSCHIRM BLEIBT AN</div>
+        <div onClick="{{ c.toggleIng }}" style="height: 48px; padding: 0 16px; border-radius: 24px; border: 1px solid {{ t.line }}; display: flex; align-items: center; font-size: 14px; font-weight: 700; cursor: pointer;">Zutaten</div>
+      </div>
+      <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 12px 24px 16px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+        <div style="position: relative; width: 240px; height: 240px; flex: none;">
+          <svg width="240" height="240" viewBox="0 0 240 240" style="transform: rotate(-90deg); display: block;">
+            <circle cx="120" cy="120" r="108" fill="none" stroke="{{ t.sunk }}" stroke-width="10"></circle>
+            <circle cx="120" cy="120" r="108" fill="none" stroke="{{ t.accent }}" stroke-width="10" stroke-linecap="round" stroke-dasharray="{{ c.ringDash }}"></circle>
+          </svg>
+          <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
+            <sc-if value="{{ c.isStep }}">
+              <div style="font-family: {{ t.display }}; font-size: 64px; font-weight: 500; letter-spacing: -0.05em; line-height: 1;">{{ c.nPad }}</div>
+              <div style="font-family: {{ t.eyeFont }}; font-size: 13px; color: {{ t.muted }};">{{ c.totalPad }}</div>
+            </sc-if>
+            <sc-if value="{{ c.isPhoto }}">
+              <sc-if value="{{ c.hasNew }}"><img src="{{ c.foto }}" alt="{{ c.title }}" style="width: 196px; height: 196px; border-radius: 98px; object-fit: cover;"></sc-if>
+              <sc-if value="{{ c.noNew }}"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="{{ t.accent }}" stroke-width="1.4" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4zM12 10a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0-7"></path></svg></sc-if>
+            </sc-if>
+          </div>
+        </div>
+        <sc-if value="{{ c.group }}"><div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: {{ t.accent }};">{{ c.group }}</div></sc-if>
+        <sc-if value="{{ c.isStep }}">
+          <div style="font-size: 22px; line-height: 1.45; font-weight: 500; text-align: center; text-wrap: pretty;">{{ c.text }}</div>
+        </sc-if>
+        <sc-if value="{{ c.isPhoto }}">
+          <div style="font-family: {{ t.display }}; font-size: 22px; font-weight: 500; letter-spacing: -0.03em; text-align: center; line-height: 1.2;">Fertig! Mach noch ein Foto.</div>
+          <div style="font-size: 15px; color: {{ t.muted }}; text-align: center; max-width: 280px; line-height: 1.5;">Dieses Rezept hat noch kein Bild. Dein Foto erscheint im Rezept und in den Listen.</div>
+          <label style="height: 56px; padding: 0 24px; border-radius: 28px; border: 1.5px solid {{ t.accent }}; color: {{ t.accent }}; display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; cursor: pointer;">
+            <sc-if value="{{ c.noNew }}"><span>Foto aufnehmen</span></sc-if><sc-if value="{{ c.hasNew }}"><span>Anderes Foto wählen</span></sc-if>
+            <input type="file" accept="image/*" capture="environment" onChange="{{ c.onPhoto }}" style="display: none;">
+          </label>
+        </sc-if>
+      </div>
+      <div style="flex: none; padding: 8px 16px {{ dockBottom }}; display: flex; gap: 10px; align-items: center;">
+        <div onClick="{{ c.prev }}" style="width: 64px; height: 64px; border-radius: 32px; border: 1px solid {{ t.line }}; display: flex; align-items: center; justify-content: center; font-size: 22px; opacity: {{ c.prevOpacity }}; flex: none; cursor: pointer;">←</div>
+        <div onClick="{{ c.next }}" style="flex: 1; height: 64px; border-radius: 32px; background: {{ t.accent }}; color: {{ t.onAccent }}; display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 24px; font-size: 17px; font-weight: 700; cursor: pointer;">
+          <span>{{ c.nextLabel }}</span>
+          <div style="width: 48px; height: 48px; border-radius: 24px; background: {{ t.onAccent }}; color: {{ t.accent }}; display: flex; align-items: center; justify-content: center; font-size: 20px;">→</div>
+        </div>
+      </div>
+      <sc-if value="{{ c.showIng }}">
+        <div onClick="{{ c.toggleIng }}" style="position: absolute; inset: 0; background: rgba(0,0,0,.5);"></div>
+        <div style="position: absolute; left: 8px; right: 8px; bottom: 8px; max-height: 70%; overflow-y: auto; background: {{ t.surface }}; border: 1px solid {{ t.line }}; border-radius: 32px; padding: 18px 20px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px;">
+            <div style="font-family: {{ t.eyeFont }}; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: {{ t.muted }};">Zutaten · {{ d.servingsLabel }}</div>
+            <div onClick="{{ c.toggleIng }}" style="width: 44px; height: 44px; border-radius: 22px; background: {{ t.sunk }}; display: flex; align-items: center; justify-content: center; cursor: pointer;">✕</div>
+          </div>
+          <sc-for list="{{ d.ingredients }}" as="i" hint-placeholder-count="5">
+            <sc-if value="{{ i.isGroup }}"><div style="font-family: {{ t.eyeFont }}; font-size: 11px; text-transform: uppercase; color: {{ t.accent }}; padding: 14px 0 4px;">{{ i.text }}</div></sc-if>
+            <sc-if value="{{ i.isItem }}">
+              <div style="display: flex; justify-content: space-between; gap: 14px; padding: 11px 0; border-bottom: 1px solid {{ t.line }}; font-size: 16px;">
+                <div style="flex: 1;">{{ i.rest }}</div>
+                <div style="font-family: {{ t.eyeFont }}; font-size: 14px; color: {{ t.accent }};">{{ i.amount }}</div>
+              </div>
+            </sc-if>
+          </sc-for>
+        </div>
+      </sc-if>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ isPlay }}">
+    <!-- P · TABS -->
+    <sc-if value="{{ isTabs }}">
+      <div ref="{{ scrollRef }}" style="flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 120px;">
+        <sc-if value="{{ isHome }}">
+          <div style="padding: 6px 16px 0; display: flex; justify-content: flex-end;">
+            
+          </div>
+          <div style="padding: 0 16px; display: flex; align-items: flex-end; gap: 6px;">
+            <div style="flex: none; margin-bottom: -4px;"><dc-import name="Maskottchen" pose="wave" size="{{ 104 }}" accent="{{ accentHex }}" hint-size="104px,104px"></dc-import></div>
+            <div style="position: relative; flex: 1; background: {{ t.surface }}; border: {{ ps.b }}; border-radius: 24px 24px 24px 6px; padding: 14px 16px; box-shadow: {{ ps.s4 }}; margin-bottom: 30px;">
+              <div style="font-size: 14px; font-weight: 700; color: {{ t.muted }};">{{ greeting }}! Ich bin Maulti.</div>
+              <div style="font-family: {{ t.display }}; font-size: 22px; font-weight: 600; line-height: 1.15; margin-top: 2px; text-wrap: balance;">{{ mealHeadline }}</div>
+            </div>
+          </div>
+          <div style="padding: 12px 16px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+            <sc-for list="{{ mealTabs }}" as="m" hint-placeholder-count="3">
+              <div onClick="{{ m.onClick }}" style="height: 56px; border-radius: 20px; background: {{ m.pbg }}; color: {{ onPastel }}; border: {{ m.pborder }}; box-shadow: {{ m.pshadow }}; transform: {{ m.plift }}; display: flex; align-items: center; justify-content: center; font-family: {{ t.display }}; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform .15s;">{{ m.label }}</div>
+            </sc-for>
+          </div>
+          <div style="padding: 16px 16px 0; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 14px; font-weight: 800; flex: none;">Wie viel Zeit?</span>
+            <div style="flex: 1; display: flex; gap: 2px; padding: 3px; border-radius: 22px; background: {{ t.sunk }};">
+              <sc-for list="{{ timeChips }}" as="m" hint-placeholder-count="2">
+                <div onClick="{{ m.onClick }}" style="flex: 1; min-height: 40px; border-radius: 19px; background: {{ m.sbg }}; color: {{ m.sfg }}; border: {{ m.sb }}; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; cursor: pointer;"><span style="font-size: 14px; font-weight: 800;">{{ m.label }}</span><span style="font-size: 11px; font-weight: 700; opacity: .8;">{{ m.hint }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="padding: 8px 20px 0; font-size: 13px; font-weight: 700; color: {{ t.muted }};">{{ poolLabel }}</div>
+          <sc-if value="{{ hasSugg }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; gap: 14px; overflow-x: auto; padding: 10px 20px 26px; scroll-snap-type: x mandatory; scroll-padding: 0 20px;">
+              <sc-for list="{{ sugg }}" as="r" hint-placeholder-count="2">
+                <div onClick="{{ r.open }}" style="flex: none; width: 262px; min-height: 210px; transform: {{ r.rot }}; background: {{ r.pcolor }}; color: {{ onPastel }}; border: {{ ps.bb }}; border-radius: 28px; box-shadow: {{ ps.s5 }}; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; scroll-snap-align: start; cursor: pointer;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="background: #ffffff; border: {{ ps.b }}; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 800;">{{ r.kategorie }}</span>
+                    <span style="background: {{ outline }}; color: #fff6e8; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 800;">{{ r.timeShort }}</span>
+                  </div>
+                  <div style="font-family: {{ t.display }}; font-size: 24px; font-weight: 600; line-height: 1.12; text-wrap: balance;">{{ r.name }}</div>
+                  <div style="align-self: flex-start; background: #ffffff; border: {{ ps.b }}; border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 800;">Los geht’s →</div>
+                </div>
+              </sc-for>
+              <div onClick="{{ reshuffle }}" style="flex: none; width: 128px; border: 2.5px dashed {{ t.muted }}; border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-family: {{ t.display }}; font-size: 15px; font-weight: 600; text-align: center; scroll-snap-align: start; cursor: pointer;">
+                <span style="font-size: 28px; color: {{ t.accent }};">↻</span>Nochmal würfeln
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ suggEmpty }}">
+            <div style="margin: 12px 16px 24px; padding: 18px; border-radius: 24px; border: 2px dashed {{ t.muted }}; display: flex; gap: 12px; align-items: center;">
+              <dc-import name="Maskottchen" pose="think" size="{{ 64 }}" accent="{{ accentHex }}" hint-size="64px,64px"></dc-import>
+              <div style="flex: 1; font-size: 14px; line-height: 1.45; color: {{ t.muted }};">Hmm, dazu finde ich nichts. Probier „{{ contextToggle }}“.</div>
+            </div>
+          </sc-if>
+
+          <sc-for list="{{ homeSections }}" as="g" hint-placeholder-count="2">
+            <div style="padding: 0 16px 24px; display: flex; flex-direction: column; gap: 10px;">
+              <div style="padding: 0 4px; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                <span style="font-family: {{ t.display }}; font-size: 19px; font-weight: 600;">{{ g.title }}</span>
+                <sc-if value="{{ g.moreLabel }}"><span onClick="{{ g.more }}" style="font-size: 14px; font-weight: 800; color: {{ t.accent }}; padding: 10px 0; cursor: pointer;">{{ g.moreLabel }}</span></sc-if>
+              </div>
+              <sc-for list="{{ g.items }}" as="r" hint-placeholder-count="3">
+                <div onClick="{{ r.open }}" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 10px; background: {{ t.surface }}; border: {{ ps.b }}; border-radius: 22px; box-shadow: {{ ps.s3 }}; cursor: pointer;">
+                  <sc-if value="{{ r.noImg }}"><div style="width: 52px; height: 52px; flex: none; border-radius: 18px; background: {{ r.pastel }}; color: {{ onPastel }}; display: flex; align-items: center; justify-content: center; font-family: {{ t.display }}; font-size: 24px; font-weight: 600;">{{ r.initial }}</div></sc-if>
+                  <sc-if value="{{ r.showImg }}"><img src="{{ r.foto }}" onError="{{ r.onImgError }}" alt="{{ r.name }}" style="width: 52px; height: 52px; flex: none; border-radius: 18px; object-fit: cover;"></sc-if>
+                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+                    <div style="font-family: {{ t.display }}; font-size: 16px; font-weight: 600; line-height: 1.2;">{{ r.name }}</div>
+                    <div style="font-size: 13px; color: {{ t.muted }}; font-weight: 600;">{{ r.meta }}</div>
+                  </div>
+                  <sc-if value="{{ r.fav }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="{{ t.accent }}"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+
+          <div style="padding: 0 16px 12px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="padding: 0 4px; font-family: {{ t.display }}; font-size: 19px; font-weight: 600;">Stöbern</div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 10px;">
+              <sc-for list="{{ playCats }}" as="c" hint-placeholder-count="7">
+                <div onClick="{{ c.open }}" style="display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer;">
+                  <div style="width: 84px; height: 84px; border-radius: 42px; background: {{ c.pastel }}; border: {{ ps.b }}; box-shadow: {{ ps.s3 }}; display: flex; align-items: center; justify-content: center;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="{{ onPastel }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ c.icon }}"></path></svg></div>
+                  <div style="display: flex; flex-direction: column; align-items: center;"><span style="font-size: 14px; font-weight: 800; text-align: center;">{{ c.name }}</span><span style="font-size: 12px; font-weight: 700; color: {{ t.muted }};">{{ c.countLabel }}</span></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isList }}">
+          <div style="padding: 10px 20px 14px; display: flex; flex-direction: column; gap: 2px;">
+            <div style="font-family: {{ t.display }}; font-size: 30px; font-weight: 600;">{{ listTitle }}</div>
+            <div style="font-size: 14px; font-weight: 600; color: {{ t.muted }};">{{ listSub }}</div>
+          </div>
+          <sc-if value="{{ isSearch }}">
+            <div style="padding: 0 16px 14px;">
+              <div style="height: 56px; border-radius: 20px; background: {{ t.surface }}; border: {{ ps.b }}; box-shadow: {{ ps.s3 }}; display: flex; align-items: center; gap: 10px; padding: 0 8px 0 16px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ t.ink }}" stroke-width="2.2" stroke-linecap="round"><path d="M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M15.5 15.5L20 20"></path></svg>
+                <input ref="{{ searchRef }}" value="{{ q }}" onChange="{{ onQ }}" placeholder="Worauf hast du Lust?" style="flex: 1; min-width: 0; border: none; background: transparent; font-size: 17px; font-weight: 600; color: {{ t.ink }}; font-family: {{ t.body }};">
+                <sc-if value="{{ q }}"><div onClick="{{ clearQ }}" style="width: 40px; height: 40px; border-radius: 20px; background: {{ t.sunk }}; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer;">✕</div></sc-if>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isSearch }}">
+            <div style="padding: 0 16px 18px; display: flex; gap: 8px; align-items: center;">
+              <div style="flex: 1; min-width: 0; display: flex; gap: 2px; padding: 3px; border-radius: 22px; background: {{ t.sunk }};">
+                <sc-for list="{{ playMealChips }}" as="m" hint-placeholder-count="4">
+                  <div onClick="{{ m.onClick }}" style="flex: 1; height: 40px; border-radius: 19px; background: {{ m.sbg }}; color: {{ m.sfg }}; border: {{ m.sb }}; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; cursor: pointer;">{{ m.label }}</div>
+                </sc-for>
+              </div>
+              <div onClick="{{ toggleFilter }}" style="flex: none; height: 46px; padding: 0 14px; border-radius: 23px; background: {{ filterBtnBg }}; color: {{ filterBtnFg }}; border: {{ ps.b }}; box-shadow: {{ ps.s3 }}; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 800; cursor: pointer;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ filterBtnFg }}" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg>
+                <span>Filter</span><sc-if value="{{ hasFilter }}"><span>{{ filterCount }}</span></sc-if>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ listEmpty }}">
+            <div style="padding: 24px 32px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;">
+              <dc-import name="Maskottchen" pose="{{ poseEmpty }}" size="{{ 120 }}" accent="{{ accentHex }}" hint-size="120px,120px"></dc-import>
+              <div style="font-family: {{ t.display }}; font-size: 22px; font-weight: 600;">{{ emptyTitle }}</div>
+              <div style="font-size: 15px; color: {{ t.muted }}; max-width: 260px; text-wrap: pretty;">{{ emptyText }}</div>
+            </div>
+          </sc-if>
+          <sc-for list="{{ listGroups }}" as="g" hint-placeholder-count="1">
+            <div style="padding: 0 16px 22px; display: flex; flex-direction: column; gap: 10px;">
+              <sc-if value="{{ g.title }}">
+                <div style="padding: 0 4px; display: flex; align-items: center; gap: 8px; font-family: {{ t.display }}; font-size: 19px; font-weight: 600;"><span>{{ g.title }}</span><span style="font-family: {{ t.body }}; font-size: 12px; font-weight: 800; background: {{ t.sunk }}; border-radius: 999px; padding: 3px 9px;">{{ g.count }}</span></div>
+              </sc-if>
+              <sc-for list="{{ g.items }}" as="r" hint-placeholder-count="6">
+                <div onClick="{{ r.open }}" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 10px; background: {{ t.surface }}; border: {{ ps.b }}; border-radius: 22px; box-shadow: {{ ps.s3 }}; cursor: pointer;">
+                  <sc-if value="{{ r.noImg }}"><div style="width: 52px; height: 52px; flex: none; border-radius: 18px; background: {{ r.pastel }}; color: {{ onPastel }}; display: flex; align-items: center; justify-content: center; font-family: {{ t.display }}; font-size: 24px; font-weight: 600;">{{ r.initial }}</div></sc-if>
+                  <sc-if value="{{ r.showImg }}"><img src="{{ r.foto }}" onError="{{ r.onImgError }}" alt="{{ r.name }}" style="width: 52px; height: 52px; flex: none; border-radius: 18px; object-fit: cover;"></sc-if>
+                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+                    <div style="font-family: {{ t.display }}; font-size: 16px; font-weight: 600; line-height: 1.2;">{{ r.name }}</div>
+                    <div style="font-size: 13px; color: {{ t.muted }}; font-weight: 600;">{{ r.meta }}</div>
+                  </div>
+                  <sc-if value="{{ r.fav }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="{{ t.accent }}"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </sc-if>
+      </div>
+
+      <div style="position: absolute; left: 12px; right: 12px; bottom: {{ dockBottom }}; height: 68px; background: {{ t.surface }}; border: {{ ps.bb }}; border-radius: 28px; box-shadow: {{ ps.s4 }}; display: flex; align-items: center; padding: 0 6px;">
+        <sc-for list="{{ playTabs }}" as="tab" hint-placeholder-count="4">
+          <div onClick="{{ tab.onClick }}" style="flex: 1; height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer;">
+            <sc-if value="{{ tab.isPlus }}">
+              <div style="width: 58px; height: 58px; margin-top: -30px; border-radius: 29px; background: {{ t.accent }}; border: {{ ps.bb }}; box-shadow: {{ ps.s4 }}; display: flex; align-items: center; justify-content: center;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{ t.onAccent }}" stroke-width="3" stroke-linecap="round"><path d="{{ tab.d }}"></path></svg>
+              </div>
+            </sc-if>
+            <sc-if value="{{ tab.notPlus }}">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="{{ tab.fill }}" stroke="{{ tab.stroke }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ tab.d }}"></path></svg>
+              <span style="font-size: 12px; font-weight: 800; color: {{ tab.fg }};">{{ tab.label }}</span>
+              <div style="width: 5px; height: 5px; border-radius: 3px; background: {{ tab.dot }};"></div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- P · DETAIL -->
+    <sc-if value="{{ isDetail }}">
+      <div ref="{{ scrollRef }}" style="flex: 1; min-height: 0; overflow-y: auto;">
+        <div style="margin: 0 10px; background: {{ detailColor }}; color: {{ onPastel }}; border: {{ ps.bb }}; border-radius: 34px; box-shadow: {{ ps.s5 }}; padding: 12px 12px 18px; position: relative;">
+          <div style="display: flex; justify-content: space-between;">
+            <div onClick="{{ back }}" style="width: 46px; height: 46px; border-radius: 23px; background: #ffffff; border: {{ ps.b }}; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; cursor: pointer;">←</div>
+            <div style="display: flex; gap: 8px;">
+              <div onClick="{{ d.toggleFav }}" style="width: 46px; height: 46px; border-radius: 23px; background: #ffffff; border: {{ ps.b }}; display: flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="{{ d.favFill }}" stroke="{{ d.favStrokePlay }}" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></div>
+              <div onClick="{{ d.edit }}" style="height: 46px; padding: 0 16px; border-radius: 23px; background: #ffffff; border: {{ ps.b }}; display: flex; align-items: center; font-size: 14px; font-weight: 800; cursor: pointer;">Bearbeiten</div>
+            </div>
+          </div>
+          <sc-if value="{{ d.showPhoto }}"><img src="{{ d.foto }}" onError="{{ d.onImgError }}" alt="{{ d.name }}" style="display: block; width: 100%; height: 200px; object-fit: cover; border-radius: 24px; border: {{ ps.b }}; margin-top: 12px;"></sc-if>
+          <div style="padding: 16px 110px 0 6px; display: flex; flex-direction: column; gap: 8px;">
+            <span style="align-self: flex-start; background: #ffffff; border: {{ ps.b }}; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 800;">{{ d.kategorie }}</span>
+            <div style="font-family: {{ t.display }}; font-size: 28px; font-weight: 600; line-height: 1.1; text-wrap: balance;">{{ d.name }}</div>
+            <sc-if value="{{ d.quelle }}"><div style="font-size: 13px; font-weight: 700;">von <sc-if value="{{ d.link }}"><a href="{{ d.link }}" target="_blank" style="color: {{ onPastel }};">{{ d.quelle }}</a></sc-if><sc-if value="{{ d.noLink }}">{{ d.quelle }}</sc-if></div></sc-if>
+          </div>
+          <div style="position: absolute; right: 8px; bottom: -14px;"><dc-import name="Maskottchen" pose="{{ poseDetail }}" size="{{ 108 }}" accent="{{ accentHex }}" hint-size="108px,108px"></dc-import></div>
+        </div>
+
+        <sc-if value="{{ d.metaCells.length }}">
+          <div style="padding: 24px 16px 0; display: flex; flex-wrap: wrap; gap: 8px;">
+            <sc-for list="{{ d.metaCells }}" as="m" hint-placeholder-count="3">
+              <div style="background: {{ t.surface }}; border: {{ ps.b }}; border-radius: 16px; padding: 8px 12px; display: flex; flex-direction: column;">
+                <span style="font-size: 11px; font-weight: 800; color: {{ t.muted }};">{{ m.label }}</span>
+                <span style="font-family: {{ t.display }}; font-size: 17px; font-weight: 600;">{{ m.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ d.isStub }}">
+          <div style="margin: 20px 16px 0; padding: 16px; border-radius: 24px; border: 2px dashed {{ t.muted }}; display: flex; gap: 12px; align-items: center;">
+            <dc-import name="Maskottchen" pose="think" size="{{ 64 }}" accent="{{ accentHex }}" hint-size="64px,64px"></dc-import>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+              <div style="font-size: 14px; font-weight: 600; line-height: 1.4;">Hier fehlt noch die Anleitung. Magst du sie ergänzen?</div>
+              <div onClick="{{ d.edit }}" style="align-self: flex-start; height: 44px; padding: 0 16px; border-radius: 22px; background: {{ t.accent }}; color: {{ t.onAccent }}; border: {{ ps.b }}; display: flex; align-items: center; font-size: 14px; font-weight: 800; cursor: pointer;">Rezept ergänzen</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ d.ingredients.length }}">
+          <div style="padding: 26px 16px 0; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 4px;">
+              <div style="font-family: {{ t.display }}; font-size: 22px; font-weight: 600;">Zutaten</div>
+              <sc-if value="{{ d.canScale }}">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <div onClick="{{ d.less }}" style="width: 44px; height: 44px; border-radius: 22px; background: {{ t.surface }}; border: {{ ps.b }}; box-shadow: {{ ps.s3 }}; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; cursor: pointer;">−</div>
+                  <div style="min-width: 58px; text-align: center; display: flex; flex-direction: column; line-height: 1;">
+                    <span style="font-family: {{ t.display }}; font-size: 22px; font-weight: 600;">{{ d.servingsNum }}</span>
+                    <span style="font-size: 11px; font-weight: 800; color: {{ t.muted }};">{{ d.servingsUnit }}</span>
+                  </div>
+                  <div onClick="{{ d.more }}" style="width: 44px; height: 44px; border-radius: 22px; background: {{ t.accent }}; color: {{ t.onAccent }}; border: {{ ps.b }}; box-shadow: {{ ps.s3 }}; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; cursor: pointer;">+</div>
+                </div>
+              </sc-if>
+            </div>
+            <div style="background: {{ t.surface }}; border: {{ ps.b }}; border-radius: 24px; padding: 6px 16px;">
+              <sc-for list="{{ d.ingredients }}" as="i" hint-placeholder-count="6">
+                <sc-if value="{{ i.isGroup }}"><div style="font-family: {{ t.display }}; font-size: 15px; font-weight: 600; color: {{ t.accent }}; padding: 14px 0 2px;">{{ i.text }}</div></sc-if>
+                <sc-if value="{{ i.isItem }}">
+                  <div style="display: flex; gap: 12px; padding: 11px 0; border-bottom: 2px dotted {{ t.line }}; font-size: 16px; line-height: 1.35;">
+                    <div style="width: 80px; flex: none; font-weight: 800;">{{ i.amount }}</div>
+                    <div style="flex: 1; min-width: 0;">{{ i.rest }}</div>
+                  </div>
+                </sc-if>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ d.steps.length }}">
+          <div style="padding: 28px 16px 0; display: flex; flex-direction: column; gap: 12px;">
+            <div style="padding: 0 4px; font-family: {{ t.display }}; font-size: 22px; font-weight: 600;">So geht’s</div>
+            <sc-for list="{{ d.steps }}" as="s" hint-placeholder-count="4">
+              <sc-if value="{{ s.group }}"><div style="padding: 6px 4px 0; font-family: {{ t.display }}; font-size: 15px; font-weight: 600; color: {{ t.accent }};">{{ s.group }}</div></sc-if>
+              <div style="display: flex; gap: 12px; align-items: flex-start; background: {{ t.surface }}; border: {{ ps.b }}; border-radius: 22px; padding: 14px;">
+                <div style="width: 34px; height: 34px; flex: none; border-radius: 17px; background: {{ detailColor }}; color: {{ onPastel }}; border: {{ ps.b }}; display: flex; align-items: center; justify-content: center; font-family: {{ t.display }}; font-size: 16px; font-weight: 600;">{{ s.n }}</div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; padding-top: 4px;">
+                  <div style="font-size: 16px; line-height: 1.5; text-wrap: pretty;">{{ s.text }}</div>
+                  <sc-if value="{{ s.timerLabel }}"><div onClick="{{ s.startTimer }}" style="align-self: flex-start; min-height: 40px; padding: 0 14px; border-radius: 20px; background: {{ t.sunk }}; border: {{ ps.b }}; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 800; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ t.ink }}" stroke-width="2.2" stroke-linecap="round"><path d="M12 6a7 7 0 1 0 0 14a7 7 0 1 0 0-14M12 9v4l3 2M10 3h4"></path></svg>{{ s.timerLabel }}</div></sc-if>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ d.hinweis }}"><div style="padding: 14px 16px; border-radius: 22px; background: {{ t.sunk }}; font-size: 15px; line-height: 1.5; white-space: pre-line;">{{ d.hinweis }}</div></sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ d.notizen }}">
+          <div style="margin: 20px 16px 0; border: {{ ps.b }}; border-radius: 22px; padding: 2px 16px; background: {{ t.surface }};">
+            <div onClick="{{ d.toggleNotes }}" style="display: flex; justify-content: space-between; align-items: center; min-height: 50px; cursor: pointer;">
+              <span style="font-family: {{ t.display }}; font-size: 16px; font-weight: 600;">Notizen &amp; Tipps</span>
+              <span style="font-size: 13px; font-weight: 800; color: {{ t.accent }};">{{ d.notesToggle }}</span>
+            </div>
+            <sc-if value="{{ d.notesOpen }}"><div style="font-size: 15px; line-height: 1.55; color: {{ t.muted }}; white-space: pre-line; padding: 0 0 14px;">{{ d.notizen }}</div></sc-if>
+          </div>
+        </sc-if>
+        <div style="height: 130px;"></div>
+      </div>
+      <sc-if value="{{ d.steps.length }}">
+        <div style="position: absolute; left: 16px; right: 16px; bottom: {{ dockBottom }};">
+          <div onClick="{{ d.cook }}" style="height: 62px; border-radius: 31px; background: {{ t.accent }}; color: {{ t.onAccent }}; border: {{ ps.bb }}; box-shadow: {{ ps.s5 }}; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: {{ t.display }}; font-size: 19px; font-weight: 600; cursor: pointer;">Los, wir kochen!</div>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <!-- P · COOK -->
+    <sc-if value="{{ isCook }}">
+      <div style="flex: none; display: flex; justify-content: space-between; align-items: center; padding: 4px 12px;">
+        <div onClick="{{ back }}" style="width: 46px; height: 46px; border-radius: 23px; background: {{ t.surface }}; border: {{ ps.b }}; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer;">✕</div>
+        <div style="display: flex; gap: 5px;">
+          <sc-for list="{{ c.progress }}" as="p" hint-placeholder-count="5"><div style="width: 10px; height: 10px; border-radius: 5px; background: {{ p.bg }}; border: {{ ps.b }};"></div></sc-for>
+        </div>
+        <div onClick="{{ c.toggleIng }}" style="height: 46px; padding: 0 14px; border-radius: 23px; background: {{ t.surface }}; border: {{ ps.b }}; display: flex; align-items: center; font-size: 14px; font-weight: 800; cursor: pointer;">Zutaten</div>
+      </div>
+      <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+        <dc-import name="Maskottchen" pose="{{ poseCook }}" size="{{ 150 }}" accent="{{ accentHex }}" hint-size="150px,150px"></dc-import>
+        <div onPointerDown="{{ c.onDown }}" onPointerUp="{{ c.onUp }}" style="touch-action: pan-y; user-select: none; align-self: stretch; position: relative; background: {{ t.surface }}; border: {{ ps.bb }}; border-radius: 28px; box-shadow: {{ ps.s5 }}; padding: 20px; margin-top: 8px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="font-size: 13px; font-weight: 800; color: {{ t.accent }};">{{ c.label }}<sc-if value="{{ c.group }}"> · {{ c.group }}</sc-if></div>
+          <sc-if value="{{ c.isStep }}">
+            <div style="font-family: {{ t.display }}; font-size: 23px; font-weight: 500; line-height: 1.35; text-wrap: pretty;">{{ c.text }}</div>
+            <sc-if value="{{ c.timerLabel }}"><div onClick="{{ c.startTimer }}" style="align-self: flex-start; min-height: 48px; padding: 0 18px; border-radius: 24px; background: {{ t.accent }}; color: {{ t.onAccent }}; border: {{ ps.b }}; box-shadow: {{ ps.s3 }}; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ t.onAccent }}" stroke-width="2.2" stroke-linecap="round"><path d="M12 6a7 7 0 1 0 0 14a7 7 0 1 0 0-14M12 9v4l3 2M10 3h4"></path></svg>{{ c.timerLabel }}</div></sc-if>
+            <div style="font-size: 12px; font-weight: 700; color: {{ t.muted }};">Wischen für den nächsten Schritt</div>
+          </sc-if>
+          <sc-if value="{{ c.isPhoto }}">
+            <div style="font-family: {{ t.display }}; font-size: 24px; font-weight: 600; line-height: 1.2;">Juhu, geschafft! Machst du ein Foto für mich?</div>
+            <div style="font-size: 15px; color: {{ t.muted }}; line-height: 1.5;">Das Rezept hat noch kein Bild. Dein Foto erscheint im Rezept und in den Listen.</div>
+            <sc-if value="{{ c.hasNew }}"><img src="{{ c.foto }}" alt="{{ c.title }}" style="width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 20px; border: {{ ps.b }};"></sc-if>
+            <label style="height: 54px; border-radius: 27px; background: {{ t.sunk }}; border: 2px dashed {{ outline }}; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; cursor: pointer;">
+              <sc-if value="{{ c.noNew }}"><span>Foto aufnehmen</span></sc-if><sc-if value="{{ c.hasNew }}"><span>Anderes Foto wählen</span></sc-if>
+              <input type="file" accept="image/*" capture="environment" onChange="{{ c.onPhoto }}" style="display: none;">
+            </label>
+          </sc-if>
+        </div>
+      </div>
+      <div style="flex: none; padding: 10px 16px {{ dockBottom }}; display: flex; gap: 10px;">
+        <div onClick="{{ c.prev }}" style="width: 62px; height: 62px; flex: none; border-radius: 31px; background: {{ t.surface }}; border: {{ ps.bb }}; box-shadow: {{ ps.s4 }}; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; opacity: {{ c.prevOpacity }}; cursor: pointer;">←</div>
+        <div onClick="{{ c.next }}" style="flex: 1; height: 62px; border-radius: 31px; background: {{ t.accent }}; color: {{ t.onAccent }}; border: {{ ps.bb }}; box-shadow: {{ ps.s4 }}; display: flex; align-items: center; justify-content: center; font-family: {{ t.display }}; font-size: 19px; font-weight: 600; cursor: pointer;">{{ c.nextLabel }}</div>
+      </div>
+      <sc-if value="{{ c.showIng }}">
+        <div onClick="{{ c.toggleIng }}" style="position: absolute; inset: 0; background: rgba(0,0,0,.4);"></div>
+        <div style="position: absolute; left: 8px; right: 8px; bottom: 8px; max-height: 70%; overflow-y: auto; background: {{ t.surface }}; border: {{ ps.bb }}; border-radius: 30px; padding: 16px 18px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 4px;">
+            <div style="font-family: {{ t.display }}; font-size: 20px; font-weight: 600;">Zutaten · {{ d.servingsLabel }}</div>
+            <div onClick="{{ c.toggleIng }}" style="width: 44px; height: 44px; border-radius: 22px; background: {{ t.sunk }}; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer;">✕</div>
+          </div>
+          <sc-for list="{{ d.ingredients }}" as="i" hint-placeholder-count="5">
+            <sc-if value="{{ i.isGroup }}"><div style="font-family: {{ t.display }}; font-size: 15px; font-weight: 600; color: {{ t.accent }}; padding: 12px 0 2px;">{{ i.text }}</div></sc-if>
+            <sc-if value="{{ i.isItem }}"><div style="display: flex; gap: 12px; padding: 10px 0; border-bottom: 2px dotted {{ t.line }}; font-size: 16px;"><div style="width: 80px; flex: none; font-weight: 800;">{{ i.amount }}</div><div style="flex: 1;">{{ i.rest }}</div></div></sc-if>
+          </sc-for>
+        </div>
+      </sc-if>
+    </sc-if>
+  </sc-if>
+  <sc-if value="{{ isPlay }}">
+    <sc-if value="{{ filterOpen }}">
+      <div onClick="{{ toggleFilter }}" style="position: absolute; inset: 0; background: rgba(0,0,0,.4);"></div>
+      <div style="position: absolute; left: 8px; right: 8px; bottom: 8px; background: {{ t.surface }}; border: {{ ps.bb }}; border-radius: 30px; padding: 18px 18px {{ safeBottom }}; display: flex; flex-direction: column; gap: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-family: {{ t.display }}; font-size: 22px; font-weight: 600;">Filter</div>
+          <div onClick="{{ resetFilters }}" style="font-size: 14px; font-weight: 800; color: {{ t.accent }}; padding: 10px 0; cursor: pointer;">Zurücksetzen</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 13px; font-weight: 800; color: {{ t.muted }};">Kategorie</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <sc-for list="{{ playCatChips }}" as="c" hint-placeholder-count="7"><div onClick="{{ c.onClick }}" style="height: 40px; padding: 0 14px; border-radius: 20px; display: flex; align-items: center; font-size: 14px; font-weight: 800; background: {{ c.fbg }}; color: {{ c.ffg }}; border: {{ ps.b }}; cursor: pointer;">{{ c.label }}</div></sc-for>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 13px; font-weight: 800; color: {{ t.muted }};">Sonstiges</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <sc-for list="{{ playExtraChips }}" as="c" hint-placeholder-count="2"><div onClick="{{ c.onClick }}" style="height: 40px; padding: 0 14px; border-radius: 20px; display: flex; align-items: center; font-size: 14px; font-weight: 800; background: {{ c.fbg }}; color: {{ c.ffg }}; border: {{ ps.b }}; cursor: pointer;">{{ c.label }}</div></sc-for>
+          </div>
+        </div>
+        <div onClick="{{ toggleFilter }}" style="height: 54px; border-radius: 27px; background: {{ t.accent }}; color: {{ t.onAccent }}; border: {{ ps.bb }}; box-shadow: {{ ps.s4 }}; display: flex; align-items: center; justify-content: center; font-family: {{ t.display }}; font-size: 17px; font-weight: 600; cursor: pointer;">{{ filterApply }}</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasTimers }}">
+      <div style="position: absolute; top: {{ floatTop }}; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 6px; z-index: 5;">
+        <sc-for list="{{ timersView }}" as="tm" hint-placeholder-count="1">
+          <div style="display: flex; align-items: center; gap: 10px; background: {{ t.ink }}; color: {{ t.bg }}; border-radius: 22px; padding: 6px 6px 6px 14px; box-shadow: 0 6px 18px rgba(0,0,0,.25); white-space: nowrap;">
+            <span style="font-family: {{ t.display }}; font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums;">{{ tm.remaining }}</span>
+            <span style="font-size: 12px; font-weight: 700; max-width: 170px; overflow: hidden; text-overflow: ellipsis;">{{ tm.text }}</span>
+            <div onClick="{{ tm.cancel }}" style="width: 32px; height: 32px; border-radius: 16px; background: rgba(255,255,255,.15); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; cursor: pointer;">✕</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ alarm }}">
+      <div style="position: absolute; inset: 0; background: rgba(0,0,0,.5); z-index: 6; display: flex; align-items: center; justify-content: center; padding: 24px;">
+        <div style="width: 100%; background: {{ t.surface }}; border: {{ ps.bb }}; border-radius: 32px; box-shadow: {{ ps.s5 }}; padding: 22px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;">
+          <dc-import name="Maskottchen" pose="alarm" size="{{ 130 }}" accent="{{ accentHex }}" hint-size="130px,130px"></dc-import>
+          <div style="font-family: {{ t.display }}; font-size: 26px; font-weight: 600;">Piep, piep! Zeit ist um.</div>
+          <div style="font-size: 15px; line-height: 1.45; color: {{ t.muted }};">{{ alarmText }}</div>
+          <div onClick="{{ closeAlarm }}" style="align-self: stretch; margin-top: 6px; height: 54px; border-radius: 27px; background: {{ t.accent }}; color: {{ t.onAccent }}; border: {{ ps.bb }}; box-shadow: {{ ps.s4 }}; display: flex; align-items: center; justify-content: center; font-family: {{ t.display }}; font-size: 17px; font-weight: 600; cursor: pointer;">Alles klar</div>
+        </div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <!-- EDIT -->
+  <sc-if value="{{ isEdit }}">
+    <div style="flex: none; height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; border-bottom: 1px solid {{ t.line }};">
+      <div onClick="{{ back }}" style="height: 44px; padding: 0 12px; display: flex; align-items: center; font-size: 16px; cursor: pointer;">Abbrechen</div>
+      <div style="font-size: 16px; font-weight: 600;">{{ editTitle }}</div>
+      <div onClick="{{ saveDraft }}" style="height: 44px; padding: 0 12px; display: flex; align-items: center; font-size: 16px; font-weight: 700; color: {{ t.accent }}; opacity: {{ saveOpacity }}; cursor: pointer;">Sichern</div>
+    </div>
+    <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 20px 20px 60px; display: flex; flex-direction: column; gap: 20px;">
+      <label style="display: flex; flex-direction: column; gap: 6px;">
+        <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Name</span>
+        <input value="{{ draft.name }}" onChange="{{ ed.name }}" placeholder="z. B. Omas Apfelkuchen" style="font-size: 17px; padding: 13px 14px; border-radius: {{ t.inputRadius }}; border: 1px solid {{ t.line }}; background: {{ t.inputBg }}; color: {{ t.ink }}; font-family: {{ t.body }}; width: 100%;">
+      </label>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Kategorie</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <sc-for list="{{ editCats }}" as="c" hint-placeholder-count="7">
+            <div onClick="{{ c.onClick }}" style="padding: 9px 14px; border-radius: {{ t.chipRadius }}; font-size: 14px; font-weight: 500; background: {{ c.bg }}; color: {{ c.fg }}; border: 1px solid {{ c.border }}; cursor: pointer;">{{ c.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Passt zu (mehrere möglich)</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <sc-for list="{{ editMeals }}" as="c" hint-placeholder-count="3">
+            <div onClick="{{ c.onClick }}" style="padding: 9px 14px; border-radius: {{ t.chipRadius }}; font-size: 14px; font-weight: 500; background: {{ c.bg }}; color: {{ c.fg }}; border: 1px solid {{ c.border }}; cursor: pointer;">{{ c.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+        <label style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Portionen</span>
+          <input value="{{ draft.portionen }}" onChange="{{ ed.portionen }}" inputmode="numeric" placeholder="4" style="font-size: 16px; padding: 13px 12px; border-radius: {{ t.inputRadius }}; border: 1px solid {{ t.line }}; background: {{ t.inputBg }}; color: {{ t.ink }}; font-family: {{ t.body }}; width: 100%;">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Arbeitszeit</span>
+          <input value="{{ draft.arbeitszeit }}" onChange="{{ ed.arbeitszeit }}" placeholder="0:30" style="font-size: 16px; padding: 13px 12px; border-radius: {{ t.inputRadius }}; border: 1px solid {{ t.line }}; background: {{ t.inputBg }}; color: {{ t.ink }}; font-family: {{ t.body }}; width: 100%;">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Gesamtzeit</span>
+          <input value="{{ draft.gesamtzeit }}" onChange="{{ ed.gesamtzeit }}" placeholder="1:00" style="font-size: 16px; padding: 13px 12px; border-radius: {{ t.inputRadius }}; border: 1px solid {{ t.line }}; background: {{ t.inputBg }}; color: {{ t.ink }}; font-family: {{ t.body }}; width: 100%;">
+        </label>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 6px;">
+        <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Zutaten</span>
+        <textarea value="{{ draft.zutaten }}" onChange="{{ ed.zutaten }}" rows="9" placeholder="Eine Zutat pro Zeile, z. B. 250 g Mehl" style="font-size: 16px; line-height: 1.5; padding: 13px 14px; border-radius: {{ t.inputRadius }}; border: 1px solid {{ t.line }}; background: {{ t.inputBg }}; color: {{ t.ink }}; font-family: {{ t.body }}; width: 100%; resize: vertical;"></textarea>
+        <span style="font-size: 12px; color: {{ t.muted }};">Eine Zutat pro Zeile. Zeilen mit Doppelpunkt am Ende werden Zwischenüberschriften.</span>
+      </label>
+      <label style="display: flex; flex-direction: column; gap: 6px;">
+        <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Zubereitung</span>
+        <textarea value="{{ draft.zubereitung }}" onChange="{{ ed.zubereitung }}" rows="10" placeholder="1. Ofen vorheizen …" style="font-size: 16px; line-height: 1.5; padding: 13px 14px; border-radius: {{ t.inputRadius }}; border: 1px solid {{ t.line }}; background: {{ t.inputBg }}; color: {{ t.ink }}; font-family: {{ t.body }}; width: 100%; resize: vertical;"></textarea>
+        <span style="font-size: 12px; color: {{ t.muted }};">Schritte mit 1., 2., 3. … beginnen. Sie werden im Kochmodus einzeln angezeigt.</span>
+      </label>
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 10px;">
+        <label style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Quelle</span>
+          <input value="{{ draft.quelle }}" onChange="{{ ed.quelle }}" placeholder="Chefkoch" style="font-size: 16px; padding: 13px 12px; border-radius: {{ t.inputRadius }}; border: 1px solid {{ t.line }}; background: {{ t.inputBg }}; color: {{ t.ink }}; font-family: {{ t.body }}; width: 100%;">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Link</span>
+          <input value="{{ draft.link }}" onChange="{{ ed.link }}" placeholder="https://" style="font-size: 16px; padding: 13px 12px; border-radius: {{ t.inputRadius }}; border: 1px solid {{ t.line }}; background: {{ t.inputBg }}; color: {{ t.ink }}; font-family: {{ t.body }}; width: 100%;">
+        </label>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 6px;">
+        <span style="font-size: 13px; font-weight: 600; color: {{ t.muted }};">Notizen</span>
+        <textarea value="{{ draft.notizen }}" onChange="{{ ed.notizen }}" rows="5" placeholder="Tipps, Varianten, wer es mag …" style="font-size: 16px; line-height: 1.5; padding: 13px 14px; border-radius: {{ t.inputRadius }}; border: 1px solid {{ t.line }}; background: {{ t.inputBg }}; color: {{ t.ink }}; font-family: {{ t.body }}; width: 100%; resize: vertical;"></textarea>
+      </label>
+      <div style="font-size: 12px; color: {{ t.muted }};">Änderungen sind für alle in der Familie sichtbar.</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="position: absolute; left: 50%; bottom: 110px; transform: translateX(-50%); background: {{ t.ink }}; color: {{ t.bg }}; font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 999px; white-space: nowrap;">{{ toast }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;variant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;playful&quot;,&quot;playsoft&quot;,&quot;playcomic&quot;,&quot;warm&quot;,&quot;minimal&quot;,&quot;future&quot;,&quot;editorial&quot;],&quot;default&quot;:&quot;playful&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;dark&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showStubs&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;inFrame&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const CATS = ['Hauptgericht', 'Beilage', 'Salat', 'Suppe', 'Grillen', 'Dessert', 'Backen', 'Grundrezept'];
+const THEMES = {
+  editorial: {
+    light: { bg: '#f6f4ef', surface: '#fffdf8', sunk: '#ece8df', ink: '#1b1a17', muted: '#6b665d', line: '#dcd6ca', accent: 'oklch(0.54 0.16 32)', onAccent: '#fffdf8' },
+    dark: { bg: '#141311', surface: '#1e1c19', sunk: '#262420', ink: '#f1ede4', muted: '#a39d91', line: '#35322c', accent: 'oklch(0.72 0.13 38)', onAccent: '#141311' },
+    display: "'Newsreader', Georgia, serif", body: "'Instrument Sans', system-ui, sans-serif",
+    cardRadius: '0px', btnRadius: '0px', chipRadius: '0px', inputRadius: '0px', titleWeight: 400, cookWeight: 400, titleSpacing: '-0.01em',
+    showIndex: true, rowPad: '16px 0', rowBgKey: null, rowBorderOn: true, listGap: '0px', rowTitleSize: '21px', pageTitle: '42px', detailTitle: '42px',
+    secFont: "'Instrument Sans', system-ui, sans-serif", secSize: '11px', secCase: 'uppercase', secSpacing: '0.16em', secWeight: 600, secPad: '8px', secBorderInk: true,
+    eyeCase: 'uppercase', eyeSpacing: '0.14em', eyeAccent: true, metaGap: '0px', metaBgKey: null, metaRadius: '0px', metaPad: '14px 0', metaBorderOn: true, noteStyle: 'italic', tabBgKey: 'bg', inputBgKey: 'surface'
+  },
+  warm: {
+    light: { bg: '#f2eadb', surface: '#fbf6ec', sunk: '#e8dcc6', ink: '#3b2c20', muted: '#7a6753', line: '#dccdb4', accent: 'oklch(0.52 0.11 50)', onAccent: '#fbf6ec' },
+    dark: { bg: '#1c1712', surface: '#28211a', sunk: '#332a21', ink: '#f1e6d4', muted: '#b3a08a', line: '#3e352b', accent: 'oklch(0.74 0.10 62)', onAccent: '#1c1712' },
+    display: "'Young Serif', Georgia, serif", body: "'Nunito Sans', system-ui, sans-serif",
+    cardRadius: '20px', btnRadius: '999px', chipRadius: '999px', inputRadius: '14px', titleWeight: 400, cookWeight: 400, titleSpacing: '0',
+    showIndex: false, rowPad: '16px 18px', rowBgKey: 'surface', rowBorderOn: false, listGap: '8px', rowTitleSize: '18px', pageTitle: '30px', detailTitle: '32px',
+    secFont: "'Young Serif', Georgia, serif", secSize: '20px', secCase: 'none', secSpacing: '0', secWeight: 400, secPad: '2px', secBorderInk: false,
+    eyeCase: 'none', eyeSpacing: '0', eyeAccent: true, metaGap: '8px', metaBgKey: 'surface', metaRadius: '16px', metaPad: '12px 14px', metaBorderOn: false, noteStyle: 'normal', tabBgKey: 'surface', inputBgKey: 'surface'
+  },
+  minimal: {
+    light: { bg: '#fafaf9', surface: '#ffffff', sunk: '#f0f0ee', ink: '#141413', muted: '#72716d', line: '#e6e5e2', accent: 'oklch(0.52 0.12 155)', onAccent: '#ffffff' },
+    dark: { bg: '#0f0f0e', surface: '#181817', sunk: '#222220', ink: '#f2f2f0', muted: '#96958f', line: '#2a2a28', accent: 'oklch(0.74 0.13 155)', onAccent: '#0f0f0e' },
+    display: "'Geist', system-ui, sans-serif", body: "'Geist', system-ui, sans-serif",
+    cardRadius: '0px', btnRadius: '12px', chipRadius: '8px', inputRadius: '10px', titleWeight: 600, cookWeight: 500, titleSpacing: '-0.025em',
+    showIndex: false, rowPad: '14px 0', rowBgKey: null, rowBorderOn: true, listGap: '0px', rowTitleSize: '17px', pageTitle: '30px', detailTitle: '30px',
+    secFont: "'Geist', system-ui, sans-serif", secSize: '13px', secCase: 'none', secSpacing: '0', secWeight: 600, secPad: '2px', secBorderInk: false,
+    eyeCase: 'none', eyeSpacing: '0', eyeAccent: false, metaGap: '8px', metaBgKey: 'sunk', metaRadius: '12px', metaPad: '12px 14px', metaBorderOn: false, noteStyle: 'normal', tabBgKey: 'bg', inputBgKey: 'sunk'
+  }
+};
+THEMES.future = {
+  light: { bg: '#eceef1', surface: '#ffffff', sunk: '#e2e5ea', ink: '#0d0f12', muted: '#5a606a', line: '#d4d8df', accent: 'oklch(0.50 0.15 135)', onAccent: '#ffffff' },
+  dark: { bg: '#0a0c0f', surface: '#13161b', sunk: '#1c2027', ink: '#eef1f5', muted: '#8b94a1', line: '#242932', accent: 'oklch(0.88 0.19 128)', onAccent: '#0a0c0f' },
+  display: "'Unbounded', system-ui, sans-serif", body: "'Manrope', system-ui, sans-serif", eyeFont: "'JetBrains Mono', ui-monospace, monospace", defaultDark: true,
+  cardRadius: '18px', btnRadius: '16px', chipRadius: '999px', inputRadius: '14px', titleWeight: 500, cookWeight: 400, titleSpacing: '-0.02em',
+  showIndex: false, rowPad: '16px', rowBgKey: 'surface', rowBorderOn: false, listGap: '8px', rowTitleSize: '16px', pageTitle: '28px', detailTitle: '30px',
+  secFont: "'JetBrains Mono', ui-monospace, monospace", secSize: '11px', secCase: 'uppercase', secSpacing: '0.12em', secWeight: 500, secPad: '2px', secBorderInk: false,
+  eyeCase: 'uppercase', eyeSpacing: '0.1em', eyeAccent: true, metaGap: '8px', metaBgKey: 'surface', metaRadius: '14px', metaPad: '12px 14px', metaBorderOn: false, noteStyle: 'normal', tabBgKey: 'surface', inputBgKey: 'surface', thumbRadius: '12px'
+};
+THEMES.playful = {
+  light: { bg: '#fff6e8', surface: '#ffffff', sunk: '#fbe9cf', ink: '#2b2118', muted: '#6e5e4f', line: '#eddcc3', accent: 'oklch(0.56 0.17 30)', onAccent: '#ffffff', outline: '#2b2118' },
+  dark: { bg: '#1f1826', surface: '#2b2233', sunk: '#362b40', ink: '#fbf3e6', muted: '#bcaec2', line: '#44394e', accent: 'oklch(0.72 0.15 30)', onAccent: '#1f1826', outline: '#0c0910' },
+  display: "'Fredoka', system-ui, sans-serif", body: "'Nunito', system-ui, sans-serif",
+  cardRadius: '22px', btnRadius: '999px', chipRadius: '999px', inputRadius: '18px', titleWeight: 600, cookWeight: 500, titleSpacing: '0',
+  showIndex: false, rowPad: '14px', rowBgKey: 'surface', rowBorderOn: false, listGap: '10px', rowTitleSize: '17px', pageTitle: '30px', detailTitle: '30px',
+  secFont: "'Fredoka', system-ui, sans-serif", secSize: '19px', secCase: 'none', secSpacing: '0', secWeight: 600, secPad: '0px', secBorderInk: false,
+  eyeCase: 'none', eyeSpacing: '0', eyeAccent: true, metaGap: '8px', metaBgKey: 'surface', metaRadius: '18px', metaPad: '12px 14px', metaBorderOn: false, noteStyle: 'normal', tabBgKey: 'surface', inputBgKey: 'surface', thumbRadius: '16px'
+};
+THEMES.playsoft = { ...THEMES.playful, ps: 'soft', pL: [0.91, 0.80], pC: 0.06, accentHex: ['#9b6be0', '#b893f0'],
+  light: { bg: '#f6f0ff', surface: '#ffffff', sunk: '#ece3fb', ink: '#2c2340', muted: '#6f6586', line: '#e4daf5', accent: 'oklch(0.58 0.16 300)', onAccent: '#ffffff', outline: '#2c2340' },
+  dark: { bg: '#1b1726', surface: '#262036', sunk: '#30293f', ink: '#f3effa', muted: '#b0a7c2', line: '#3b3350', accent: 'oklch(0.74 0.13 300)', onAccent: '#1b1726', outline: '#0d0b14' },
+  display: "'Baloo 2', system-ui, sans-serif", secFont: "'Baloo 2', system-ui, sans-serif" };
+THEMES.playcomic = { ...THEMES.playful, ps: 'comic', pL: [0.85, 0.76], pC: 0.14, accentHex: ['#e2463a', '#f06a52'],
+  light: { bg: '#fff3c4', surface: '#ffffff', sunk: '#ffe89a', ink: '#1a1a1a', muted: '#5a5646', line: '#e8d98f', accent: 'oklch(0.58 0.20 25)', onAccent: '#ffffff', outline: '#1a1a1a' },
+  dark: { bg: '#17150f', surface: '#24211a', sunk: '#2f2b20', ink: '#fff8e0', muted: '#bdb49a', line: '#3a3527', accent: 'oklch(0.70 0.18 30)', onAccent: '#17150f', outline: '#000000' },
+  display: "'Bricolage Grotesque', system-ui, sans-serif", secFont: "'Bricolage Grotesque', system-ui, sans-serif" };
+const CAT_ICON = { Grillen: 'M4 10h16a8 6 0 0 1-16 0zM8 16l-2 5M16 16l2 5M9 6c0-1 1-1.5 1-3M14 6c0-1 1-1.5 1-3', Hauptgericht: 'M12 4a8 8 0 1 0 0 16a8 8 0 1 0 0-16M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8', Beilage: 'M4 11h16a8 8 0 0 1-16 0zM9 7c0-1.5 1-2 1-3M14 7c0-1.5 1-2 1-3', Salat: 'M5 19C5 10 11 5 19 5c0 8-5 14-14 14zM5 19L13 11', Suppe: 'M3 11h18a9 7 0 0 1-18 0zM8 7c0-1.5 1-2 1-3M12 7c0-1.5 1-2 1-3M16 7c0-1.5 1-2 1-3', Dessert: 'M7 11a5 5 0 0 1 10 0zM7 11l5 10l5-10', Backen: 'M5 14a7 5 0 0 1 14 0v5H5zM9 14v5M12 14v5M15 14v5', Grundrezept: 'M12 3v10M8 13c0 4 1.8 8 4 8s4-4 4-8zM8 13h8' };
+const CAT_HUE = { Grillen: 5, Hauptgericht: 30, Beilage: 95, Salat: 145, Suppe: 205, Dessert: 335, Backen: 65, Grundrezept: 265 };
+const ICONS = {
+  home: 'M4 10.5L12 4l8 6.5V20h-5.5v-5.5h-5V20H4z',
+  search: 'M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M15.5 15.5L20 20',
+  fav: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z',
+  recipes: 'M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M15.5 15.5L20 20',
+  new: 'M12 5v14M5 12h14',
+  moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+  sun: 'M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4'
+};
+const FR = { '½': .5, '¼': .25, '¾': .75, '⅓': 1 / 3, '⅔': 2 / 3 };
+const UNITS = /^(g|kg|ml|l|cl|dl|EL|TL|Pck\.?|Päckchen|Prisen?|Tassen?|Becher|Dosen?|Stück|Bund|Zehen?|Scheiben?|Msp\.?|Glas|Würfel|Tüten?)(?=\s|$)/;
+
+class Component extends DCLogic {
+  state = { timers: [], alarm: null, filterOpen: false, meal: null, weekend: null, seed: 0, smeal: null, ready: false, tab: 'home', stack: [], q: '', cat: null, quick: false, withSteps: false, allCat: null, favs: [], recents: [], edits: {}, servings: null, step: 0, showIng: false, notesOpen: false, dark: null, draft: null, imgFailed: {}, toast: null };
+  base = [];
+  get variant() { return this.props.variant || new URLSearchParams(location.search).get('variant') || 'editorial'; }
+  k(n) { return 'kb-' + this.variant + '-' + n; }
+  load(n, d) { try { const v = localStorage.getItem(this.k(n)); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  store(n, v) { try { localStorage.setItem(this.k(n), JSON.stringify(v)); } catch (e) {} }
+  componentDidMount() {
+    this.iv = setInterval(() => { const tm = this.state.timers; if (!tm.length) return; const now = Date.now(); const done = tm.filter(x => x.end <= now); if (done.length) { this.setState({ timers: tm.filter(x => x.end > now), alarm: done[0] }); try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch (e) {} } else this.forceUpdate(); }, 500);
+    try { this.mq = matchMedia('(prefers-color-scheme: dark)'); this.mqL = () => this.forceUpdate(); this.mq.addEventListener('change', this.mqL); } catch (e) {}
+    fetch('data/rezepte.json').then(r => r.json()).then(base => {
+      this.base = base;
+      const favs = this.load('favs', null) || base.filter(r => ['Herz-Waffeln', 'Käsespätzle', 'Schwäbische Seelen', 'Maultaschen'].includes(r.name)).map(r => r.id);
+      this.setState({ ready: true, favs, recents: this.load('recents', []), edits: this.load('edits', {}) });
+    });
+  }
+  componentDidUpdate(prev) { if (prev.dark !== this.props.dark && this.state.dark !== null) this.setState({ dark: null }); }
+  parseDur(text) { const m = (text || '').match(/(\d+(?:[.,]\d+)?)(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?\s*(Minuten|Minute|Min\.?|Stunden|Stunde|Std\.?)/i); if (!m) return null; let v = parseFloat(m[1].replace(',', '.')); if (/^S/i.test(m[2])) v *= 60; return { min: v, label: m[0] }; }
+  startTimer(r, n, dur) { const ms = dur.min * (this.props.fastTimers ? 1000 : 60000); this.setState(st => ({ timers: st.timers.concat([{ id: Date.now(), recipe: r.name, step: n, label: dur.label, end: Date.now() + ms }]) })); this.flash('Timer läuft: ' + dur.label); }
+  componentWillUnmount() { clearInterval(this.iv); this.releaseWake(); clearTimeout(this.tt); }
+
+  recipes() {
+    const e = this.state.edits;
+    return this.base.map(r => e[r.id] || r).concat(Object.values(e).filter(r => r.isNew));
+  }
+  find(id) { return this.recipes().find(r => r.id === id); }
+  hasSteps(r) { return !!(r.zubereitung && r.zubereitung.trim()); }
+  mins(s) { const m = (s || '').match(/^(\d+):(\d{2})$/); return m ? +m[1] * 60 + +m[2] : null; }
+  fmtTime(s) { const t = this.mins(s); if (t == null) return ''; const h = Math.floor(t / 60), m = t % 60; return h ? h + ' Std.' + (m ? ' ' + m + ' Min.' : '') : m + ' Min.'; }
+  meta(r) {
+    if (!this.hasSteps(r)) return 'Noch ohne Anleitung';
+    return [this.fmtTime(r.gesamtzeit) || this.fmtTime(r.arbeitszeit), r.portionen ? r.portionen + (r.portionen === 1 ? ' Portion' : ' Portionen') : ''].filter(Boolean).join(' · ');
+  }
+  num(s) { if (FR[s] != null) return FR[s]; if (s.includes('/')) { const [a, b] = s.split('/'); return a / b; } return parseFloat(s.replace(',', '.')); }
+  fmtNum(n) {
+    if (n >= 20) return String(Math.round(n));
+    const r = Math.round(n * 4) / 4;
+    if (r === 0) return String(Math.round(n * 10) / 10).replace('.', ',');
+    const i = Math.floor(r), f = { 0: '', 0.25: '¼', 0.5: '½', 0.75: '¾' }[r - i];
+    return (i ? String(i) : '') + f;
+  }
+  parseIng(raw, f) {
+    return (raw || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+      if (/:$/.test(l)) return { isGroup: true, text: l.replace(/:$/, '') };
+      const m = l.match(/^((?:ca\.|knapp|etwa|gut)\s+)?(\d+(?:[.,]\d+)?|[½¼¾⅓⅔]|\d+\/\d+)(?:\s*[–-]\s*(\d+(?:[.,]\d+)?))?\s*(.*)$/);
+      if (!m) return { isItem: true, amount: '', rest: l };
+      let rest = m[4], unit = '';
+      const u = rest.match(UNITS);
+      if (u) { unit = u[0]; rest = rest.slice(u[0].length).trim(); }
+      const a = this.num(m[2]) * f, b = m[3] ? this.num(m[3]) * f : null;
+      return { isItem: true, amount: (m[1] || '') + this.fmtNum(a) + (b != null ? '–' + this.fmtNum(b) : '') + (unit ? ' ' + unit : ''), rest };
+    });
+  }
+  parseSteps(raw) {
+    const items = []; let blank = true, group = '';
+    (raw || '').split('\n').forEach(l => {
+      const s = l.trim();
+      if (!s) { blank = true; return; }
+      const m = s.match(/^(\d+)[.)]\s*(.*)$/);
+      if (m) items.push({ type: 'step', text: m[2], group });
+      else if (/:$/.test(s) && s.length < 70) group = s.replace(/:$/, '');
+      else if (!blank && items.length) items[items.length - 1].text += ' ' + s;
+      else items.push({ type: 'para', text: s, group });
+      blank = false;
+    });
+    let last = -1; items.forEach((it, i) => { if (it.type === 'step') last = i; });
+    if (last === -1) return { steps: items.map(it => ({ text: it.text, group: it.group })), hinweis: '' };
+    return { steps: items.slice(0, last + 1).map(it => ({ text: it.text, group: it.group })), hinweis: items.slice(last + 1).map(it => it.text).join('\n') };
+  }
+
+  push(entry, extra) { this.setState(s => ({ stack: s.stack.concat([entry]), ...(extra || {}) })); }
+  back = () => { if (this.top() && this.top().screen === 'cook') this.releaseWake(); this.setState(s => ({ stack: s.stack.slice(0, -1), showIng: false })); };
+  top() { return this.state.stack[this.state.stack.length - 1]; }
+  open(id) {
+    const r = this.find(id);
+    const recents = [id].concat(this.state.recents.filter(x => x !== id)).slice(0, 5);
+    this.store('recents', recents);
+    this.push({ screen: 'detail', id }, { recents, servings: r && r.portionen, notesOpen: false });
+  }
+  setTab(tab, focus) { this.setState({ tab, stack: [] }); if (this.scrollEl) this.scrollEl.scrollTop = 0; if (focus) setTimeout(() => this.searchEl && this.searchEl.focus(), 50); }
+  toggleFav(id) { const favs = this.state.favs.includes(id) ? this.state.favs.filter(x => x !== id) : [id].concat(this.state.favs); this.store('favs', favs); this.setState({ favs }); }
+  flash(msg) { clearTimeout(this.tt); this.setState({ toast: msg }); this.tt = setTimeout(() => this.setState({ toast: null }), 1600); }
+  uploadPhoto(r, e) {
+    const file = e.target.files && e.target.files[0]; if (!file) return;
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const max = 1200, sc = Math.min(1, max / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas'); cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+      const rec = { ...r, foto: cv.toDataURL('image/jpeg', 0.8) };
+      const edits = { ...this.state.edits, [r.id]: rec };
+      this.store('edits', edits);
+      const imgFailed = { ...this.state.imgFailed }; delete imgFailed[r.id];
+      this.setState({ edits, imgFailed }); this.flash('Foto gespeichert');
+    };
+    img.src = url;
+  }
+  startCook(id) {
+    const r = this.find(id);
+    this.push({ screen: 'cook', id, needPhoto: !(r && r.foto && !this.state.imgFailed[id]) }, { step: 0, showIng: false });
+    try { navigator.wakeLock && navigator.wakeLock.request('screen').then(l => { this.wl = l; }).catch(() => {}); } catch (e) {}
+  }
+  releaseWake() { try { this.wl && this.wl.release(); } catch (e) {} this.wl = null; }
+  editRecipe(id) { const r = this.find(id); this.push({ screen: 'edit', id }, { draft: { ...r, portionen: r.portionen ? String(r.portionen) : '' } }); }
+  newRecipe = () => { this.push({ screen: 'edit', id: null }, { draft: { id: 'n' + Date.now(), isNew: true, name: '', kategorie: 'Hauptgericht', mahlzeit: [], portionen: '4', arbeitszeit: '', gesamtzeit: '', zutaten: '', zubereitung: '', quelle: '', link: '', notizen: '', foto: '' } }); };
+  saveDraft = () => {
+    const d = this.state.draft; if (!d || !d.name.trim()) return;
+    const rec = { ...d, name: d.name.trim(), portionen: parseInt(d.portionen, 10) || null };
+    const edits = { ...this.state.edits, [rec.id]: rec };
+    this.store('edits', edits);
+    const stack = this.state.stack.slice(0, -1);
+    if (d.isNew && !this.state.edits[d.id]) stack.push({ screen: 'detail', id: rec.id });
+    this.setState({ edits, stack, draft: null, servings: rec.portionen });
+    this.flash('Gespeichert');
+  };
+
+  renderVals() {
+    const v = THEMES[this.variant] ? this.variant : 'editorial';
+    const T = THEMES[v];
+    const sysDark = typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches;
+    const dark = this.props.inFrame ? !!(this.props.dark || T.defaultDark) : sysDark;
+    const C = dark ? T.dark : T.light;
+    const t = { ...T, ...C,
+      rowBg: T.rowBgKey ? C[T.rowBgKey] : 'transparent', rowBorder: T.rowBorderOn ? '1px solid ' + C.line : 'none',
+      secColor: v === 'warm' ? C.ink : C.muted, secBorder: T.secBorderInk ? '1px solid ' + C.ink : 'none',
+      eyeColor: T.eyeAccent ? C.accent : C.muted, metaBg: T.metaBgKey ? C[T.metaBgKey] : 'transparent', metaBorder: T.metaBorderOn ? '1px solid ' + C.line : 'none',
+      tabBg: C[T.tabBgKey], inputBg: C[T.inputBgKey], sugRadius: { editorial: '0px', warm: '26px', minimal: '16px' }[v] || '0px', segRadius: { editorial: '0px', warm: '999px', minimal: '10px' }[v] || '0px', segItemRadius: { editorial: '0px', warm: '999px', minimal: '8px' }[v] || '0px', mealHead: v === 'editorial' ? '34px' : '22px',
+      thumbRadius: T.thumbRadius || (v === 'warm' ? '14px' : v === 'minimal' ? '10px' : '0px'), eyeFont: T.eyeFont || T.body };
+    const inFrame = !!this.props.inFrame;
+    const showStubs = this.props.showStubs !== false;
+    const s = this.state;
+    const all = this.recipes();
+    const vis = (showStubs ? all : all.filter(r => this.hasSteps(r))).slice().sort((a, b) => a.name.localeCompare(b.name, 'de'));
+    const imgOk = r => !!r.foto && !s.imgFailed[r.id];
+    const dash = (frac, rad) => { const cc = 2 * Math.PI * rad; return (Math.max(0.03, Math.min(1, frac || 0)) * cc).toFixed(1) + ' ' + cc.toFixed(1); };
+    const short = x => { const m = this.mins(x); if (m == null) return ''; const h = Math.floor(m / 60), mm = m % 60; return h ? h + 'h' + (mm ? String(mm).padStart(2, '0') : '') : mm + '′'; };
+    const pL = T.pL || [0.88, 0.78], pC = T.pC || 0.09;
+    const pastel = h => 'oklch(' + (dark ? pL[1] : pL[0]) + ' ' + pC + ' ' + h + ')';
+    const O = C.outline || C.ink, sh = dark ? 'rgba(0,0,0,.4)' : 'rgba(60,40,110,.13)';
+    const ps = T.ps === 'soft' ? { b: '2px solid transparent', bb: '2px solid transparent', s3: '0 6px 18px ' + sh, s4: '0 8px 22px ' + sh, s5: '0 12px 28px ' + sh }
+      : T.ps === 'comic' ? { b: '3px solid ' + O, bb: '3px solid ' + O, s3: '3px 3px 0 ' + O, s4: '4px 4px 0 ' + O, s5: '5px 5px 0 ' + O }
+      : { b: '2px solid ' + O, bb: '2.5px solid ' + O, s3: '0 3px 0 ' + O, s4: '0 4px 0 ' + O, s5: '0 5px 0 ' + O };
+    const catColor = k => pastel(CAT_HUE[k] != null ? CAT_HUE[k] : 60);
+    const vm = (r, i) => ({ pastel: catColor(r.kategorie), initial: (r.name || '?').charAt(0), timeShort: short(r.gesamtzeit || r.arbeitszeit) || '—', ring: dash((this.mins(r.gesamtzeit) || 0) / 180, 13), isStub: !this.hasSteps(r), tileBorder: this.hasSteps(r) ? '1px solid ' + C.line : '1px dashed ' + C.muted, foto: r.foto, showImg: imgOk(r), noImg: !imgOk(r), onImgError: () => this.setState(st => ({ imgFailed: { ...st.imgFailed, [r.id]: true } })), id: r.id, name: r.name, kategorie: r.kategorie, meta: this.meta(r), num: String(i + 1).padStart(2, '0'), fav: s.favs.includes(r.id), open: () => this.open(r.id) });
+    const chip = (label, active, onClick) => ({ label, onClick, active, fbg: active ? C.accent : 'transparent', ffg: active ? C.onAccent : C.ink, bg: active ? C.ink : 'transparent', fg: active ? C.bg : C.ink, border: active ? C.ink : C.line });
+
+    const withSteps = vis.filter(r => this.hasSteps(r));
+    const day = Math.floor(Date.now() / 864e5);
+    const heroR = withSteps.length ? withSteps[(day * 7) % withSteps.length] : null;
+    const hero = heroR ? { name: heroR.name, kategorie: heroR.kategorie, meta: this.meta(heroR), open: () => this.open(heroR.id), time: short(heroR.gesamtzeit) || '—', dash: dash((this.mins(heroR.gesamtzeit) || 0) / 180, 80), portions: heroR.portionen ? heroR.portionen + ' Port.' : '' } : { name: '', kategorie: '', meta: '', open: () => {}, time: '', dash: '0 1', portions: '' };
+    const MEALS = [['Frühstück', 'Frühstück'], ['Mittag & Abend', 'Abend'], ['Backen', 'Backen']];
+    const hr = new Date().getHours(), autoMeal = hr < 11 ? 0 : 1;
+    const mi = s.meal != null ? s.meal : autoMeal;
+    const wd = new Date().getDay(), weekend = s.weekend != null ? s.weekend : (wd === 0 || wd === 6);
+    const limit = mi === 2 ? 90 : 30;
+    const hash = str => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+    const pool = vis.filter(r => (r.mahlzeit || []).includes(MEALS[mi][0]) && (weekend || (m => m == null || m <= limit)(this.mins(r.gesamtzeit))));
+    const seedKey = day + '-' + mi + '-' + (s.seed || 0);
+    const sugg = pool.slice().sort((a, b) => hash(seedKey + a.id) - hash(seedKey + b.id)).slice(0, 6).map((r, i) => {
+      const first = i === 0;
+      return { ...vm(r, i), time: short(r.gesamtzeit) || '—', dash: dash((this.mins(r.gesamtzeit) || 0) / 180, 58),
+        cbg: first ? C.accent : C.surface, cfg: first ? C.onAccent : C.ink, cmuted: first ? C.onAccent : C.muted, cborder: first ? C.accent : C.line,
+        btnBg: first ? C.onAccent : C.ink, btnFg: first ? C.accent : C.bg,
+        pcolor: pastel([90, 25, 165, 250][mi]), rot: i % 2 ? 'rotate(1.4deg)' : 'rotate(-1.4deg)' };
+    });
+    const mealTabs = MEALS.map(([k, l], i) => { const on = i === mi; return { label: l, onClick: () => this.setState({ meal: i, seed: 0 }),
+      sbg: on ? C.surface : 'transparent', sfg: on ? C.ink : C.muted, sshadow: on ? '0 1px 4px rgba(0,0,0,.12)' : 'none',
+      fbg: on ? C.accent : 'transparent', ffg: on ? C.onAccent : C.muted,
+      pbg: pastel([90, 25, 165, 250][i]), pborder: on ? ps.bb : '2.5px solid transparent', pshadow: on ? ps.s4 : 'none', plift: on ? 'translateY(-3px)' : 'none' }; });
+    const byIds = ids => ids.map(id => vis.find(r => r.id === id)).filter(Boolean);
+    const homeSections = [
+      { title: 'Favoriten', items: byIds(s.favs).slice(0, 4).map(vm), moreLabel: 'Alle ' + byIds(s.favs).length + ' anzeigen →', more: () => this.setTab('fav') }
+    ].filter(g => g.items.length);
+    const catList = CATS.map(c => ({ name: c, count: vis.filter(r => r.kategorie === c).length, open: () => { this.setState({ tab: 'recipes', cat: c, q: '', stack: [] }); if (this.scrollEl) this.scrollEl.scrollTop = 0; } })).filter(c => c.count);
+
+    let listTitle = '', listSub = '', listGroups = [], chips = [], emptyTitle = '', emptyText = '';
+    if (s.tab === 'recipes') {
+      const q = s.q.trim().toLowerCase();
+      let res = vis.filter(r => (!q || r.name.toLowerCase().includes(q) || (r.zutaten || '').toLowerCase().includes(q)) && (!s.cat || r.kategorie === s.cat) && (!s.smeal || (r.mahlzeit || []).includes(s.smeal)) && (!s.quick || ((m => m != null && m <= 30)(this.mins(r.gesamtzeit)))) && (!s.withSteps || this.hasSteps(r)));
+      if (q) res = res.sort((a, b) => (b.name.toLowerCase().includes(q) ? 1 : 0) - (a.name.toLowerCase().includes(q) ? 1 : 0));
+      listTitle = 'Rezepte'; listSub = res.length + (res.length === 1 ? ' Rezept' : ' Rezepte') + (q ? ' gefunden' : '');
+      listGroups = !res.length ? [] : q ? [{ title: '', count: '', items: res.map(vm) }]
+        : CATS.map(cc => { const items = res.filter(r => r.kategorie === cc); return { title: cc, count: String(items.length), items: items.map(vm) }; }).filter(g => g.items.length);
+      chips = MEALS.map(([k, l]) => chip(l, s.smeal === k, () => this.setState({ smeal: s.smeal === k ? null : k })))
+        .concat([chip('Bis 30 Min.', s.quick, () => this.setState({ quick: !s.quick })), chip('Mit Anleitung', s.withSteps, () => this.setState({ withSteps: !s.withSteps }))])
+        .concat(CATS.map(c => chip(c, s.cat === c, () => this.setState({ cat: s.cat === c ? null : c }))));
+      emptyTitle = 'Nichts gefunden'; emptyText = 'Versuch es mit einer Zutat oder entferne einen Filter.';
+    } else if (s.tab === 'fav') {
+      const f = byIds(s.favs);
+      listTitle = 'Favoriten'; listSub = f.length + (f.length === 1 ? ' Rezept' : ' Rezepte');
+      listGroups = f.length ? [{ title: '', count: '', items: f.map(vm) }] : [];
+      emptyTitle = 'Noch keine Favoriten'; emptyText = 'Tippe in einem Rezept auf das Herz, dann erscheint es hier.';
+    }
+
+    const tabs = [['home', 'Start'], ['recipes', 'Rezepte'], ['fav', 'Favoriten'], ['new', 'Neu']].map(([key, label]) => {
+      const on = s.tab === key;
+      return { key, label, d: ICONS[key], color: on ? C.accent : C.muted, fill: on && key === 'fav' ? C.accent : 'none', onClick: key === 'new' ? this.newRecipe : () => this.setTab(key) };
+    });
+
+    const top = this.top();
+    const r = top && top.id ? this.find(top.id) : null;
+    let d = { ingredients: [], steps: [], metaCells: [] }, c = { progress: [] };
+    if (r) {
+      const servings = s.servings || r.portionen;
+      const f = r.portionen && servings ? servings / r.portionen : 1;
+      const st = this.parseSteps(r.zubereitung);
+      const fav = s.favs.includes(r.id);
+      d = {
+        name: r.name, kategorie: r.kategorie, foto: r.foto, showPhoto: !!r.foto && !s.imgFailed[r.id], onImgError: () => this.setState({ imgFailed: { ...s.imgFailed, [r.id]: true } }),
+        quelle: r.quelle || (r.link ? 'Link' : ''), link: r.link || '', noLink: !r.link,
+        metaCells: [{ label: 'Arbeitszeit', value: this.fmtTime(r.arbeitszeit) }, { label: 'Gesamtzeit', value: this.fmtTime(r.gesamtzeit) }, { label: 'pro Portion', value: r.kcalPortion ? r.kcalPortion + ' kcal' : '' }].filter(m => m.value),
+        isStub: !this.hasSteps(r), ingredients: this.parseIng(r.zutaten, f), canScale: !!r.portionen,
+        servingsLabel: servings ? this.fmtNum(servings) + (servings <= 1 ? ' Portion' : ' Portionen') : '',
+        less: () => this.setState({ servings: Math.max(0.5, servings - (servings <= 2 ? 0.5 : 1)) }),
+        more: () => this.setState({ servings: servings + (servings < 2 ? 0.5 : 1) }),
+        steps: st.steps.map((x, i) => ({ ...(dd => ({ timerLabel: dd ? dd.label + ' · Timer' : '', startTimer: () => dd && this.startTimer(r, i + 1, dd) }))(this.parseDur(x.text)), n: i + 1, text: x.text, group: x.group && (i === 0 || st.steps[i - 1].group !== x.group) ? x.group : '' })), hinweis: st.hinweis, notizen: r.notizen || '',
+        notesOpen: s.notesOpen, notesToggle: s.notesOpen ? 'Ausblenden' : 'Anzeigen', toggleNotes: () => this.setState({ notesOpen: !s.notesOpen }),
+        favFill: fav ? C.accent : 'none', favStroke: fav ? C.accent : C.ink, favStrokePlay: fav ? C.accent : '#2b2118',
+        toggleFav: () => { this.toggleFav(r.id); this.flash(fav ? 'Aus Favoriten entfernt' : 'Zu Favoriten hinzugefügt'); },
+        edit: () => this.editRecipe(r.id), cook: () => this.startCook(r.id),
+        servingsNum: servings ? this.fmtNum(servings) : '', servingsUnit: servings && servings <= 1 ? 'Portion' : 'Portionen',
+        gauges: [
+          { label: 'Arbeit', value: short(r.arbeitszeit), dash: dash((this.mins(r.arbeitszeit) || 0) / 120, 24) },
+          { label: 'Gesamt', value: short(r.gesamtzeit), dash: dash((this.mins(r.gesamtzeit) || 0) / 240, 24) },
+          { label: 'kcal/Port.', value: r.kcalPortion ? String(r.kcalPortion) : '', dash: dash((r.kcalPortion || 0) / 800, 24) }
+        ].filter(g => g.value)
+      };
+      const needPhoto = top.screen === 'cook' ? (top.needPhoto != null ? top.needPhoto : !d.showPhoto) : !d.showPhoto;
+      const n = st.steps.length, total = n + (needPhoto ? 1 : 0), cur = Math.min(s.step, Math.max(0, total - 1));
+      const isPhoto = needPhoto && cur === n;
+      const hasNew = isPhoto && d.showPhoto;
+      c = {
+        title: st.steps[cur] && st.steps[cur].group && !isPhoto ? r.name + ' · ' + st.steps[cur].group : r.name, n: cur + 1, text: st.steps[cur] ? st.steps[cur].text : '', label: isPhoto ? 'Letzter Schritt' : 'Schritt ' + (cur + 1) + ' von ' + n,
+        isStep: !isPhoto, isPhoto, hasNew, noNew: !hasNew, foto: r.foto,
+        onPhoto: e => this.uploadPhoto(r, e),
+        progress: Array.from({ length: total }, (_, i) => ({ bg: i <= cur ? C.accent : C.line })),
+        prev: () => cur > 0 && this.setState({ step: cur - 1 }), prevOpacity: cur > 0 ? 1 : 0.35,
+        next: () => { if (cur < total - 1) this.setState({ step: cur + 1 }); else { this.back(); this.flash('Guten Appetit!'); } },
+        nextLabel: cur < total - 1 ? 'Weiter' : (isPhoto && !hasNew ? 'Überspringen' : 'Fertig'), showIng: s.showIng, toggleIng: () => this.setState({ showIng: !s.showIng }),
+        ...(dd => ({ timerLabel: dd && !isPhoto ? dd.label + ' · Timer starten' : '', startTimer: () => dd && this.startTimer(r, cur + 1, dd) }))(st.steps[cur] ? this.parseDur(st.steps[cur].text) : null),
+        onDown: e => { this.sx = e.clientX; }, onUp: e => { if (this.sx == null) return; const dx = e.clientX - this.sx; this.sx = null; if (dx < -50) { if (cur < total - 1) this.setState({ step: cur + 1 }); } else if (dx > 50 && cur > 0) this.setState({ step: cur - 1 }); },
+        ringDash: dash((cur + 1) / total, 108), nPad: String(cur + 1).padStart(2, '0'), totalPad: '/ ' + String(total).padStart(2, '0'), group: st.steps[cur] && !isPhoto ? st.steps[cur].group : ''
+      };
+    }
+    const draft = s.draft || {};
+    const setD = k => e => { const val = e.target.value; this.setState(st => ({ draft: { ...st.draft, [k]: val } })); };
+    const ed = {}; ['name', 'portionen', 'arbeitszeit', 'gesamtzeit', 'zutaten', 'zubereitung', 'quelle', 'link', 'notizen'].forEach(k => { ed[k] = setD(k); });
+    const hour = new Date().getHours();
+
+    return {
+      t, inFrame, notFrame: !inFrame, rootHeight: inFrame ? '100%' : '100dvh', safeBottom: inFrame ? '28px' : 'max(env(safe-area-inset-bottom), 10px)',
+      isEd: v === 'editorial', isWarm: v === 'warm', isMin: v === 'minimal', isFut: v === 'future', isPlay: v.indexOf('play') === 0, isClassic: v !== 'future' && v.indexOf('play') !== 0, ps,
+      outline: C.outline || C.ink, onPastel: '#2b2118',
+      playTabs: ['home', 'recipes', 'fav', 'new'].map(k => { const tb = tabs.find(x => x.key === k); const on = s.tab === k; return { ...tb, isPlus: false, notPlus: true, fg: on ? C.ink : C.muted, fill: on && k === 'fav' ? C.accent : 'none', stroke: on && k === 'fav' ? C.accent : (on ? C.ink : C.muted), dot: on ? C.accent : 'transparent' }; }),
+      playCats: catList.map(cc => ({ ...cc, pastel: catColor(cc.name), icon: CAT_ICON[cc.name] || CAT_ICON.Hauptgericht, countLabel: cc.count + ' Rezepte' })),
+      playMealChips: [['', 'Alle']].concat(MEALS).map(([k, l]) => { const on = (s.smeal || '') === k; return { label: l, onClick: () => this.setState({ smeal: k || null }), sbg: on ? C.surface : 'transparent', sfg: on ? C.ink : C.muted, sb: on ? ps.b : '2px solid transparent' }; }),
+      playCatChips: CATS.map(k => chip(k, s.cat === k, () => this.setState({ cat: s.cat === k ? null : k }))),
+      playExtraChips: [chip('Bis 30 Min.', s.quick, () => this.setState({ quick: !s.quick })), chip('Mit Anleitung', s.withSteps, () => this.setState({ withSteps: !s.withSteps }))],
+      filterCount: (s.cat ? 1 : 0) + (s.quick ? 1 : 0) + (s.withSteps ? 1 : 0), hasFilter: !!(s.cat || s.quick || s.withSteps), filterOpen: !!s.filterOpen && !top && s.tab === 'recipes', filterApply: listSub + ' anzeigen',
+      toggleFilter: () => this.setState({ filterOpen: !s.filterOpen }), resetFilters: () => this.setState({ cat: null, quick: false, withSteps: false }),
+      filterBtnBg: (s.cat || s.quick || s.withSteps) ? C.accent : C.surface, filterBtnFg: (s.cat || s.quick || s.withSteps) ? C.onAccent : C.ink,
+      timersView: (s.timers || []).map(x => { const ms = Math.max(0, x.end - Date.now()), sec = Math.ceil(ms / 1000); return { text: x.recipe + ' · Schritt ' + x.step, remaining: Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'), cancel: () => this.setState(st => ({ timers: st.timers.filter(y => y.id !== x.id) })) }; }),
+      hasTimers: !!(s.timers && s.timers.length), alarm: !!s.alarm, alarmText: s.alarm ? s.alarm.recipe + ', Schritt ' + s.alarm.step + ': ' + s.alarm.label + ' sind um.' : '', closeAlarm: () => this.setState({ alarm: null }),
+      detailColor: r ? catColor(r.kategorie) : C.sunk,
+      poseDetail: r && s.favs.includes(r.id) ? 'heart' : 'wave', poseEmpty: s.tab === 'fav' ? 'sleep' : 'think', poseCook: c.isPhoto ? 'cheer' : 'cook',
+      accentHex: T.accentHex ? T.accentHex[dark ? 1 : 0] : (dark ? '#f08a6e' : '#e8674f'), isGridCats: v === 'minimal',
+      dock: tabs.map(tb => { const on = s.tab === tb.key; return { ...tb, on, bg: on ? C.accent : 'transparent', fg: on ? C.onAccent : C.muted, fill: on && tb.key === 'fav' ? C.onAccent : 'none', pad: on ? '0 18px 0 14px' : '0', w: on ? 'auto' : '48px' }; }),
+      dockBottom: inFrame ? '26px' : 'calc(env(safe-area-inset-bottom) + 12px)', floatTop: inFrame ? '58px' : 'calc(env(safe-area-inset-top) + 8px)',
+      bento: catList.map((cc, i) => ({ ...cc, span: i === 0 ? 'span 2' : 'span 1', big: i === 0, small: i !== 0, frac: dash(cc.count / Math.max(1, vis.length) * 2, 13) })),
+      statusLine: new Date().toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' }).toUpperCase() + ' · ' + vis.length + ' REZEPTE',
+      isTabs: !top, isDetail: !!top && top.screen === 'detail' && !!r, isCook: !!top && top.screen === 'cook' && !!r, isEdit: !!top && top.screen === 'edit',
+      isHome: !top && s.tab === 'home', isList: !top && s.tab !== 'home', isSearch: s.tab === 'recipes', isAll: false,
+      dateLine: new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }),
+      countLine: vis.length + ' Rezepte · ' + catList.length + ' Kategorien',
+      greeting: hour < 11 ? 'Guten Morgen' : hour < 17 ? 'Guten Tag' : 'Guten Abend',
+      modeIcon: dark ? ICONS.sun : ICONS.moon, toggleDark: () => this.setState({ dark: !dark }),
+      goSearch: () => this.setTab('recipes', true),
+      hero, homeSections, catList, tabs,
+      listTitle, listSub, listGroups, chips, listEmpty: !top && s.tab !== 'home' && !listGroups.length && s.ready, emptyTitle, emptyText,
+      q: s.q, onQ: e => this.setState({ q: e.target.value }), clearQ: () => this.setState({ q: '' }),
+      newRecipe: this.newRecipe, back: this.back, d, c,
+      draft, ed, saveDraft: this.saveDraft, saveOpacity: draft.name && draft.name.trim() ? 1 : 0.4, editTitle: draft.isNew ? 'Neues Rezept' : 'Bearbeiten',
+      editMeals: MEALS.map(([k, l]) => { const cur = draft.mahlzeit || []; const on = cur.includes(k); return chip(l, on, () => this.setState(st => { const m = st.draft.mahlzeit || []; return { draft: { ...st.draft, mahlzeit: on ? m.filter(x => x !== k) : m.concat([k]) } }; })); }),
+      sugg, mealTabs, suggEmpty: !sugg.length && s.ready, hasSugg: sugg.length > 0,
+      mealHeadline: ['Was frühstücken wir heute?', 'Was kochen wir heute?', 'Was backen wir heute?', 'Was grillen wir heute?'][mi],
+      contextLabel: (weekend ? 'Viel Zeit · auch Aufwendiges' : 'Wenig Zeit · bis ' + limit + ' Min.') + ' · ' + pool.length + ' passend',
+      contextToggle: weekend ? 'Wenig Zeit' : 'Viel Zeit',
+      poolLabel: pool.length + (pool.length === 1 ? ' passendes Rezept' : ' passende Rezepte'),
+      timeChips: [[false, 'Wenig Zeit', 'bis ' + limit + ' Min.'], [true, 'Viel Zeit', 'auch Aufwendiges']].map(([w, l, hint]) => { const on = weekend === w; return { label: l, hint, onClick: () => this.setState({ weekend: w, seed: 0 }), sbg: on ? C.surface : 'transparent', sfg: on ? C.ink : C.muted, sb: on ? ps.b : '2px solid transparent' }; }),
+      toggleWeekend: () => this.setState({ weekend: !weekend, seed: 0 }), reshuffle: () => this.setState({ seed: (s.seed || 0) + 1 }),
+      editCats: CATS.map(k => chip(k, draft.kategorie === k, () => this.setState(st => ({ draft: { ...st.draft, kategorie: k } })))),
+      toast: s.toast,
+      scrollRef: el => { if (el) this.scrollEl = el; }, searchRef: el => { this.searchEl = el; }
+    };
+  }
+}
+</script>
+</body>
+</html>

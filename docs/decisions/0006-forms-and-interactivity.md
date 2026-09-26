@@ -1,25 +1,21 @@
 # 0006 – Forms & interactivity
 
-**Status:** Partly accepted. The island framework is open (blocked on the design: edit UX)
+**Status:** Accepted (2026-09-26; island framework decided after the design handoff)
 
 ## Context
 
-The app edits recipes. Some features need client-side state: image resize before upload (ADR 0005), and possibly a serving scaler, a dynamic ingredient editor and cooking mode.
+The app edits recipes, and the design has a lot of client-side interaction: serving scaler, search and filter sheet, suggestion carousel with "Nochmal würfeln", favorites in `localStorage`, cooking mode with swipe, timers and the photo step (resize before upload, ADR 0005). The edit form itself is simple: text fields, chips and textareas, no dynamic lists or drag and drop.
 
-## Decision (accepted)
+## Decision
 
 - **Mutations** go through Astro Actions with zod validation on the server. Forms work without JS (progressive enhancement)
 - **Islands** only where interaction really needs it. One framework for all islands, no mixing
-- No global client state and no SPA routing
+- **Island framework: Preact** (with the official `@astrojs/preact` integration). React API at about 3 kB; chosen by Martin (2026-09-26) for the familiar React style
+- No global client state and no SPA routing. State that has to survive a page change (favorites, running timers) lives in `localStorage` or the URL
 
-## Open: island framework
+## Consequences
 
-Candidates:
-
-- **Svelte:** small bundles, little boilerplate, syntax close to Astro. The front-runner if the edit UX has dynamic lists (add, remove, reorder ingredient rows)
-- **Preact:** React API at about 3 kB. Choose it if React familiarity or a specific React library matters
-- **Vanilla / web components:** only if the design ends up with almost no interactivity
-
-## To accept
-
-The design shows the edit form (simple fields vs. dynamic lists, drag and drop?) and which interactive features are in v1.
+- Pages stay server-rendered; islands hydrate only where needed (e.g. `client:visible` for the carousel, `client:load` for cooking mode)
+- Svelte was the alternative with slightly smaller bundles; not a deciding factor at this size
+- Timers must keep running when moving between pages inside the app, so their state is persisted in `localStorage`
+- Verify the `@astrojs/preact` version and options against the current Astro docs at implementation time

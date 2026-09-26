@@ -15,6 +15,13 @@ npm-debug.log*
 .env.*
 !.env.example
 
+# Recipe data from the design handoff (Airtable export, recipe list with meal
+# assignments): our recipes, partly copied from Chefkoch etc., and signed image
+# URLs. The repo is public: never publish them.
+design/Rezepte-Grid view.csv
+design/data/
+design/Mahlzeit-Zuordnung.csv
+
 # test output
 coverage/
 

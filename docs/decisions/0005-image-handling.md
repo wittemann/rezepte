@@ -18,7 +18,8 @@ Recipe images are Airtable attachments today, and Airtable stays the source of t
 **Upload: in the app, into Airtable**
 
 - Upload through Airtable's upload-attachment endpoint (content API; the file is sent base64-encoded, **max 5 MB per file**)
-- Resize and compress in the browser before upload (for example to about 2000 px wide JPEG/WebP), so phone photos stay under the limit and pages load fast
+- Resize and compress in the browser before upload to **max. 1200 px** on the longer side (JPEG/WebP, value from the design), so phone photos stay well under the limit and pages load fast
+- Where uploads happen (design): the photo step at the end of cooking mode, for recipes without a photo
 - Delete or replace = update the attachment field on the record
 
 Verify the endpoint details (URL, payload, limits) against the current Airtable API docs at implementation time.

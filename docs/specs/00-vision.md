@@ -6,7 +6,7 @@ One pleasant place for our own recipes: quick to find while shopping or planning
 
 ## Users
 
-Exactly two people (Martin and his wife), sharing one password. Used mainly on a phone in the kitchen, occasionally on a desktop.
+Family and friends: a small, trusted group who all see **and edit** the same cookbook, sharing one password (decided 2026-09-26; originally just Martin and his wife). Used mainly on an iPhone in the kitchen, added to the home screen; occasionally on a desktop.
 
 ## Principles
 
@@ -19,5 +19,5 @@ Exactly two people (Martin and his wife), sharing one password. Used mainly on a
 
 - Public sign-up, user accounts, roles, multi-tenancy
 - Multiple languages (German only)
-- Offline mode or native apps (may be reconsidered later)
+- Offline mode or native apps (may be reconsidered later). The web app can be added to the home screen, but needs a connection ([ADR 0012](../decisions/0012-pwa-and-timers.md))
 - Social features (sharing, comments, ratings by others)
