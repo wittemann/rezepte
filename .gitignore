@@ -1,0 +1,25 @@
+# build output
+dist/
+.vercel/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+
+# environment variables: never commit secrets (docs/specs/06-deployment.md)
+.env
+.env.*
+!.env.example
+
+# test output
+coverage/
+
+# macOS-specific files
+.DS_Store
+
+# editors
+.idea/
