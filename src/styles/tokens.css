@@ -22,6 +22,8 @@
   --accent: oklch(0.56 0.17 30);
   --on-accent: #ffffff;
   --outline: #2b2118;
+  /* Maulti's accent (lock, heart, confetti): a lighter coral than --accent, as in the design */
+  --mascot-accent: #e8674f;
 
   /*
    * Pastels: oklch(L 0.09 hue), one hue per category and meal.
@@ -88,6 +90,7 @@
     --accent: oklch(0.72 0.15 30);
     --on-accent: #1f1826;
     --outline: #0c0910;
+    --mascot-accent: #f08a6e;
 
     --pastel-l: 0.78;
   }

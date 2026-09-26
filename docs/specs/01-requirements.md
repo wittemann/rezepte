@@ -53,6 +53,7 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 - Deleting recipes in the app
 - Logout button (not needed in v1: sessions last about a year; to log everyone out, rotate `SESSION_SECRET`)
 - Offline use
+- Maulti in dark mode: his dark brown outline and arms are hard to see on the dark background (same in the design). Ask Claude Design for a lighter outline in dark mode
 
 ## Non-functional
 
