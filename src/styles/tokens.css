@@ -74,6 +74,7 @@
   --space-l: 0.875rem; /* 14px */
   --space-xl: 1rem; /* 16px */
   --space-page: 1.25rem; /* 20px: side margin of every page */
+  --space-xxl: 1.5rem; /* 24px: side margin of the login screen */
 
   /* Minimum size of anything tappable */
   --touch-target: 2.75rem; /* 44px */

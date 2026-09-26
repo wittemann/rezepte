@@ -1,0 +1,10 @@
+---
+// Login screen (docs/specs/04-auth.md). Checking the password follows in the next step.
+import Base from '../layouts/Base.astro';
+import LoginForm from '../components/LoginForm.tsx';
+import { TEXT } from './_login.texts.ts';
+---
+
+<Base title={TEXT.title}>
+  <LoginForm client:load />
+</Base>
