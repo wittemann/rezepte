@@ -20,8 +20,8 @@
     <path d="{{ browL }}"></path><path d="{{ browR }}"></path>
   </g>
   <g display="{{ v.eyesOpen }}">
-    <ellipse cx="48" cy="{{ eyeY }}" rx="4.6" ry="5.6" fill="#3b2a1d"></ellipse><ellipse cx="72" cy="{{ eyeY }}" rx="4.6" ry="5.6" fill="#3b2a1d"></ellipse>
-    <circle cx="49.6" cy="{{ hlY }}" r="1.8" fill="#fff"></circle><circle cx="73.6" cy="{{ hlY }}" r="1.8" fill="#fff"></circle>
+    <ellipse cx="48" cy="{{ eyeY }}" rx="4.6" ry="5.6" fill="#3b2a1d"></ellipse><circle cx="49.6" cy="{{ hlY }}" r="1.8" fill="#fff"></circle>
+    <g display="{{ v.rightEye }}"><ellipse cx="72" cy="{{ eyeY }}" rx="4.6" ry="5.6" fill="#3b2a1d"></ellipse><circle cx="73.6" cy="{{ hlY }}" r="1.8" fill="#fff"></circle></g>
   </g>
   <g display="{{ v.eyesClosed }}" fill="none" stroke="#3b2a1d" stroke-width="3" stroke-linecap="round">
     <path d="M43 70 Q48 74 53 70"></path><path d="M67 70 Q72 74 77 70"></path>
@@ -38,6 +38,7 @@
     <g display="{{ v.sleep }}"><path d="M15 82 Q7 90 13 99"></path><path d="M105 82 Q113 90 107 99"></path></g>
     <g display="{{ v.heart }}"><path d="M16 80 Q24 97 48 95"></path><path d="M104 80 Q96 97 72 95"></path></g>
     <g display="{{ v.alarm }}"><path d="M16 66 Q6 58 9 44"></path><path d="M104 70 Q110 64 108 56"></path></g>
+    <g display="{{ v.lock }}"><path d="M15 78 Q6 86 9 97"></path><path d="M104 76 Q113 80 112 90"></path></g>
   </g>
   <g fill="#f8e4bb" stroke="#3b2a1d" stroke-width="3">
     <circle display="{{ v.wave }}" cx="111" cy="41" r="5.5"></circle>
@@ -59,6 +60,13 @@
   </g>
   <g display="{{ v.sleep }}" fill="{{ accent }}" font-family="Fredoka, system-ui" font-weight="700"><text x="92" y="34" font-size="16">z</text><text x="104" y="22" font-size="12">z</text><text x="113" y="12" font-size="9">z</text></g>
   <path display="{{ v.heart }}" d="M60 106 C47 98 47 87 54 87 C57.5 87 60 90 60 90 C60 90 62.5 87 66 87 C73 87 73 98 60 106 Z" fill="{{ accent }}" stroke="#3b2a1d" stroke-width="2.5" stroke-linejoin="round"></path>
+  <g display="{{ v.lock }}">
+    <path d="M106 92 V86 a7 7 0 0 1 14 0 V92" fill="none" stroke="#3b2a1d" stroke-width="4" stroke-linecap="round"></path>
+    <rect x="101" y="91" width="24" height="19" rx="5" fill="{{ accent }}" stroke="#3b2a1d" stroke-width="3"></rect>
+    <circle cx="113" cy="98.5" r="2.6" fill="#3b2a1d"></circle><path d="M113 100 V104" stroke="#3b2a1d" stroke-width="2.6" stroke-linecap="round"></path>
+    <path d="M129 84 l5 -3 M130 94 l6 0 M126 76 l2 -5" stroke="#f2c94c" stroke-width="3" stroke-linecap="round"></path>
+  </g>
+  <g display="{{ v.wink }}" fill="none" stroke="#3b2a1d" stroke-width="3" stroke-linecap="round"><path d="M67 69 Q72 73 77 69"></path></g>
   <g display="{{ v.alarm }}">
     <circle cx="106" cy="40" r="15" fill="#fff" stroke="#3b2a1d" stroke-width="3"></circle>
     <circle cx="96" cy="25" r="4.5" fill="{{ accent }}" stroke="#3b2a1d" stroke-width="2.5"></circle><circle cx="116" cy="25" r="4.5" fill="{{ accent }}" stroke="#3b2a1d" stroke-width="2.5"></circle>
@@ -67,7 +75,7 @@
   </g>
 </svg>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:160,&quot;height&quot;:160},&quot;pose&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;wave&quot;,&quot;think&quot;,&quot;cook&quot;,&quot;cheer&quot;,&quot;sleep&quot;,&quot;heart&quot;,&quot;alarm&quot;],&quot;default&quot;:&quot;wave&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:96,&quot;tsType&quot;:&quot;number&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#e8674f&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:160,&quot;height&quot;:160},&quot;pose&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;wave&quot;,&quot;think&quot;,&quot;cook&quot;,&quot;cheer&quot;,&quot;sleep&quot;,&quot;heart&quot;,&quot;alarm&quot;,&quot;lock&quot;],&quot;default&quot;:&quot;wave&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:96,&quot;tsType&quot;:&quot;number&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#e8674f&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
   forks() {
     let d = '';
@@ -91,7 +99,8 @@ class Component extends DCLogic {
       eyeY: p === 'think' ? 66 : 69, hlY: p === 'think' ? 63.8 : 66.8, browL: brows[0], browR: brows[1],
       v: {
         eyesOpen: on(!closed), eyesClosed: on(closed),
-        smile: on(p === 'wave' || p === 'cook' || p === 'heart'), open: on(p === 'cheer' || p === 'alarm'), oh: on(p === 'think' || p === 'sleep'),
+        rightEye: on(p !== 'lock'), wink: on(p === 'lock'), lock: on(p === 'lock'),
+        smile: on(p === 'wave' || p === 'cook' || p === 'heart' || p === 'lock'), open: on(p === 'cheer' || p === 'alarm'), oh: on(p === 'think' || p === 'sleep'),
         wave: on(p === 'wave'), think: on(p === 'think'), cook: on(p === 'cook'), cheer: on(p === 'cheer'), sleep: on(p === 'sleep'), heart: on(p === 'heart'), alarm: on(p === 'alarm')
       }
     };

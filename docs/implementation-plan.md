@@ -22,7 +22,7 @@ Each item below is done only when it has passed these steps, in this order:
 - [ ] `src/styles/tokens.css`: colors light + dark (`prefers-color-scheme`), accent, pastel formula with category and meal hues, radii, outlines, hard shadows, spacing; sizes in `rem`
 - [ ] `src/styles/global.css`: base styles, body background, safe areas, focus styles, min. font size
 - [ ] Base layout: `lang="de"`, `viewport-fit=cover`, `theme-color` light/dark, apple-touch-icon, manifest link
-- [ ] Maulti as a component (SVG from `Maskottchen.dc.html`, props `pose` × 7, `size`)
+- [ ] Maulti as a component (SVG from `Maskottchen.dc.html`, props `pose` × 8 incl. `lock`, `size`)
 - [ ] Icons: tab bar icons and category icons (`CAT_ICON` in the prototype)
 
 ## 2. Data layer
@@ -43,8 +43,8 @@ Each item below is done only when it has passed these steps, in this order:
 
 - [ ] `lib/auth/session.ts`: cookie `<issuedAt>.<HMAC>` sign/verify, constant-time compare — [04-auth](specs/04-auth.md)
 - [ ] `src/middleware.ts`: redirect to `/login?next=…` without a valid session; skip `/login` and static assets
-- [ ] Login page in the design's style (Maulti, one password field) + login action with ~500 ms delay on failure; `next` only allows local paths
-- [ ] Logout (POST)
+- [ ] Login page as designed (`design/README.md`, „0. Login“): Maulti `lock`/`think`, show/hide toggle, error state; login action with ~500 ms delay on failure; `next` only allows local paths
+- [x] **(owner)** Login screen design from Claude Design (added 2026-09-26)
 - [ ] **(owner)** Share the passphrase with the family
 
 ## 4. App shell and shared components
@@ -54,6 +54,7 @@ Each item below is done only when it has passed these steps, in this order:
 - [ ] Pills and chips, segmented control, buttons (primary/round/outline), speech bubble, meta sticker
 - [ ] Bottom sheet (filter sheet, ingredients in cooking mode)
 - [ ] Toast ("Gespeichert")
+- [ ] Plain error pages: 404 ("Rezept nicht gefunden") and 500 ("Da ist was schiefgelaufen"), tokens only, no design
 - [ ] Favorites store: `localStorage`, most recently added first, shared by all islands
 
 ## 5. Screens

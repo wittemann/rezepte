@@ -5,12 +5,12 @@ Decision: [ADR 0004](../decisions/0004-shared-password-auth.md). The password is
 ## Flow
 
 1. Any request without a valid session cookie → redirect to `/login?next=<path>`
-2. `/login` shows a single password field (German UI)
+2. `/login` shows a single password field with a show/hide toggle, as designed (`design/README.md`, „0. Login“). A plain `<form>`, so it works without JS and the iOS password manager recognizes it; JS only adds the toggle and resets the error state while typing
 3. On POST, the server hashes the input with scrypt and compares it in constant time (`timingSafeEqual`) to `APP_PASSWORD_HASH`
-4. Success → set cookie `session` = `<issuedAt>.<HMAC-SHA256(issuedAt, SESSION_SECRET)>`
+4. Success → set cookie `session` = `<issuedAt>.<HMAC-SHA256(issuedAt, SESSION_SECRET)>`, then redirect to `next` (local paths only) or the start page. Failure → error text, Maulti `think`, accent border, after the ~500 ms delay
    - `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, `Max-Age` ≈ 1 year
 5. Middleware verifies the signature on every request except `/login` and static assets
-6. `/logout` (POST) deletes the cookie
+6. Logout: **not in v1**. Later, `/logout` (POST) deletes the cookie, once the design has a place for it. Until then, rotating `SESSION_SECRET` logs everyone out
 
 ## Password lifecycle
 
@@ -22,7 +22,7 @@ Decision: [ADR 0004](../decisions/0004-shared-password-auth.md). The password is
 
 ## Protection against guessing
 
-Minimal: a delay of about 500 ms on a failed attempt. Good enough for a two-person app; revisit if logs show abuse.
+Minimal: a delay of about 500 ms on a failed attempt. Good enough for a small, trusted group; revisit if logs show abuse.
 
 The delay is a speed bump, not a lock: serverless functions run in parallel, so an attacker can still send many guesses at once. What actually protects the app is the password itself. **Use a long passphrase** (for example four or more random words), not a short password.
 

@@ -6,7 +6,7 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 
 **Access**
 
-- Log in with the shared password, stay logged in on the device, log out ([04-auth](04-auth.md)). _The design has no login screen; it's built from the design's components and tokens._
+- Log in with the shared password and stay logged in on the device for about a year ([04-auth](04-auth.md)). Login screen as designed (`design/README.md`, „0. Login“; `design/screenshots/00-login.png`).
 
 **Start**
 
@@ -44,12 +44,14 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 
 - Installable on the home screen (web app manifest and icons, [ADR 0012](../decisions/0012-pwa-and-timers.md))
 - Light and dark mode following the system setting
+- Plain error pages for "not found" and "something went wrong" (no design needed for v1)
 
 ## Later (not v1)
 
 - Timer notifications when the phone is locked or the app is closed (Web Push, [ADR 0012](../decisions/0012-pwa-and-timers.md))
 - Shopping list collected from several recipes (not in the design)
 - Deleting recipes in the app
+- Logout button (not needed in v1: sessions last about a year; to log everyone out, rotate `SESSION_SECRET`)
 - Offline use
 
 ## Non-functional

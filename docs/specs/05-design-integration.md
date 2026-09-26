@@ -6,7 +6,7 @@ The visual design is created in **Claude Design**. This spec describes how it be
 
 - **Location:** `design/`. Start with `design/README.md` (German): screens, rules, tokens, assets. Screenshots in `design/screenshots/`
 - **Relevant variant:** `playful` only (template branch `isPlay` in `Kochbuch App.dc.html`). The other variants were explorations and are not built
-- **Fidelity:** high. Colors, type, spacing, radii, shadows and interactions are final. The mascot Maulti is final as SVG (`Maskottchen.dc.html`, 7 poses)
+- **Fidelity:** high. Colors, type, spacing, radii, shadows and interactions are final. The mascot Maulti is final as SVG (`Maskottchen.dc.html`, 8 poses incl. `lock` for the login; `maulti-login.svg`)
 - **Prototype:** open `design/Kochbuch App.dc.html?variant=playful` in a browser. It needs `support.js` and `data/rezepte.json` next to it
 - **Not in git:** `design/Rezepte-Grid view.csv`, `design/data/` and `design/Mahlzeit-Zuordnung.csv` contain our recipe data (the full Airtable export with texts partly copied from other sites and signed image URLs; the list of all recipes with their meals). They're in `.gitignore` because the repo is public. The prototype only runs where these files exist locally
 - `design/` is excluded from Prettier, ESLint and type checking; it's reference material, not app code
@@ -31,11 +31,15 @@ The visual design is created in **Claude Design**. This spec describes how it be
 
 ## Deviations from the design
 
-| Design says                                               | We do                                                    | Why                                                                       |
-| --------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Next.js recommended ("if there's no project yet")         | Astro                                                    | Project already set up ([ADR 0001](../decisions/0001-astro-on-vercel.md)) |
-| Fonts from Google Fonts                                   | Self-hosted, same fonts                                  | GDPR ([ADR 0007](../decisions/0007-styling-approach.md))                  |
-| Sizes in `px`                                             | `rem`                                                    | System text size; the design README asks for it too                       |
-| Timers ring on a locked iPhone (Web Push)                 | Sound, vibration and overlay while the app is open       | [ADR 0012](../decisions/0012-pwa-and-timers.md); push later if needed     |
-| No login screen                                           | Login page built from the design's components and tokens | Needed for [04-auth](04-auth.md)                                          |
-| Stored in `localStorage` in the prototype (edits, photos) | Written to Airtable                                      | As the design README asks; favorites stay per device                      |
+| Design says                                               | We do                                              | Why                                                                                          |
+| --------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Next.js recommended ("if there's no project yet")         | Astro                                              | Project already set up ([ADR 0001](../decisions/0001-astro-on-vercel.md))                    |
+| Fonts from Google Fonts                                   | Self-hosted, same fonts                            | GDPR ([ADR 0007](../decisions/0007-styling-approach.md))                                     |
+| Sizes in `px`                                             | `rem`                                              | System text size; the design README asks for it too                                          |
+| Timers ring on a locked iPhone (Web Push)                 | Sound, vibration and overlay while the app is open | [ADR 0012](../decisions/0012-pwa-and-timers.md); push later if needed                        |
+| Login: env var "e.g. `FAMILY_PASSWORD`"                   | `APP_PASSWORD_HASH` (scrypt hash)                  | Naming example only; ours is set up ([04-auth](04-auth.md))                                  |
+| Login: optional rate limit, 5 attempts/min per IP         | ~500 ms delay per failed attempt                   | Per-IP counting on serverless needs a shared store; revisit on abuse ([04-auth](04-auth.md)) |
+| All routes behind login, incl. images                     | Image proxy cached by the CDN without login check  | Deliberate ([ADR 0005](../decisions/0005-image-handling.md))                                 |
+| No error pages                                            | Plain error pages (404, 500), no design for v1     | Rarely seen; not worth a design yet                                                          |
+| No logout                                                 | No logout in v1                                    | Sessions last about a year; see [04-auth](04-auth.md)                                        |
+| Stored in `localStorage` in the prototype (edits, photos) | Written to Airtable                                | As the design README asks; favorites stay per device                                         |

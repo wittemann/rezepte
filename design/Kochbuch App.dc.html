@@ -760,6 +760,20 @@
     </sc-if>
   </sc-if>
 
+  <sc-if value="{{ isLogin }}">
+    <form onSubmit="{{ doLogin }}" style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px 24px {{ safeBottom }}; margin: 0;">
+      <dc-import name="Maskottchen" pose="{{ loginPose }}" size="{{ 170 }}" accent="{{ accentHex }}" hint-size="170px,170px"></dc-import>
+      <div style="font-family: {{ t.display }}; font-size: 32px; font-weight: 600; text-align: center; line-height: 1.1;">Unser Kochbuch</div>
+      <div style="font-size: 16px; font-weight: 600; color: {{ t.muted }}; text-align: center; max-width: 280px; line-height: 1.45; text-wrap: pretty;">{{ loginText }}</div>
+      <div style="align-self: stretch; height: 58px; border-radius: 20px; background: {{ t.surface }}; border: {{ loginBorder }}; box-shadow: {{ ps.s3 }}; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 18px; margin-top: 8px;">
+        <input type="{{ pwType }}" value="{{ pw }}" onChange="{{ onPw }}" placeholder="Passwort" autocomplete="current-password" style="flex: 1; min-width: 0; border: none; background: transparent; font-size: 18px; font-weight: 700; color: {{ t.ink }}; font-family: {{ t.body }};">
+        <div onClick="{{ togglePw }}" style="height: 44px; padding: 0 12px; border-radius: 22px; background: {{ t.sunk }}; display: flex; align-items: center; font-size: 13px; font-weight: 800; cursor: pointer;">{{ pwToggleLabel }}</div>
+      </div>
+      <button type="submit" style="align-self: stretch; height: 58px; border-radius: 29px; background: {{ t.accent }}; color: {{ t.onAccent }}; border: {{ ps.bb }}; box-shadow: {{ ps.s4 }}; font-family: {{ t.display }}; font-size: 19px; font-weight: 600; cursor: pointer;">Reinlassen</button>
+      <div style="font-size: 13px; font-weight: 600; color: {{ t.muted }}; text-align: center;">Einmal eingeben, dann merkt sich dein iPhone das.</div>
+    </form>
+  </sc-if>
+
   <sc-if value="{{ isPlay }}">
     <!-- P · TABS -->
     <sc-if value="{{ isTabs }}">
@@ -1265,13 +1279,14 @@ const FR = { '½': .5, '¼': .25, '¾': .75, '⅓': 1 / 3, '⅔': 2 / 3 };
 const UNITS = /^(g|kg|ml|l|cl|dl|EL|TL|Pck\.?|Päckchen|Prisen?|Tassen?|Becher|Dosen?|Stück|Bund|Zehen?|Scheiben?|Msp\.?|Glas|Würfel|Tüten?)(?=\s|$)/;
 
 class Component extends DCLogic {
-  state = { timers: [], alarm: null, filterOpen: false, meal: null, weekend: null, seed: 0, smeal: null, ready: false, tab: 'home', stack: [], q: '', cat: null, quick: false, withSteps: false, allCat: null, favs: [], recents: [], edits: {}, servings: null, step: 0, showIng: false, notesOpen: false, dark: null, draft: null, imgFailed: {}, toast: null };
+  state = { authed: false, pw: '', pwErr: false, pwShow: false, timers: [], alarm: null, filterOpen: false, meal: null, weekend: null, seed: 0, smeal: null, ready: false, tab: 'home', stack: [], q: '', cat: null, quick: false, withSteps: false, allCat: null, favs: [], recents: [], edits: {}, servings: null, step: 0, showIng: false, notesOpen: false, dark: null, draft: null, imgFailed: {}, toast: null };
   base = [];
   get variant() { return this.props.variant || new URLSearchParams(location.search).get('variant') || 'editorial'; }
   k(n) { return 'kb-' + this.variant + '-' + n; }
   load(n, d) { try { const v = localStorage.getItem(this.k(n)); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
   store(n, v) { try { localStorage.setItem(this.k(n), JSON.stringify(v)); } catch (e) {} }
   componentDidMount() {
+    this.setState({ authed: this.props.forceLogin ? false : !!this.load('auth', false) });
     this.iv = setInterval(() => { const tm = this.state.timers; if (!tm.length) return; const now = Date.now(); const done = tm.filter(x => x.end <= now); if (done.length) { this.setState({ timers: tm.filter(x => x.end > now), alarm: done[0] }); try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch (e) {} } else this.forceUpdate(); }, 500);
     try { this.mq = matchMedia('(prefers-color-scheme: dark)'); this.mqL = () => this.forceUpdate(); this.mq.addEventListener('change', this.mqL); } catch (e) {}
     fetch('data/rezepte.json').then(r => r.json()).then(base => {
@@ -1513,7 +1528,13 @@ class Component extends DCLogic {
     const ed = {}; ['name', 'portionen', 'arbeitszeit', 'gesamtzeit', 'zutaten', 'zubereitung', 'quelle', 'link', 'notizen'].forEach(k => { ed[k] = setD(k); });
     const hour = new Date().getHours();
 
+    const loginGate = v.indexOf('play') === 0 && (this.props.forceLogin || !inFrame) && !s.authed;
     return {
+      isLogin: loginGate, pw: s.pw, pwType: s.pwShow ? 'text' : 'password', pwToggleLabel: s.pwShow ? 'Verbergen' : 'Zeigen',
+      togglePw: () => this.setState({ pwShow: !s.pwShow }), onPw: e => this.setState({ pw: e.target.value, pwErr: false }),
+      loginPose: s.pwErr ? 'think' : 'lock', loginBorder: s.pwErr ? '2.5px solid ' + C.accent : ps.b,
+      loginText: s.pwErr ? 'Hmm, das Passwort stimmt nicht. Probier’s nochmal!' : 'Psst, nur für Familie und Freunde. Wie lautet das Passwort?',
+      doLogin: e => { e.preventDefault(); if (s.pw.trim().toLowerCase() === 'maultasche') { this.store('auth', true); this.setState({ authed: true, pw: '', pwErr: false }); } else this.setState({ pwErr: true }); },
       t, inFrame, notFrame: !inFrame, rootHeight: inFrame ? '100%' : '100dvh', safeBottom: inFrame ? '28px' : 'max(env(safe-area-inset-bottom), 10px)',
       isEd: v === 'editorial', isWarm: v === 'warm', isMin: v === 'minimal', isFut: v === 'future', isPlay: v.indexOf('play') === 0, isClassic: v !== 'future' && v.indexOf('play') !== 0, ps,
       outline: C.outline || C.ink, onPastel: '#2b2118',
@@ -1534,7 +1555,7 @@ class Component extends DCLogic {
       dockBottom: inFrame ? '26px' : 'calc(env(safe-area-inset-bottom) + 12px)', floatTop: inFrame ? '58px' : 'calc(env(safe-area-inset-top) + 8px)',
       bento: catList.map((cc, i) => ({ ...cc, span: i === 0 ? 'span 2' : 'span 1', big: i === 0, small: i !== 0, frac: dash(cc.count / Math.max(1, vis.length) * 2, 13) })),
       statusLine: new Date().toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' }).toUpperCase() + ' · ' + vis.length + ' REZEPTE',
-      isTabs: !top, isDetail: !!top && top.screen === 'detail' && !!r, isCook: !!top && top.screen === 'cook' && !!r, isEdit: !!top && top.screen === 'edit',
+      isTabs: !top && !loginGate, isDetail: !loginGate && !!top && top.screen === 'detail' && !!r, isCook: !loginGate && !!top && top.screen === 'cook' && !!r, isEdit: !loginGate && !!top && top.screen === 'edit',
       isHome: !top && s.tab === 'home', isList: !top && s.tab !== 'home', isSearch: s.tab === 'recipes', isAll: false,
       dateLine: new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }),
       countLine: vis.length + ' Rezepte · ' + catList.length + ' Kategorien',

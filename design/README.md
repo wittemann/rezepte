@@ -85,6 +85,35 @@ Liste aller Favoriten. Leer: Maulti `sleep`, „Noch keine Favoriten“ / „Tip
 ### 7. Rezept bearbeiten / neu
 Kopf: Abbrechen · „Bearbeiten“/„Neues Rezept“ · Sichern (deaktiviert ohne Name). Felder: Name, Kategorie (Chips), Passt zu (Mehrfach: Frühstück/Abend/Backen), Portionen, Arbeitszeit, Gesamtzeit (`h:mm`), Zutaten (Hilfetext zu Überschriften), Zubereitung (Hilfetext zu 1., 2., …), Quelle, Link, Notizen. Inputs 16px+. Hinweis „Änderungen sind für alle in der Familie sichtbar.“ Toast „Gespeichert“.
 
+### 0. Login (vor allen anderen Screens)
+Zweck:
+Einfacher Schutz für Familie und Freunde: ein gemeinsames Passwort, kein Benutzername.
+
+#### Layout (iPhone, 390 × 844)
+Vollbild, Hintergrund `bg`. Keine Tab-Leiste. Inhalt vertikal zentriert, Spalte mit Gap 14px, Padding 24px seitlich, unten `max(env(safe-area-inset-bottom), 10px)`.
+
+1. **Maulti** 170 × 170, Pose `lock` (Vorhängeschloss in der rechten Hand, zwinkert). Bei falschem Passwort Pose `think`.
+2. **Titel** „Unser Kochbuch“: Fredoka 32/600, zentriert, line-height 1.1.
+3. **Text**, Nunito 16/600, Farbe `muted`, max-width 280, zentriert, line-height 1.45:
+   - Standard: „Psst, nur für Familie und Freunde. Wie lautet das Passwort?“
+   - Fehler: „Hmm, das Passwort stimmt nicht. Probier’s nochmal!“
+4. **Passwortfeld** (volle Breite, 8px Abstand nach oben): Höhe 58, Radius 20, `surface`, Rand `2px solid outline` (bei Fehler `2.5px solid accent`), Schatten `0 3px 0 outline`, Padding `0 8 0 18`.
+   - `<input type="password" autocomplete="current-password" placeholder="Passwort">`, Nunito 18/700, ohne Rahmen/Hintergrund.
+   - Rechts Pill-Button „Zeigen“ / „Verbergen“ (44 hoch, Radius 22, `sunk`, 13/800), schaltet `type` zwischen password/text um.
+5. **Button** „Reinlassen“ (`type="submit"`): volle Breite, Höhe 58, Radius 29, `accent` / Text `onAccent`, Rand `2.5px solid outline`, Schatten `0 4px 0 outline`, Fredoka 19/600.
+6. **Hinweis** „Einmal eingeben, dann merkt sich dein iPhone das.“: 13/600 `muted`, zentriert.
+
+Alles liegt in einem `<form>`, damit Enter/„Los“ auf der iOS-Tastatur absendet und der iOS-Passwortmanager das Feld erkennt.
+
+#### Verhalten
+- Absenden → Passwort **serverseitig** prüfen (z. B. Vergleich mit Env-Variable `FAMILY_PASSWORD`, gehashed). Nie im Client-Bundle speichern. (Im Prototyp nur Demo: „maultasche“.)
+- Erfolg → langlebiges, httpOnly, secure Session-Cookie (z. B. 1 Jahr) → Weiterleitung auf Start. Alle Seiten und API-Routen (inkl. Airtable-Proxy und Bild-Upload) prüfen das Cookie, sonst Redirect auf /login.
+- Fehler → Fehlertext + Pose `think` + Akzent-Rand. Beim Tippen zurück in den Normalzustand.
+- Optional: Rate-Limit (z. B. 5 Versuche/Minute pro IP).
+- Dark Mode folgt dem System (Tokens wie im Hauptpaket).
+
+Referenz: `screenshots/00-login.png`, Grafik `maulti-login.svg`.
+
 ## Regeln & Logik
 - **Mengen skalieren:** führende Menge parsen (`250`, `1,5`, `½ ¼ ¾`, `1/2`, Bereiche `2–3`, Präfixe `ca./knapp/etwa`) + Einheit (`g kg ml l cl dl EL TL Pck. Prise Tasse Becher Dose Stück Bund Zehe Scheibe Msp. Glas Würfel Tüte`). Faktor = gewählt / Basis. Ausgabe: ≥ 20 ganzzahlig, sonst auf ¼ gerundet mit ¼ ½ ¾. Zeilen ohne Menge („Salz, Pfeffer“) bleiben unverändert.
 - **Zeitangabe im Schritt:** Regex auf `(\d+(,\d+)?)(–\d+)? (Minuten|Min.|Stunden|Std.)`, bei Bereichen zählt die untere Zahl.
@@ -107,7 +136,7 @@ Kopf: Abbrechen · „Bearbeiten“/„Neues Rezept“ · Sichern (deaktiviert o
 - Kontraste: Button-Texte auf Akzent ≥ 4.5:1 geprüft (hell: weiß auf L 0.56; dunkel: dunkel auf L 0.72).
 
 ## Assets
-- `Maskottchen.dc.html`: Maulti als SVG (viewBox 120×120), Props `pose` (`wave | think | cook | cheer | sleep | heart | alarm`), `size`, `accent`. Einsatz: Start `wave`, leere Suche/Stub `think`, leere Favoriten `sleep`, Detail `heart`/`wave`, Kochmodus `cook`, Foto-Schritt `cheer`, Timer-Ende `alarm`.
+- `Maskottchen.dc.html`: Maulti als SVG (viewBox 120×120), Props `pose` (`wave | think | cook | cheer | sleep | heart | alarm | lock`), `size`, `accent`. Einsatz: Start `wave`, leere Suche/Stub `think`, leere Favoriten `sleep`, Detail `heart`/`wave`, Kochmodus `cook`, Foto-Schritt `cheer`, Timer-Ende `alarm`, Login `lock` (bei falschem Passwort `think`).
 - `icon-180.png`: Apple-Touch-Icon (Maulti auf Pfirsich). Für die PWA zusätzlich 192/512px aus dem SVG erzeugen und ein `manifest.webmanifest` (Name „Kochbuch“, display `standalone`, theme `#fff6e8`) anlegen.
 - Kategorie-Icons: einfache 24px-Linienpfade, siehe `CAT_ICON` in `Kochbuch App.dc.html`.
 

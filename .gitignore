@@ -21,6 +21,8 @@ npm-debug.log*
 design/Rezepte-Grid view.csv
 design/data/
 design/Mahlzeit-Zuordnung.csv
+# Zipped handoff exports contain the same data files
+design/*.zip
 
 # test output
 coverage/
