@@ -1,0 +1,86 @@
+/*
+ * Base styles for every page. Values come from tokens.css; import that first.
+ * Design rule: no text smaller than 12px (0.75rem).
+ */
+
+:root {
+  /* iPhone notch and home indicator; 0 everywhere else */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+html {
+  /* Stop iOS from enlarging text on its own in landscape */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/*
+ * iOS only: 1rem follows the text size set in the iPhone settings (Dynamic Type;
+ * 17px at the default setting). The @supports check keeps it off macOS Safari,
+ * where it would shrink everything to 13px. Other browsers ignore it.
+ */
+@supports (font: -apple-system-body) and (-webkit-touch-callout: default) {
+  html {
+    font: -apple-system-body;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  padding: var(--safe-top) var(--safe-right) 0 var(--safe-left);
+  background: var(--bg);
+  color: var(--ink);
+  /* Set again here: the iOS font shorthand above resets the family */
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+p {
+  margin: 0;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form controls use the page font instead of the browser's */
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+/* Keyboard focus only, not on tap */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}

@@ -20,7 +20,7 @@ Each item below is done only when it has passed these steps, in this order:
 - [x] Add Preact: `@astrojs/preact` + `preact` (versions and options checked against current docs) — [ADR 0006](decisions/0006-forms-and-interactivity.md)
 - [x] Self-hosted fonts: Fredoka 500/600, Nunito 400–800 (Astro Fonts API, Fontsource provider) — [ADR 0007](decisions/0007-styling-approach.md)
 - [x] `src/styles/tokens.css`: colors light + dark (`prefers-color-scheme`), accent, pastel formula with category and meal hues, radii, outlines, hard shadows, spacing; sizes in `rem`
-- [ ] `src/styles/global.css`: base styles, body background, safe areas, focus styles, min. font size
+- [x] `src/styles/global.css`: base styles, body background, safe areas, focus styles, min. font size
 - [ ] Base layout: `lang="de"`, `viewport-fit=cover`, `theme-color` light/dark, apple-touch-icon, manifest link
 - [ ] Maulti as a component (SVG from `Maskottchen.dc.html`, props `pose` × 8 incl. `lock`, `size`)
 - [ ] Icons: tab bar icons and category icons (`CAT_ICON` in the prototype)

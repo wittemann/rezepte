@@ -2,6 +2,7 @@
 // Placeholder until the recipe list is built (docs/specs/02-architecture.md).
 import { Font } from 'astro:assets';
 import '../styles/tokens.css';
+import '../styles/global.css';
 ---
 
 <html lang="de">
@@ -18,16 +19,3 @@ import '../styles/tokens.css';
     <h1>Rezepte</h1>
   </body>
 </html>
-
-<style>
-  /* Temporary until global.css; shows the fonts and tokens are in use. */
-  body {
-    font-family: var(--font-body);
-    background: var(--bg);
-    color: var(--ink);
-  }
-  h1 {
-    font-family: var(--font-display);
-    font-weight: 600;
-  }
-</style>
