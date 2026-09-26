@@ -10,6 +10,7 @@
 - **Format / lint:** Prettier (+ `prettier-plugin-astro`), ESLint (+ `eslint-plugin-astro`)
 - **Tests:** Vitest for `lib/` (Airtable mapping, auth hash/cookie). Test files are named `*.spec.ts` and sit next to the code they test. End-to-end tests are deferred, see [ADR 0010](0010-e2e-tests-deferred.md)
 - **Git / GitHub:** a **public** GitHub repo. Vercel Git integration gives preview deploys
+- **Manual review:** a human developer reviews every change before it's committed; Claude commits only after their explicit OK, in small commits a human can understand in one sitting (rules in `CLAUDE.md`, workflow in [implementation-plan](../implementation-plan.md)). CI is a safety net, not a replacement for the review
 - **CI:** a GitHub Action runs lint, type-check (`astro check`), tests and a secret scan (gitleaks) on **every PR and every push to `main`**
 - **Secret scanning:** GitHub secret scanning and push protection (free for public repos; check both are on in the repo settings) plus the gitleaks step in CI
 - **Dependencies:** Dependabot alerts and security-update PRs are on (only security fixes, no routine version bumps). Each PR runs CI. Known exception: `path-to-regexp` under `@astrojs/vercel` is only used at build time on our own routes; don't accept a fix that downgrades the adapter

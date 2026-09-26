@@ -10,7 +10,7 @@ The app edits recipes, and the design has a lot of client-side interaction: serv
 
 - **Mutations** go through Astro Actions with zod validation on the server. Forms work without JS (progressive enhancement)
 - **Islands** only where interaction really needs it. One framework for all islands, no mixing
-- **Island framework: Preact** (with the official `@astrojs/preact` integration). React API at about 3 kB; chosen by Martin (2026-09-26) for the familiar React style
+- **Island framework: Preact** (with the official `@astrojs/preact` integration). React API at about 3 kB; chosen by the project owner (2026-09-26) for the familiar React style
 - No global client state and no SPA routing. State that has to survive a page change (favorites, running timers) lives in `localStorage` or the URL
 
 ## Consequences

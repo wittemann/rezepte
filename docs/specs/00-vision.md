@@ -6,7 +6,7 @@ One pleasant place for our own recipes: quick to find while shopping or planning
 
 ## Users
 
-Family and friends: a small, trusted group who all see **and edit** the same cookbook, sharing one password (decided 2026-09-26; originally just Martin and his wife). Used mainly on an iPhone in the kitchen, added to the home screen; occasionally on a desktop.
+Family and friends: a small, trusted group who all see **and edit** the same cookbook, sharing one password (decided 2026-09-26; originally just two people). Used mainly on an iPhone in the kitchen, added to the home screen; occasionally on a desktop.
 
 ## Principles
 

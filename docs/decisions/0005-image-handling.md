@@ -28,5 +28,5 @@ Verify the endpoint details (URL, payload, limits) against the current Airtable 
 
 - Airtable stays the only storage. Images added in Airtable directly just work
 - Each image costs one Airtable call per CDN cache miss; after that, it's served from the Vercel CDN
-- Cached images are served by the CDN **without the login check**. Confirmed by Martin (2026-09-26): URLs contain unguessable record and attachment ids, and recipe photos aren't sensitive
+- Cached images are served by the CDN **without the login check**. Confirmed by the project owner (2026-09-26): URLs contain unguessable record and attachment ids, and recipe photos aren't sensitive
 - Image upload needs a bit of client JS (resize before upload). It'll be an island, see ADR 0006

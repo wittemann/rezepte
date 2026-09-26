@@ -1,5 +1,7 @@
 # rezepte – Documentation
 
+**Progress:** [implementation-plan](implementation-plan.md) is the checklist for building v1.
+
 ## Specs
 
 | File                                                    | Content                                                               |

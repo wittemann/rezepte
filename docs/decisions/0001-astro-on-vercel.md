@@ -4,7 +4,7 @@
 
 ## Context
 
-Hosting must be the Vercel free tier. The app reads and writes Airtable live, so it needs server-side code. Martin likes Astro.
+Hosting must be the Vercel free tier. The app reads and writes Airtable live, so it needs server-side code. The project owner likes Astro.
 
 ## Decision
 

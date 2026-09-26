@@ -4,12 +4,12 @@
 
 ## Context
 
-The Vercel production URL is https://rezepte-rust.vercel.app. `rezepte.vercel.app` belongs to someone else, so Vercel added a random suffix. The URL works but is neither memorable nor ours. Martin wants the app on his own domain later.
+The Vercel production URL is https://rezepte-rust.vercel.app. `rezepte.vercel.app` belongs to someone else, so Vercel added a random suffix. The URL works but is neither memorable nor ours. The project owner wants the app on their own domain later.
 
 ## Decision
 
 - **For now:** production stays on `rezepte-rust.vercel.app`. No action needed
-- **Later:** production moves to a custom domain (for example a subdomain of a domain Martin owns). The `vercel.app` URL then redirects to it
+- **Later:** production moves to a custom domain (for example a subdomain of a domain the project owner has). The `vercel.app` URL then redirects to it
 
 ## TODO
 
