@@ -30,4 +30,11 @@ describe('safeNextPath', () => {
   ])('refuses anything that could lead to another site: %j', (next) => {
     expect(safeNextPath(next)).toBe('/');
   });
+
+  it.each(['/login', '/login/', '/login?next=%2Frezepte'])(
+    'never leads back to the login page: %j',
+    (next) => {
+      expect(safeNextPath(next)).toBe('/');
+    },
+  );
 });

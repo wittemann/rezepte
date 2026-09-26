@@ -1,15 +1,22 @@
 ---
 // Login screen (docs/specs/04-auth.md). GET shows the form; POST checks the password,
 // sets the session cookie and sends the visitor back to where they were headed.
+// Someone already logged in goes straight on, e.g. a home screen app that was added
+// on this page and always starts here.
 import { APP_PASSWORD_HASH, SESSION_SECRET } from 'astro:env/server';
 import Base from '../layouts/Base.astro';
 import LoginForm from '../components/LoginForm.tsx';
 import { checkPassword, SESSION_COOKIE_OPTIONS } from '../lib/auth/login.ts';
 import { safeNextPath } from '../lib/auth/next-path.ts';
-import { createSessionToken, SESSION_COOKIE } from '../lib/auth/session.ts';
+import { createSessionToken, SESSION_COOKIE, verifySessionToken } from '../lib/auth/session.ts';
 import { TEXT } from './_login.texts.ts';
 
+const nextPath = safeNextPath(Astro.url.searchParams.get('next'));
 let wrongPassword = false;
+
+if (verifySessionToken(Astro.cookies.get(SESSION_COOKIE)?.value, SESSION_SECRET)) {
+  return Astro.redirect(nextPath);
+}
 
 if (Astro.request.method === 'POST') {
   // A POST without form data (e.g. from a bot) counts as a wrong password, not a server error
@@ -17,7 +24,7 @@ if (Astro.request.method === 'POST') {
   if (await checkPassword(form.get('password'), APP_PASSWORD_HASH)) {
     Astro.cookies.set(SESSION_COOKIE, createSessionToken(SESSION_SECRET), SESSION_COOKIE_OPTIONS);
     // 303: the browser follows with a GET, so reloading doesn't resend the password
-    return Astro.redirect(safeNextPath(Astro.url.searchParams.get('next')), 303);
+    return Astro.redirect(nextPath, 303);
   }
   wrongPassword = true;
 }

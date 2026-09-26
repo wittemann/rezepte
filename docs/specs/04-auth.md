@@ -8,8 +8,9 @@ Decision: [ADR 0004](../decisions/0004-shared-password-auth.md). The password is
 2. `/login` shows a single password field with a show/hide toggle, as designed (`design/README.md`, „0. Login“). A plain `<form>`, so it works without JS and the iOS password manager recognizes it; JS only adds the toggle and resets the error state while typing
 3. On POST, the server hashes the input with scrypt and compares it in constant time (`timingSafeEqual`) to `APP_PASSWORD_HASH`
 4. Success → set cookie `session` = `<issuedAt>.<HMAC-SHA256(issuedAt, SESSION_SECRET)>`, then redirect to `next` (local paths only) or the start page. Failure → error text, Maulti `think`, accent border, after the ~500 ms delay
-   - `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, `Max-Age` ≈ 1 year
+   - `HttpOnly`, `Secure` (production only: the dev server runs on plain http, and Safari on an iPhone in the local network would drop the cookie), `SameSite=Lax`, `Path=/`, `Max-Age` ≈ 1 year
 5. Middleware verifies the signature on every request except `/login` and static assets
+   - `/login` itself sends someone who already has a valid session straight on to `next` (never back to `/login`). A home screen app added on the login page always starts there
 6. Logout: **not in v1**. Later, `/logout` (POST) deletes the cookie, once the design has a place for it. Until then, rotating `SESSION_SECRET` logs everyone out
 
 ## Password lifecycle
