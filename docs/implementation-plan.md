@@ -41,7 +41,7 @@ Each item below is done only when it has passed these steps, in this order:
 
 ## 3. Auth
 
-- [ ] `lib/auth/session.ts`: cookie `<issuedAt>.<HMAC>` sign/verify, constant-time compare — [04-auth](specs/04-auth.md)
+- [x] `lib/auth/session.ts`: cookie `<issuedAt>.<HMAC>` sign/verify, constant-time compare — [04-auth](specs/04-auth.md)
 - [ ] `src/middleware.ts`: redirect to `/login?next=…` without a valid session; skip `/login` and static assets
 - [ ] Login page as designed (`design/README.md`, „0. Login“): Maulti `lock`/`think`, show/hide toggle, error state; login action with ~500 ms delay on failure; `next` only allows local paths
 - [x] **(owner)** Login screen design from Claude Design (added 2026-09-26)
