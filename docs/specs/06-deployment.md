@@ -6,6 +6,14 @@
 - Keep Vercel's **Git fork protection** on, so PRs from forks never build with our env vars without approval
 - `main` branch → production; every other branch or PR → preview deployment
 - Node version: current Active LTS supported by Vercel (see [ADR 0008](../decisions/0008-tooling.md))
+- Vercel project `rezepte` in the personal Hobby account (`martin-wittemanns-projects`); function region `iad1` (US East, close to Airtable)
+- **Production URL:** https://rezepte-rust.vercel.app (`rezepte.vercel.app` belongs to someone else, hence the random suffix). Moves to a custom domain later, see [ADR 0011](../decisions/0011-custom-domain.md)
+
+## Deployment protection
+
+- Vercel Authentication is on for everything **except the production domain**: preview and per-deployment URLs require a Vercel login (they use real Airtable data)
+- The production domain is publicly reachable on purpose, so both of us can use it without a Vercel account. The app's own login ([04-auth](04-auth.md)) protects it
+- A custom domain added later is also public (setting `all_except_custom_domains`)
 
 ## Environment variables
 

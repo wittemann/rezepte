@@ -28,6 +28,7 @@ Status: **Accepted** = settled · **Proposed** = recommended, awaiting OK · **O
 | [0008](decisions/0008-tooling.md)                     | TypeScript, npm, Node LTS, lint, Vitest, public repo, CI on PR + main                   | Accepted        | –                                  |
 | [0009](decisions/0009-error-monitoring.md)            | Error monitoring with Sentry (free plan, errors + replay on error)                      | Accepted        | –                                  |
 | [0010](decisions/0010-e2e-tests-deferred.md)          | End-to-end tests (Playwright) deferred; plan for later documented                       | Accepted        | –                                  |
+| [0011](decisions/0011-custom-domain.md)               | Custom domain for production (later; `rezepte-rust.vercel.app` until then)              | Open            | Choosing the domain                |
 
 ## ADR format
 
