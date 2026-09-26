@@ -1,5 +1,6 @@
 ---
 // Placeholder until the recipe list is built (docs/specs/02-architecture.md).
+import { Font } from 'astro:assets';
 ---
 
 <html lang="de">
@@ -8,9 +9,22 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width" />
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-body" preload />
     <title>Rezepte</title>
   </head>
   <body>
     <h1>Rezepte</h1>
   </body>
 </html>
+
+<style>
+  /* Temporary until global.css; shows the self-hosted fonts are in use. */
+  body {
+    font-family: var(--font-body);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+</style>
