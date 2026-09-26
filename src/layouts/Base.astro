@@ -1,0 +1,37 @@
+---
+// Shell for every page: document head, fonts, tokens and base styles.
+import { Font } from 'astro:assets';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <!-- viewport-fit=cover lets pages reach under the notch; global.css adds the safe-area padding -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+
+    <!-- Browser bar color, matching --bg in tokens.css -->
+    <meta name="theme-color" content="#fff6e8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1f1826" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <!-- Home screen icon and name on the iPhone (design/icon-180.png) -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Kochbuch" />
+
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-body" preload />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

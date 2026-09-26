@@ -21,7 +21,7 @@ Each item below is done only when it has passed these steps, in this order:
 - [x] Self-hosted fonts: Fredoka 500/600, Nunito 400–800 (Astro Fonts API, Fontsource provider) — [ADR 0007](decisions/0007-styling-approach.md)
 - [x] `src/styles/tokens.css`: colors light + dark (`prefers-color-scheme`), accent, pastel formula with category and meal hues, radii, outlines, hard shadows, spacing; sizes in `rem`
 - [x] `src/styles/global.css`: base styles, body background, safe areas, focus styles, min. font size
-- [ ] Base layout: `lang="de"`, `viewport-fit=cover`, `theme-color` light/dark, apple-touch-icon, manifest link
+- [x] Base layout: `lang="de"`, `viewport-fit=cover`, `theme-color` light/dark, apple-touch-icon
 - [ ] Maulti as a component (SVG from `Maskottchen.dc.html`, props `pose` × 8 incl. `lock`, `size`)
 - [ ] Icons: tab bar icons and category icons (`CAT_ICON` in the prototype)
 
@@ -99,7 +99,7 @@ Each item below is done only when it has passed these steps, in this order:
 
 ## 6. Installable app
 
-- [ ] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon
+- [ ] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon; manifest link in `Base.astro`
 
 ## 7. Monitoring and quality
 
