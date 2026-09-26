@@ -1,11 +1,14 @@
 // @ts-check
 import { defineConfig, envField } from 'astro/config';
+import preact from '@astrojs/preact';
 import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
   adapter: vercel(),
+  // Islands only (docs/decisions/0006-forms-and-interactivity.md)
+  integrations: [preact()],
   env: {
     // Secrets are validated when `astro:env/server` is first imported, not at build time.
     // Values live in Vercel and the local `.env` only (docs/specs/06-deployment.md).

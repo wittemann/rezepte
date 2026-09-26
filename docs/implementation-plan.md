@@ -17,7 +17,7 @@ Each item below is done only when it has passed these steps, in this order:
 
 ## 1. Foundation
 
-- [ ] Add Preact: `@astrojs/preact` + `preact` (versions and options checked against current docs) — [ADR 0006](decisions/0006-forms-and-interactivity.md)
+- [x] Add Preact: `@astrojs/preact` + `preact` (versions and options checked against current docs) — [ADR 0006](decisions/0006-forms-and-interactivity.md)
 - [ ] Self-hosted fonts: Fredoka 500/600, Nunito 400–800 (e.g. Fontsource packages) — [ADR 0007](decisions/0007-styling-approach.md)
 - [ ] `src/styles/tokens.css`: colors light + dark (`prefers-color-scheme`), accent, pastel formula with category and meal hues, radii, outlines, hard shadows, spacing; sizes in `rem`
 - [ ] `src/styles/global.css`: base styles, body background, safe areas, focus styles, min. font size
