@@ -16,7 +16,9 @@ Decision: [ADR 0004](../decisions/0004-shared-password-auth.md). The password is
 
 - **Set / change:** run `npm run hash-password`, type the password, and paste the printed value into Vercel as `APP_PASSWORD_HASH`, then redeploy. Old sessions stay valid.
 - **Log everyone out:** set a new `SESSION_SECRET` and redeploy.
-- **Hash format:** `scrypt$<salt-base64>$<hash-base64>` using `node:crypto` only, no dependency.
+- **Hash format:** `scrypt:<salt-base64>:<hash-base64>` using `node:crypto` only, no dependency (`src/lib/auth/password.ts`). Parameters: N=2^15, r=8, p=1, 16-byte salt, 64-byte key. The password is Unicode-normalized (NFC) first, so umlauts typed on different devices match.
+  - The separator is `:`, not `$`: Vite expands `$…` as variables when it loads `.env`, even inside quotes, which would silently corrupt the hash.
+- **Minimum length:** the script refuses passwords shorter than 16 characters (see "Protection against guessing").
 
 ## Protection against guessing
 
