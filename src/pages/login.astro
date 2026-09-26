@@ -1,10 +1,28 @@
 ---
-// Login screen (docs/specs/04-auth.md). Checking the password follows in the next step.
+// Login screen (docs/specs/04-auth.md). GET shows the form; POST checks the password,
+// sets the session cookie and sends the visitor back to where they were headed.
+import { APP_PASSWORD_HASH, SESSION_SECRET } from 'astro:env/server';
 import Base from '../layouts/Base.astro';
 import LoginForm from '../components/LoginForm.tsx';
+import { checkPassword, SESSION_COOKIE_OPTIONS } from '../lib/auth/login.ts';
+import { safeNextPath } from '../lib/auth/next-path.ts';
+import { createSessionToken, SESSION_COOKIE } from '../lib/auth/session.ts';
 import { TEXT } from './_login.texts.ts';
+
+let wrongPassword = false;
+
+if (Astro.request.method === 'POST') {
+  // A POST without form data (e.g. from a bot) counts as a wrong password, not a server error
+  const form = await Astro.request.formData().catch(() => new FormData());
+  if (await checkPassword(form.get('password'), APP_PASSWORD_HASH)) {
+    Astro.cookies.set(SESSION_COOKIE, createSessionToken(SESSION_SECRET), SESSION_COOKIE_OPTIONS);
+    // 303: the browser follows with a GET, so reloading doesn't resend the password
+    return Astro.redirect(safeNextPath(Astro.url.searchParams.get('next')), 303);
+  }
+  wrongPassword = true;
+}
 ---
 
 <Base title={TEXT.title}>
-  <LoginForm client:load />
+  <LoginForm client:load error={wrongPassword} />
 </Base>
