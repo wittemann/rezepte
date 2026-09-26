@@ -3,7 +3,8 @@
   "type": "module",
   "version": "0.0.1",
   "private": true,
-  "description": "Private recipe app for two, backed by Airtable",
+  "description": "Private recipe app for family and friends, backed by Airtable",
+  "author": "Martin Wittemann",
   "license": "MIT",
   "engines": {
     "node": "24.x"
