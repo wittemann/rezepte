@@ -1,0 +1,94 @@
+/*
+ * Design tokens, variant "playful" (design/README.md, "Design Tokens").
+ * Components use these variables only, no hard-coded colors or sizes
+ * (docs/specs/05-design-integration.md). Fonts come from astro.config.mjs:
+ * --font-display (Fredoka) and --font-body (Nunito).
+ *
+ * Sizes are in rem (1rem = 16px at default text size) so they follow the
+ * system text size. Borders and shadow offsets stay in px: they are outlines,
+ * not content, and shouldn't get thicker with larger text.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Colors, light */
+  --bg: #fff6e8;
+  --surface: #ffffff;
+  --sunk: #fbe9cf;
+  --ink: #2b2118;
+  --muted: #6e5e4f;
+  --line: #eddcc3;
+  --accent: oklch(0.56 0.17 30);
+  --on-accent: #ffffff;
+  --outline: #2b2118;
+
+  /*
+   * Pastels: oklch(L 0.09 hue), one hue per category and meal.
+   * L is lighter in light mode than in dark mode. Text on a pastel is always --on-pastel.
+   * Names are English; lib/recipes/fields.ts maps the Airtable values (Grillen, Frühstück, …) to them.
+   */
+  --pastel-l: 0.88;
+  --pastel-c: 0.09;
+  --on-pastel: #2b2118;
+
+  --pastel-cat-grill: oklch(var(--pastel-l) var(--pastel-c) 5);
+  --pastel-cat-main: oklch(var(--pastel-l) var(--pastel-c) 30);
+  --pastel-cat-dessert: oklch(var(--pastel-l) var(--pastel-c) 335);
+  --pastel-cat-baking: oklch(var(--pastel-l) var(--pastel-c) 65);
+  --pastel-cat-side: oklch(var(--pastel-l) var(--pastel-c) 95);
+  --pastel-cat-salad: oklch(var(--pastel-l) var(--pastel-c) 145);
+  --pastel-cat-soup: oklch(var(--pastel-l) var(--pastel-c) 205);
+  --pastel-cat-basics: oklch(var(--pastel-l) var(--pastel-c) 265);
+  /* Recipes without a known category (hue as in the prototype) */
+  --pastel-cat-other: oklch(var(--pastel-l) var(--pastel-c) 60);
+
+  --pastel-meal-breakfast: oklch(var(--pastel-l) var(--pastel-c) 90);
+  --pastel-meal-lunch-dinner: oklch(var(--pastel-l) var(--pastel-c) 25);
+  --pastel-meal-baking: oklch(var(--pastel-l) var(--pastel-c) 165);
+
+  /* Radii. Design: 16–20 small, 22 cards and rows, 28–34 large cards and sheets, pills */
+  --radius-xs: 1rem; /* 16px */
+  --radius-s: 1.125rem; /* 18px: thumbnails, meta stickers */
+  --radius-m: 1.25rem; /* 20px: inputs, meal tiles */
+  --radius-card: 1.375rem; /* 22px: cards, recipe rows */
+  --radius-l: 1.5rem; /* 24px: speech bubble, photos */
+  --radius-xl: 1.75rem; /* 28px: suggestion cards */
+  --radius-sheet: 1.875rem; /* 30px: bottom sheet */
+  --radius-xxl: 2.125rem; /* 34px: recipe header card */
+  --radius-pill: 999px;
+
+  /* Outlines and hard shadows, always in the outline color */
+  --border: 2px solid var(--outline);
+  --border-thick: 2.5px solid var(--outline);
+  --shadow-s: 0 3px 0 var(--outline);
+  --shadow-m: 0 4px 0 var(--outline);
+  --shadow-l: 0 5px 0 var(--outline);
+
+  /* Spacing. Design: page margin 16–20, gaps 8/10/12/14 */
+  --space-xs: 0.5rem; /* 8px */
+  --space-s: 0.625rem; /* 10px */
+  --space-m: 0.75rem; /* 12px */
+  --space-l: 0.875rem; /* 14px */
+  --space-xl: 1rem; /* 16px */
+  --space-page: 1.25rem; /* 20px: side margin of every page */
+
+  /* Minimum size of anything tappable */
+  --touch-target: 2.75rem; /* 44px */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1f1826;
+    --surface: #2b2233;
+    --sunk: #362b40;
+    --ink: #fbf3e6;
+    --muted: #bcaec2;
+    --line: #44394e;
+    --accent: oklch(0.72 0.15 30);
+    --on-accent: #1f1826;
+    --outline: #0c0910;
+
+    --pastel-l: 0.78;
+  }
+}
