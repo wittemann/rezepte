@@ -23,7 +23,7 @@ Each item below is done only when it has passed these steps, in this order:
 - [x] `src/styles/global.css`: base styles, body background, safe areas, focus styles, min. font size
 - [x] Base layout: `lang="de"`, `viewport-fit=cover`, `theme-color` light/dark, apple-touch-icon
 - [x] Maulti as a component (Preact, SVG from `Maskottchen.dc.html`, props `pose` × 8 incl. `lock`, `size`)
-- [ ] Icons: tab bar icons and category icons (`CAT_ICON` in the prototype)
+- [x] Icons: tab bar icons and category icons (`CAT_ICON` in the prototype)
 
 ## 2. Data layer
 

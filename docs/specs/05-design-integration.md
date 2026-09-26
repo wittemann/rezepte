@@ -28,6 +28,7 @@ The visual design is created in **Claude Design**. This spec describes how it be
 
 - The design is the reference. Deviations, for example for technical reasons, are noted below.
 - German UI text comes from the design where it's provided.
+- The prototype code isn't fully up to date. Known case: its `playful` tab bar still has a raised accent button for „Neu“. `design/README.md` and the screenshots are correct: four equal tabs, „Neu“ is a normal tab with the plus icon, the active tab is `ink` with an accent dot (confirmed by the project owner, 2026-09-26). Where code and README/screenshots disagree, check with the project owner.
 
 ## Deviations from the design
 
