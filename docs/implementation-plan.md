@@ -1,6 +1,6 @@
 # Implementation plan
 
-Steps to build v1 as defined in [01-requirements](specs/01-requirements.md), following the design in `design/` ([05-design-integration](specs/05-design-integration.md)). Tick items off as they land on `main`.
+Steps to build v1 as defined in [01-requirements](specs/01-requirements.md), following the design in `design/` ([05-design-integration](specs/05-design-integration.md)). An item is ticked off in the commit that completes it.
 
 Legend: **(owner)** = needs the project owner (accounts, secrets, decisions, testing on the phone).
 
@@ -12,8 +12,8 @@ Each item below is done only when it has passed these steps, in this order:
 2. **Check:** format, lint, type check, tests and build pass locally (`npm run format:check`, `lint`, `check`, `test`, `build`)
 3. **Present:** Claude summarizes what changed and why, lists the files, reports the check results and points out what deserves a close look (tricky logic, new dependencies, security-relevant code, generated files)
 4. **Manual review (human developer):** read the diff until it's understood. Ask questions, request changes, or give an explicit OK. If a change is too big to follow, it gets split
-5. **Commit:** only after the OK, one commit per reviewed change, with a message that explains why
-6. **Push:** when the developer asks; CI then runs on GitHub. Tick the item off here in the same or the next commit
+5. **Commit:** only after the OK, one commit per reviewed change, with a message that explains why. The commit that completes an item also ticks it off here
+6. **Push:** when the developer asks; CI then runs on GitHub
 
 ## 1. Foundation
 
@@ -29,7 +29,7 @@ Each item below is done only when it has passed these steps, in this order:
 
 - [ ] `lib/airtable/client.ts`: fetch client with auth header, pagination (`offset`), error mapping, one retry after 30 s on 429 — [ADR 0002](decisions/0002-airtable-as-source-of-truth.md)
 - [ ] `npm run airtable:schema`: print tables and fields with IDs (metadata API)
-- [ ] `lib/recipes/fields.ts`: table and field IDs from [03-data-model](specs/03-data-model.md); constants `CATEGORIES`, `MEALS` with hues
+- [ ] `lib/recipes/fields.ts`: table and field IDs from [03-data-model](specs/03-data-model.md); constants `CATEGORIES`, `MEALS` mapping the Airtable values to the English names used by the `--pastel-*` tokens and `Icon` (`Grillen` → `grill`, `Mittag & Abend` → `lunch-dinner`, …)
 - [ ] Ingredient parser: headings (`…:`), amounts (`1,5`, `½`, `1/2`, `2–3`, `ca.`), units → `IngredientLine`
 - [ ] Serving scaler: factor, rounding (≥ 20 whole numbers, else ¼ steps with ¼ ½ ¾), ½-steps below 2 servings
 - [ ] Method parser: numbered steps, sections (`Teig:`), hint after the last step, timer extraction (`25 Minuten`, `1,5 Std.`, ranges → lower number)
@@ -45,12 +45,12 @@ Each item below is done only when it has passed these steps, in this order:
 - [x] `src/middleware.ts`: redirect to `/login?next=…` without a valid session; skip `/login` and static assets
 - [x] Login page as designed (`design/README.md`, „0. Login“): Maulti `lock`/`think`, show/hide toggle, error state; login action with ~500 ms delay on failure; `next` only allows local paths
 - [x] **(owner)** Login screen design from Claude Design (added 2026-09-26)
-- [ ] **(owner)** Share the passphrase with the family
 
 ## 4. App shell and shared components
 
-- [ ] Floating tab bar: Start · Rezepte · Favoriten · Neu, active state, safe-area aware; page padding for it
-- [ ] Recipe row (photo or initial tile, name, meta, heart)
+- [ ] Desktop: limit the app to about one iPhone width (≈ 430 px, in `rem`), centered, as a token; fixed elements (tab bar, bottom sheet, sticky CTA, timer pill) stay within it. The design only covers the phone (390 × 844); on wide screens the login column currently stretches across the whole window
+- [ ] Floating tab bar: Start · Rezepte · Favoriten · Neu as in `design/README.md` and the screenshots, not the prototype code ([05-design-integration](specs/05-design-integration.md), Rules); active state, safe-area aware; page padding for it. Open: color of the filled heart when Favoriten is active (README: `ink`, prototype code: accent)
+- [ ] Recipe row (photo or initial tile, name, meta, heart; the prototype draws this heart filled without outline)
 - [ ] Pills and chips, segmented control, buttons (primary/round/outline), speech bubble, meta sticker
 - [ ] Bottom sheet (filter sheet, ingredients in cooking mode)
 - [ ] Toast ("Gespeichert")
@@ -68,7 +68,7 @@ Each item below is done only when it has passed these steps, in this order:
 
 **Recipe detail**
 
-- [ ] Image proxy route `/img/[recordId]/[attachmentId]` with long cache headers — [ADR 0005](decisions/0005-image-handling.md)
+- [ ] Image proxy route `/img/[recordId]/[attachmentId]` with long cache headers — [ADR 0005](decisions/0005-image-handling.md). The middleware checks the login for uncached requests only; verify which headers make the Vercel CDN cache a function response
 - [ ] Header card in category color: back, heart, "Bearbeiten", optional photo, category, title, source link, Maulti (`heart`/`wave`)
 - [ ] Meta stickers (Arbeitszeit, Gesamtzeit, kcal/Portion)
 - [ ] Ingredients with serving scaler (island)
@@ -100,6 +100,7 @@ Each item below is done only when it has passed these steps, in this order:
 ## 6. Installable app
 
 - [ ] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon; manifest link in `Base.astro`
+- [ ] Replace `favicon.svg` / `favicon.ico` (still Astro's default logo) with Maulti
 
 ## 7. Monitoring and quality
 
@@ -117,4 +118,4 @@ Each item below is done only when it has passed these steps, in this order:
 
 ## Later (not v1)
 
-See "Later" in [01-requirements](specs/01-requirements.md): timer push notifications, shopping list, deleting recipes in the app, offline use.
+See "Later" in [01-requirements](specs/01-requirements.md): timer push notifications, shopping list, deleting recipes in the app, logout button, offline use, a lighter outline for Maulti in dark mode.
