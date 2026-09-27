@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import { AirtableError, listRecords, RATE_LIMIT_WAIT_MS, type AirtableRecord } from './client.ts';
+import {
+  AirtableError,
+  listRecords,
+  listTables,
+  RATE_LIMIT_WAIT_MS,
+  type AirtableRecord,
+} from './client.ts';
 
 const TOKEN = 'patTestToken.notARealOne';
 const TABLE_ID = 'tblTestTable';
@@ -121,5 +127,24 @@ describe('errors', () => {
     });
     expect(fetch).toHaveBeenCalledOnce();
     expect(delay).not.toHaveBeenCalled();
+  });
+});
+
+describe('listTables', () => {
+  it('reads the schema of the base', async () => {
+    const tables = [
+      {
+        id: 'tblTestTable',
+        name: 'Test',
+        primaryFieldId: 'fldTitle',
+        fields: [{ id: 'fldTitle', name: 'Title', type: 'singleLineText' }],
+      },
+    ];
+    const { connection, fetch } = connectionAnswering(jsonResponse({ tables }));
+
+    expect(await listTables(connection)).toEqual(tables);
+    expect(String(fetch.mock.calls[0][0])).toBe(
+      'https://api.airtable.com/v0/meta/bases/appTestBase/tables',
+    );
   });
 });

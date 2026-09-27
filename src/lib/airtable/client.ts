@@ -100,3 +100,18 @@ export async function listRecords(
   } while (offset);
   return records;
 }
+
+/** A table in the base's schema, with the parts the app looks at. */
+export interface AirtableTable {
+  id: string;
+  name: string;
+  primaryFieldId: string;
+  fields: { id: string; name: string; type: string }[];
+}
+
+/** All tables of the base with their fields (metadata API, needs the `schema.bases:read` scope). */
+export async function listTables(connection: AirtableConnection): Promise<AirtableTable[]> {
+  const url = new URL(`${API_URL}/meta/bases/${connection.baseId}/tables`);
+  const { tables } = (await getJson(connection, url)) as { tables: AirtableTable[] };
+  return tables;
+}
