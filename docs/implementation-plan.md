@@ -29,7 +29,7 @@ Each item below is done only when it has passed these steps, in this order:
 
 - [x] `lib/airtable/client.ts`: fetch client with auth header, pagination (`offset`), error mapping, one retry after 30 s on 429 — [ADR 0002](decisions/0002-airtable-as-source-of-truth.md)
 - [x] `npm run airtable:schema`: print tables and fields with IDs (metadata API)
-- [ ] `lib/recipes/fields.ts`: table and field IDs from [03-data-model](specs/03-data-model.md); constants `CATEGORIES`, `MEALS` mapping the Airtable values to the English names used by the `--pastel-*` tokens and `Icon` (`Grillen` → `grill`, `Mittag & Abend` → `lunch-dinner`, …)
+- [x] `lib/recipes/fields.ts`: table and field IDs from [03-data-model](specs/03-data-model.md); constants `CATEGORIES`, `MEALS` mapping the Airtable values to the English names used by the `--pastel-*` tokens and `Icon` (`Grillen` → `grill`, `Mittag & Abend` → `lunch-dinner`, …)
 - [ ] Ingredient parser: headings (`…:`), amounts (`1,5`, `½`, `1/2`, `2–3`, `ca.`), units → `IngredientLine`
 - [ ] Serving scaler: factor, rounding (≥ 20 whole numbers, else ¼ steps with ¼ ½ ¾), ½-steps below 2 servings
 - [ ] Method parser: numbered steps, sections (`Teig:`), hint after the last step, timer extraction (`25 Minuten`, `1,5 Std.`, ranges → lower number)
