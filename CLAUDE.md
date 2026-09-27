@@ -2,6 +2,8 @@
 
 Private recipe app for family and friends (one shared password). German UI; code, identifiers and docs in English.
 
+Be extremely concise. Sacrifice grammar for the sake of concision.
+
 - **Stack:** Astro (latest) SSR on Vercel free tier, Airtable as the source of truth (read + write).
 - **Auth:** one shared password, checked against a hash held in environment variables. **Never commit secrets.**
 - **Design:** comes from Claude Design, handoff in `design/` (start with `design/README.md`, variant `playful` only). Don't invent visual design; follow `docs/specs/05-design-integration.md`.
