@@ -62,24 +62,51 @@ async function readErrorReason(response: Response): Promise<string | undefined> 
 }
 
 /** An AirtableError that says which request failed and why. */
-async function toAirtableError(response: Response, url: URL): Promise<AirtableError> {
-  let message = `Airtable GET ${url.pathname} failed with ${response.status}`;
+async function toAirtableError(
+  response: Response,
+  method: string,
+  url: URL,
+): Promise<AirtableError> {
+  let message = `Airtable ${method} ${url.pathname} failed with ${response.status}`;
   const reason = await readErrorReason(response);
   if (reason) message += ` (${reason})`;
   return new AirtableError(response.status, message);
 }
 
-/** GETs `url` as JSON. On 429 it waits once and tries again; any other error status throws. */
-async function getJson(connection: AirtableConnection, url: URL): Promise<unknown> {
+type HttpMethod = 'GET' | 'POST' | 'PATCH';
+
+// Airtable record IDs: "rec" followed by letters and digits.
+const RECORD_ID = /^rec[A-Za-z0-9]+$/;
+
+/** Whether `id` looks like an Airtable record ID. Anything else is never sent to Airtable. */
+export function isRecordId(id: string): boolean {
+  return RECORD_ID.test(id);
+}
+
+/**
+ * Sends a request to `url` and returns the JSON answer. A `body` is sent as JSON.
+ * On 429 it waits once and tries again; any other error status throws.
+ */
+async function requestJson(
+  connection: AirtableConnection,
+  method: HttpMethod,
+  url: URL,
+  body?: unknown,
+): Promise<unknown> {
   const { fetch = globalThis.fetch, delay = wait } = connection;
-  const init = { headers: { Authorization: `Bearer ${connection.token}` } };
+  const headers: Record<string, string> = { Authorization: `Bearer ${connection.token}` };
+  const init: RequestInit = { method, headers };
+  if (body !== undefined) {
+    headers['Content-Type'] = 'application/json';
+    init.body = JSON.stringify(body);
+  }
 
   let response = await fetch(url, init);
   if (response.status === 429) {
     await delay(RATE_LIMIT_WAIT_MS);
     response = await fetch(url, init);
   }
-  if (!response.ok) throw await toAirtableError(response, url);
+  if (!response.ok) throw await toAirtableError(response, method, url);
   return response.json();
 }
 
@@ -99,7 +126,7 @@ export async function listRecords(
     url.searchParams.set('returnFieldsByFieldId', 'true');
     if (options.filterByFormula) url.searchParams.set('filterByFormula', options.filterByFormula);
     if (offset) url.searchParams.set('offset', offset);
-    const page = (await getJson(connection, url)) as ListRecordsResponse;
+    const page = (await requestJson(connection, 'GET', url)) as ListRecordsResponse;
     records.push(...page.records);
     offset = page.offset;
   } while (offset);
@@ -117,6 +144,42 @@ export interface AirtableTable {
 /** All tables of the base with their fields (metadata API, needs the `schema.bases:read` scope). */
 export async function listTables(connection: AirtableConnection): Promise<AirtableTable[]> {
   const url = new URL(`${API_URL}/meta/bases/${connection.baseId}/tables`);
-  const { tables } = (await getJson(connection, url)) as { tables: AirtableTable[] };
+  const { tables } = (await requestJson(connection, 'GET', url)) as { tables: AirtableTable[] };
   return tables;
+}
+
+/**
+ * Creates one record and returns it as saved, fields keyed by field ID.
+ * `typecast` lets Airtable convert values, e.g. add a missing select option.
+ */
+export async function createRecord(
+  connection: AirtableConnection,
+  tableId: string,
+  fields: Record<string, unknown>,
+): Promise<AirtableRecord> {
+  const url = new URL(`${API_URL}/${connection.baseId}/${tableId}`);
+  const body = { fields, typecast: true, returnFieldsByFieldId: true };
+  return (await requestJson(connection, 'POST', url, body)) as AirtableRecord;
+}
+
+/**
+ * Changes only the given fields of one record (PATCH; PUT would clear all others)
+ * and returns it as saved, fields keyed by field ID.
+ *
+ * Throws before sending anything if `recordId` isn't a record ID ("..", "recA/x"), so it can't
+ * point the request at another URL.
+ *
+ * Note: for an unknown record ID Airtable answers 403 INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND,
+ * not 404 (seen live for GET, expected for PATCH). Callers have to handle that.
+ */
+export async function updateRecord(
+  connection: AirtableConnection,
+  tableId: string,
+  recordId: string,
+  fields: Record<string, unknown>,
+): Promise<AirtableRecord> {
+  if (!isRecordId(recordId)) throw new Error(`Not an Airtable record ID: ${recordId}`);
+  const url = new URL(`${API_URL}/${connection.baseId}/${tableId}/${recordId}`);
+  const body = { fields, typecast: true, returnFieldsByFieldId: true };
+  return (await requestJson(connection, 'PATCH', url, body)) as AirtableRecord;
 }

@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   AirtableError,
+  createRecord,
   listRecords,
   listTables,
   RATE_LIMIT_WAIT_MS,
+  updateRecord,
   type AirtableRecord,
 } from './client.ts';
 
@@ -40,7 +42,7 @@ describe('listRecords', () => {
     expect(fetch).toHaveBeenCalledOnce();
     const [url, init] = fetch.mock.calls[0];
     expect(String(url)).toBe(`${TABLE_URL}?returnFieldsByFieldId=true`);
-    expect(init).toEqual({ headers: { Authorization: `Bearer ${TOKEN}` } });
+    expect(init).toEqual({ method: 'GET', headers: { Authorization: `Bearer ${TOKEN}` } });
   });
 
   it('sends the filter formula on every page', async () => {
@@ -139,6 +141,101 @@ describe('errors', () => {
     });
     expect(fetch).toHaveBeenCalledOnce();
     expect(delay).not.toHaveBeenCalled();
+  });
+});
+
+describe('createRecord', () => {
+  it('POSTs the fields as JSON, with typecast and fields keyed by ID', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse(testRecord('recNew')));
+    await createRecord(connection, TABLE_ID, { fldTitle: 'Title of recNew' });
+
+    expect(fetch).toHaveBeenCalledOnce();
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(TABLE_URL);
+    expect(init).toEqual({
+      method: 'POST',
+      headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fields: { fldTitle: 'Title of recNew' },
+        typecast: true,
+        returnFieldsByFieldId: true,
+      }),
+    });
+  });
+
+  it('returns the saved record', async () => {
+    const { connection } = connectionAnswering(jsonResponse(testRecord('recNew')));
+    expect(await createRecord(connection, TABLE_ID, {})).toEqual(testRecord('recNew'));
+  });
+
+  it('waits and tries once more when rate limited', async () => {
+    const { connection, fetch, delay } = connectionAnswering(
+      rateLimited(),
+      jsonResponse(testRecord('recNew')),
+    );
+
+    expect(await createRecord(connection, TABLE_ID, {})).toEqual(testRecord('recNew'));
+    expect(delay).toHaveBeenCalledWith(RATE_LIMIT_WAIT_MS);
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch.mock.calls[1]).toEqual(fetch.mock.calls[0]);
+  });
+
+  it('names POST in the error', async () => {
+    const { connection } = connectionAnswering(
+      jsonResponse({ error: { type: 'INVALID_VALUE_FOR_COLUMN', message: 'Bad value' } }, 422),
+    );
+
+    await expect(createRecord(connection, TABLE_ID, {})).rejects.toMatchObject({
+      status: 422,
+      message: `Airtable POST ${TABLE_PATH} failed with 422 (INVALID_VALUE_FOR_COLUMN: Bad value)`,
+    });
+  });
+});
+
+describe('updateRecord', () => {
+  it('PATCHes (never PUTs) the fields as JSON, with typecast and fields keyed by ID', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse(testRecord('recA')));
+    await updateRecord(connection, TABLE_ID, 'recA', { fldTitle: 'Title of recA' });
+
+    expect(fetch).toHaveBeenCalledOnce();
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(`${TABLE_URL}/recA`);
+    expect(init).toEqual({
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fields: { fldTitle: 'Title of recA' },
+        typecast: true,
+        returnFieldsByFieldId: true,
+      }),
+    });
+  });
+
+  it.each(['', '.', '..', 'rec', 'recA/../tblOther', 'recA?x=1', 'tblTestTable'])(
+    'refuses "%s" as record ID without sending anything',
+    async (recordId) => {
+      const { connection, fetch } = connectionAnswering();
+      await expect(updateRecord(connection, TABLE_ID, recordId, {})).rejects.toThrow(
+        'Not an Airtable record ID',
+      );
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
+  it('returns the saved record', async () => {
+    const { connection } = connectionAnswering(jsonResponse(testRecord('recA')));
+    expect(await updateRecord(connection, TABLE_ID, 'recA', {})).toEqual(testRecord('recA'));
+  });
+
+  it('names PATCH in the error, e.g. for an unknown record ID', async () => {
+    const { connection } = connectionAnswering(
+      jsonResponse({ error: { type: 'INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND' } }, 403),
+    );
+
+    await expect(updateRecord(connection, TABLE_ID, 'recUnknown', {})).rejects.toMatchObject({
+      status: 403,
+      message: `Airtable PATCH ${TABLE_PATH}/recUnknown failed with 403 (INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND)`,
+    });
   });
 });
 

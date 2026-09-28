@@ -2,14 +2,15 @@
 // The connection is passed in, like in lib/airtable/client.ts, so tests and scripts can use it.
 // Writing (create, update) follows in a later step.
 
-import { listRecords, type AirtableConnection, type AirtableRecord } from '../airtable/client.ts';
+import {
+  isRecordId,
+  listRecords,
+  type AirtableConnection,
+  type AirtableRecord,
+} from '../airtable/client.ts';
 import { RECIPES_TABLE_ID } from './fields.ts';
 import type { Recipe, RecipeId } from './recipe.ts';
 import { readRecord } from './record.ts';
-
-// Airtable record IDs: "rec" followed by letters and digits. Anything else can't be a recipe,
-// so it isn't sent to Airtable at all. This also keeps the ID safe to put into a formula.
-const RECORD_ID = /^rec[A-Za-z0-9]+$/;
 
 const byTitle = new Intl.Collator('de').compare;
 
@@ -29,7 +30,8 @@ export async function getById(
   connection: AirtableConnection,
   id: RecipeId,
 ): Promise<Recipe | undefined> {
-  if (!RECORD_ID.test(id)) return undefined;
+  // Anything that isn't a record ID can't be a recipe; checking it also keeps the formula safe.
+  if (!isRecordId(id)) return undefined;
   // A filtered list instead of GET …/{id}: for an unknown ID, that answers 403 (not 404), which
   // looks like a permission problem. The list is simply empty, and a 403 stays a real error.
   const [record] = await listRecords(connection, RECIPES_TABLE_ID, {
