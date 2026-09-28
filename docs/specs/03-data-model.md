@@ -113,13 +113,15 @@ The app, manual edits in Airtable and Claude sessions all write to the same base
 - Units shown with the amount: `g kg ml l EL TL Päckchen Prise(n) Tasse Becher Dose Bund Beutel Topf Schuss Spritzer Klecks Handvoll Zweige Stangen`. Other words after the amount are fine; the amount still scales
 - Lines without an amount (`Salz, Pfeffer`) are fine; they're never scaled
 - A line ending in `:` is a sub-heading: `Für den Teig:`
+- Equipment (form, pan, machine) goes at the end under `Außerdem:`, not into Zubereitung
 
 **Zubereitung**
 
+- Starts with step `1.` (or a section heading); no text before the first step
 - Steps numbered `1.`, `2.`, … one step per paragraph
 - A line ending in `:` starts a section: `Teig:`. Numbering may restart per section
 - Paragraphs after the last numbered step are shown as a hint
-- Times written as `25 Minuten`, `10 Min.`, `1 Stunde`, `2 Std.` (ranges `5–6 Minuten`) get a timer button in cooking mode
+- Times written as `25 Minuten`, `10 Min.`, `1 Stunde`, `2 Std.` (ranges `5–6 Minuten`) get a timer button in cooking mode. No seconds (`90 Sekunden` → `1,5 Minuten`). One timer per step: the first time in it
 - Empty = the recipe is an idea ("Noch ohne Anleitung") and invites completing it
 
 ## Validation
