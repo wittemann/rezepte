@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
+import { ZodError } from 'zod';
 import type { AirtableRecord } from '../airtable/client.ts';
 import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
-import { getAll, getById } from './repository.ts';
+import { toRecordFields, type RecipeInput } from './input.ts';
+import { create, getAll, getById, update } from './repository.ts';
 
 const TABLE_URL = `https://api.airtable.com/v0/appTestBase/${RECIPES_TABLE_ID}`;
 
@@ -125,5 +127,166 @@ describe('getById', () => {
       const { connection } = connectionAnswering(jsonResponse({ error: 'ERROR' }, status));
       await expect(getById(connection, 'recA')).rejects.toMatchObject({ status });
     }
+  });
+});
+
+/** A made-up input with a few fields filled. */
+const testInput: RecipeInput = {
+  title: 'Testsuppe',
+  category: 'Suppe',
+  meals: ['Mittag & Abend'],
+  servings: 4,
+  workMinutes: 20,
+  ingredientsText: '250 g Testgemüse',
+  stepsText: '1. Alles kochen.',
+};
+
+// Invalid on purpose: a blank title.
+const invalidInput: RecipeInput = { ...testInput, title: '  ' };
+
+/** The record Airtable would send back after saving `testInput`. */
+const savedRecord = (id: string) =>
+  testRecord(id, {
+    [RECIPE_FIELDS.title]: 'Testsuppe',
+    [RECIPE_FIELDS.category]: 'Suppe',
+    [RECIPE_FIELDS.meals]: ['Mittag & Abend'],
+    [RECIPE_FIELDS.servings]: 4,
+    [RECIPE_FIELDS.workTime]: 1200,
+    [RECIPE_FIELDS.ingredients]: '250 g Testgemüse',
+    [RECIPE_FIELDS.steps]: '1. Alles kochen.',
+    [RECIPE_FIELDS.caloriesPerServing]: 320, // formula, filled in by Airtable
+  });
+
+type FetchMock = ReturnType<typeof connectionAnswering>['fetch'];
+
+function requestAt(fetch: FetchMock, index: number) {
+  const [url, init] = fetch.mock.calls[index];
+  return { url: new URL(String(url)), method: init?.method, body: JSON.parse(String(init?.body)) };
+}
+
+describe('create', () => {
+  it('posts exactly the mapped fields with typecast and returns the saved recipe', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse(savedRecord('recNew')));
+
+    const recipe = await create(connection, testInput);
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    const request = requestAt(fetch, 0);
+    expect(request.method).toBe('POST');
+    expect(request.url.href).toBe(TABLE_URL);
+    expect(request.body).toEqual({
+      fields: toRecordFields(testInput),
+      typecast: true,
+      returnFieldsByFieldId: true,
+    });
+    expect(recipe).toMatchObject({
+      id: 'recNew',
+      title: 'Testsuppe',
+      category: 'Suppe',
+      meals: ['Mittag & Abend'],
+      servings: 4,
+      workMinutes: 20,
+      caloriesPerServing: 320,
+    });
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('sends nothing for invalid input', async () => {
+    const { connection, fetch } = connectionAnswering();
+    await expect(create(connection, invalidInput)).rejects.toBeInstanceOf(ZodError);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('throws if the saved record has no title', async () => {
+    const { connection } = connectionAnswering(jsonResponse(testRecord('recNew', {})));
+    await expect(create(connection, testInput)).rejects.toThrow(
+      'Saved recipe record recNew could not be read',
+    );
+  });
+
+  it('passes Airtable errors on', async () => {
+    for (const status of [403, 500]) {
+      const { connection } = connectionAnswering(jsonResponse({ error: 'ERROR' }, status));
+      await expect(create(connection, testInput)).rejects.toMatchObject({ status });
+    }
+  });
+});
+
+describe('update', () => {
+  it('checks the record exists, then patches exactly the mapped fields', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Alter Testtitel')] }),
+      jsonResponse(savedRecord('recA')),
+    );
+
+    const recipe = await update(connection, 'recA', testInput);
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+    const [lookupUrl, lookupInit] = fetch.mock.calls[0];
+    const lookup = new URL(String(lookupUrl));
+    expect(lookupInit?.method).toBe('GET');
+    expect(lookup.origin + lookup.pathname).toBe(TABLE_URL);
+    expect(lookup.searchParams.get('filterByFormula')).toBe("RECORD_ID() = 'recA'");
+
+    const patch = requestAt(fetch, 1);
+    expect(patch.method).toBe('PATCH');
+    expect(patch.url.href).toBe(`${TABLE_URL}/recA`);
+    expect(patch.body).toEqual({
+      fields: toRecordFields(testInput),
+      typecast: true,
+      returnFieldsByFieldId: true,
+    });
+    expect(recipe).toMatchObject({ id: 'recA', title: 'Testsuppe', servings: 4 });
+  });
+
+  it('sends nothing for invalid input', async () => {
+    const { connection, fetch } = connectionAnswering();
+    await expect(update(connection, 'recA', invalidInput)).rejects.toBeInstanceOf(ZodError);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('returns undefined without asking Airtable when the ID is no record ID', async () => {
+    const { connection, fetch } = connectionAnswering();
+
+    for (const id of ['', 'abc', 'rec', 'recA/../x', 'recA?x=1']) {
+      expect(await update(connection, id, testInput)).toBeUndefined();
+    }
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('returns undefined for an unknown record and does not patch', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse({ records: [] }));
+
+    expect(await update(connection, 'recMissing', testInput)).toBeUndefined();
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0][1]?.method).toBe('GET');
+  });
+
+  it('passes errors of the lookup on, including 403, and does not patch', async () => {
+    for (const status of [403, 500]) {
+      const { connection, fetch } = connectionAnswering(jsonResponse({ error: 'ERROR' }, status));
+      await expect(update(connection, 'recA', testInput)).rejects.toMatchObject({ status });
+      expect(fetch).toHaveBeenCalledTimes(1);
+    }
+  });
+
+  it('passes errors of the PATCH on, including 403', async () => {
+    for (const status of [403, 500]) {
+      const { connection } = connectionAnswering(
+        jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+        jsonResponse({ error: 'ERROR' }, status),
+      );
+      await expect(update(connection, 'recA', testInput)).rejects.toMatchObject({ status });
+    }
+  });
+
+  it('throws if the saved record has no title', async () => {
+    const { connection } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse(testRecord('recA', {})),
+    );
+    await expect(update(connection, 'recA', testInput)).rejects.toThrow(
+      'Saved recipe record recA could not be read',
+    );
   });
 });

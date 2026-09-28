@@ -36,7 +36,7 @@ Each item below is done only when it has passed these steps, in this order:
 - [x] Time helpers: Airtable seconds ⇄ minutes, display `20 Min.` / `1 Std. 5 Min.`, form input `h:mm`
 - [x] Run the parsers against all real recipes (locally, output not committed) and fix what they don't understand; adjust the data conventions if needed
 - [x] `lib/recipes/repository.ts`, reading: `getAll`, `getById` with zod validation, tolerant reads
-- [ ] `lib/recipes/repository.ts`, writing: `create`, `update` with `PATCH` + `typecast`, never writing computed fields
+- [x] `lib/recipes/repository.ts`, writing: `create`, `update` with `PATCH` + `typecast`, never writing computed fields
 - [ ] Search (name and ingredients, name matches first) and filters (meal, category, ≤ 30 min, with instructions)
 - [ ] Suggestions: matching meal, time limit (30/90 min, unknown time counts as matching), deterministic shuffle by day + meal + dice seed, max. 6
 

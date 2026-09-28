@@ -170,7 +170,7 @@ export async function createRecord(
  * point the request at another URL.
  *
  * Note: for an unknown record ID Airtable answers 403 INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND,
- * not 404 (seen live for GET, expected for PATCH). Callers have to handle that.
+ * not 404 (seen live for GET and PATCH). Callers have to handle that.
  */
 export async function updateRecord(
   connection: AirtableConnection,
