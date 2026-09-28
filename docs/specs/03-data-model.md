@@ -42,7 +42,7 @@ interface Quantity {
   min: number; // "2–3" → min 2, max 3
   max?: number;
   unit?: string; // g, kg, ml, l, EL, TL, Pck., Prise, …
-  approx?: boolean; // "ca.", "knapp", "etwa"
+  prefix?: 'ca.' | 'knapp' | 'etwa'; // kept as written, shown in front of the scaled amount
   rest: string; // the text after amount and unit: "Mehl (Type 550)"
 }
 
@@ -107,9 +107,10 @@ The app, manual edits in Airtable and Claude sessions all write to the same base
 
 **Zutaten** (one ingredient per line)
 
-- Amount first, then unit, then the rest: `250 g Mehl`, `1,5 EL Zucker`, `½ TL Salz`, `2–3 Zehen Knoblauch`, `ca. 200 g Kartoffeln`
-- Amounts: whole numbers, decimal comma (`1,5`), fractions `½ ¼ ¾` or `1/2`, ranges with an en dash `2–3`, optional prefix `ca.`, `knapp`, `etwa`
-- Units the scaler understands: `g kg ml l cl dl EL TL Pck. Prise Tasse Becher Dose Stück Bund Zehe Scheibe Msp. Glas Würfel Tüte`
+- Amount first, then unit, then the rest: `250 g Mehl`, `1,5 EL Zucker`, `0,5 TL Salz`, `2–3 Zehen Knoblauch`, `ca. 200 g Kartoffeln`
+- Amounts: whole numbers or decimal comma (`1,5`, `0,5`); no fractions (`½`, `1/2`): such lines are shown as written and not scaled. Ranges with an en dash `2–3`, optional prefix `ca.`, `knapp`, `etwa`
+- Amount and unit are separated by a space (`250 g`, not `250g`)
+- Units shown with the amount: `g kg ml l EL TL Päckchen Prise(n) Tasse Becher Dose Bund Beutel Topf Schuss Spritzer Klecks Handvoll Zweige Stangen`. Other words after the amount are fine; the amount still scales
 - Lines without an amount (`Salz, Pfeffer`) are fine; they're never scaled
 - A line ending in `:` is a sub-heading: `Für den Teig:`
 
