@@ -43,6 +43,18 @@ describe('listRecords', () => {
     expect(init).toEqual({ headers: { Authorization: `Bearer ${TOKEN}` } });
   });
 
+  it('sends the filter formula on every page', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ records: [testRecord('recA')], offset: 'page2' }),
+      jsonResponse({ records: [testRecord('recB')] }),
+    );
+    await listRecords(connection, TABLE_ID, { filterByFormula: "RECORD_ID() = 'recA'" });
+
+    for (const [url] of fetch.mock.calls) {
+      expect(new URL(String(url)).searchParams.get('filterByFormula')).toBe("RECORD_ID() = 'recA'");
+    }
+  });
+
   it('returns the records of a single page', async () => {
     const records = [testRecord('recA'), testRecord('recB')];
     const { connection } = connectionAnswering(jsonResponse({ records }));

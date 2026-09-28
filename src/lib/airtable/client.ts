@@ -83,16 +83,21 @@ async function getJson(connection: AirtableConnection, url: URL): Promise<unknow
   return response.json();
 }
 
-/** All records of a table. Airtable sends up to 100 per page, plus an offset for the next one. */
+/**
+ * All records of a table, or only those matching `filterByFormula` (an Airtable formula).
+ * Airtable sends up to 100 per page, plus an offset for the next one.
+ */
 export async function listRecords(
   connection: AirtableConnection,
   tableId: string,
+  options: { filterByFormula?: string } = {},
 ): Promise<AirtableRecord[]> {
   const records: AirtableRecord[] = [];
   let offset: string | undefined;
   do {
     const url = new URL(`${API_URL}/${connection.baseId}/${tableId}`);
     url.searchParams.set('returnFieldsByFieldId', 'true');
+    if (options.filterByFormula) url.searchParams.set('filterByFormula', options.filterByFormula);
     if (offset) url.searchParams.set('offset', offset);
     const page = (await getJson(connection, url)) as ListRecordsResponse;
     records.push(...page.records);
