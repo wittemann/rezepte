@@ -43,5 +43,12 @@ export const MEALS = [
   { value: 'Backen', name: 'baking' },
 ] as const;
 
+/**
+ * The sources ("Quelle") a recipe can come from; "Webseite" covers any other website.
+ * A fixed list, because writes use typecast and would turn a typo into a new select option.
+ */
+export const SOURCES = ['Chefkoch', 'YouTube', 'Instagram', 'Webseite', 'Apple Notes'] as const;
+
 export type Category = (typeof CATEGORIES)[number]['value'];
 export type Meal = (typeof MEALS)[number]['value'];
+export type Source = (typeof SOURCES)[number];

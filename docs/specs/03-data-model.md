@@ -101,8 +101,9 @@ The app, manual edits in Airtable and Claude sessions all write to the same base
 - **Name** is required; everything else is optional
 - **Kategorie:** exactly one of Hauptgericht, Beilage, Salat, Suppe, Grillen, Dessert, Backen, Grundrezept. New categories are possible, but the design has colors and icons only for these
 - **Mahlzeit:** any of `Frühstück`, `Mittag & Abend`, `Backen`. Empty = the recipe doesn't appear in the start page suggestions
-- **Portionen:** the number the ingredient amounts are written for. Leave empty if that makes no sense (e.g. a marinade); the app then hides the serving scaler
+- **Portionen:** a whole number: the number the ingredient amounts are written for. Leave empty if that makes no sense (e.g. a marinade); the app then hides the serving scaler
 - **Arbeitszeit / Gesamtzeit:** Airtable duration `h:mm`
+- **Quelle:** one of `Chefkoch`, `YouTube`, `Instagram`, `Webseite` (any other website), `Apple Notes`. The app offers only these
 - **Never write** `Kalorien pro Portion` (formula). Don't write fields the app doesn't know; use `PATCH`, never `PUT`
 
 **Zutaten** (one ingredient per line)
