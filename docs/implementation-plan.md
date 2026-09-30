@@ -112,7 +112,16 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [ ] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon; manifest link in `Base.astro` · `sonnet`
 - [ ] Replace `favicon.svg` / `favicon.ico` (still Astro's default logo) with Maulti · `haiku`
 
-## 7. Monitoring and quality
+## 7. End-to-end tests
+
+Playwright against a local dev server with the real Airtable base, read-only ([ADR 0010](decisions/0010-e2e-tests-deferred.md)). Tests never write and never contain recipe names or texts (the repo is public): they pick whatever the first recipe is.
+
+- [ ] Set up Playwright: config, `npm run test:e2e`, dev server started by the config, login helper using a test password hash and session secret from a local `.env` (never committed); Chromium only, phone viewport; CI job in the workflow from [ADR 0008](decisions/0008-tooling.md) with secrets from GitHub · `sonnet`
+- [ ] Smoke test: login (wrong password shows the error, right one gets in) → recipes list → first recipe detail · `sonnet`
+- [ ] Later with the screens: search and filter, favorites, start suggestions, cooking mode with timers · `sonnet`
+- [ ] Edit and new recipe: needs a test base or a cleanup step, since it writes; decide when we get there · `opus`
+
+## 8. Monitoring and quality
 
 - [ ] **(owner)** Create the Sentry account (EU region) and project; add `SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` to Vercel — [ADR 0009](decisions/0009-error-monitoring.md)
 - [ ] `@sentry/astro`: errors + replay on error, inputs masked, login POST scrubbed, explicit reports for Airtable errors, 429s and skipped records · `opus`
@@ -120,7 +129,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [ ] Performance check on a phone over mobile data (target ≈ 1 s per page) · `sonnet`
 - [ ] Dark mode pass on every screen · `sonnet`
 
-## 8. Launch
+## 9. Launch
 
 - [ ] **(owner)** Test on the iPhone: add to home screen, cook one recipe end to end (timers, photo step, edit)
 - [ ] **(owner)** Share the URL and passphrase with family and friends

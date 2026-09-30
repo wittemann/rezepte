@@ -18,20 +18,20 @@
 
 Status: **Accepted** = settled · **Proposed** = recommended, awaiting OK · **Open** = blocked on input (design or Airtable schema)
 
-| #                                                     | Decision                                                                            | Status   | Blocked on          |
-| ----------------------------------------------------- | ----------------------------------------------------------------------------------- | -------- | ------------------- |
-| [0001](decisions/0001-astro-on-vercel.md)             | Astro (latest) SSR on Vercel                                                        | Accepted | –                   |
-| [0002](decisions/0002-airtable-as-source-of-truth.md) | Airtable via own fetch client, field IDs, typecast, tolerant reads                  | Accepted | –                   |
-| [0003](decisions/0003-rendering-and-caching.md)       | Plain SSR, no caching for now                                                       | Accepted | –                   |
-| [0004](decisions/0004-shared-password-auth.md)        | Shared password, hash in env, signed cookie                                         | Accepted | –                   |
-| [0005](decisions/0005-image-handling.md)              | Images: Airtable attachments behind a proxy, upload in the app                      | Accepted | –                   |
-| [0006](decisions/0006-forms-and-interactivity.md)     | Astro Actions + small islands (Preact)                                              | Accepted | –                   |
-| [0007](decisions/0007-styling-approach.md)            | Styling: CSS custom properties from the design tokens, dark mode, self-hosted fonts | Accepted | –                   |
-| [0008](decisions/0008-tooling.md)                     | TypeScript, npm, Node LTS, lint, Vitest, public repo, CI on PR + main               | Accepted | –                   |
-| [0009](decisions/0009-error-monitoring.md)            | Error monitoring with Sentry (free plan, errors + replay on error)                  | Accepted | –                   |
-| [0010](decisions/0010-e2e-tests-deferred.md)          | End-to-end tests (Playwright) deferred; plan for later documented                   | Accepted | –                   |
-| [0011](decisions/0011-custom-domain.md)               | Custom domain for production (later; `rezepte-rust.vercel.app` until then)          | Open     | Choosing the domain |
-| [0012](decisions/0012-pwa-and-timers.md)              | Installable web app (manifest), no service worker; timers without push in v1        | Accepted | –                   |
+| #                                                     | Decision                                                                               | Status   | Blocked on          |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------- | -------- | ------------------- |
+| [0001](decisions/0001-astro-on-vercel.md)             | Astro (latest) SSR on Vercel                                                           | Accepted | –                   |
+| [0002](decisions/0002-airtable-as-source-of-truth.md) | Airtable via own fetch client, field IDs, typecast, tolerant reads                     | Accepted | –                   |
+| [0003](decisions/0003-rendering-and-caching.md)       | Plain SSR, no caching for now                                                          | Accepted | –                   |
+| [0004](decisions/0004-shared-password-auth.md)        | Shared password, hash in env, signed cookie                                            | Accepted | –                   |
+| [0005](decisions/0005-image-handling.md)              | Images: Airtable attachments behind a proxy, upload in the app                         | Accepted | –                   |
+| [0006](decisions/0006-forms-and-interactivity.md)     | Astro Actions + small islands (Preact)                                                 | Accepted | –                   |
+| [0007](decisions/0007-styling-approach.md)            | Styling: CSS custom properties from the design tokens, dark mode, self-hosted fonts    | Accepted | –                   |
+| [0008](decisions/0008-tooling.md)                     | TypeScript, npm, Node LTS, lint, Vitest, public repo, CI on PR + main                  | Accepted | –                   |
+| [0009](decisions/0009-error-monitoring.md)            | Error monitoring with Sentry (free plan, errors + replay on error)                     | Accepted | –                   |
+| [0010](decisions/0010-e2e-tests-deferred.md)          | End-to-end tests (Playwright): read-only against the real base, built with the screens | Accepted | –                   |
+| [0011](decisions/0011-custom-domain.md)               | Custom domain for production (later; `rezepte-rust.vercel.app` until then)             | Open     | Choosing the domain |
+| [0012](decisions/0012-pwa-and-timers.md)              | Installable web app (manifest), no service worker; timers without push in v1           | Accepted | –                   |
 
 ## ADR format
 

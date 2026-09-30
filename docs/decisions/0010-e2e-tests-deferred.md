@@ -1,6 +1,6 @@
-# 0010 – End-to-end tests: deferred
+# 0010 – End-to-end tests: deferred, then planned
 
-**Status:** Accepted (2026-09-26)
+**Status:** Accepted (2026-09-26); updated 2026-09-30: build them alongside the screens, against the real base, read-only
 
 ## Context
 
@@ -8,11 +8,12 @@
 
 ## Decision
 
-- **No end-to-end tests for now.** Vitest covers `lib/`
+- **No end-to-end tests until the screens exist.** Vitest covers `lib/`
+- **Update 2026-09-30:** screens are being built, so e2e tests are now in the [implementation plan](../implementation-plan.md). For now they run against the real Airtable base, **read-only**; no recipe data in the tests. Tests that write (edit, new) wait for a test base or a cleanup step
 - **When they're added**, the plan is:
   - Playwright, one smoke test first: login → list → detail
   - Runs against a local dev server with a test `.env`, **never against production data**
-  - Airtable: a separate test base, or mocked responses. Previews and prod share the real base (06-deployment), so tests must not write there
+  - Airtable: originally a separate test base or mocked responses. Previews and prod share the real base (06-deployment), so tests must not write there
   - Runs in the CI workflow from ADR 0008
 
 ## Consequences
