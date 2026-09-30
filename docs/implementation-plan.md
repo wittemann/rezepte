@@ -64,7 +64,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] Pills and chips, segmented control, buttons (primary/round/outline), speech bubble, meta sticker · `sonnet`
 - [x] Bottom sheet (filter sheet, ingredients in cooking mode) · `opus`
 - [x] Toast ("Gespeichert") · `haiku`
-- [ ] Plain error pages: 404 ("Rezept nicht gefunden") and 500 ("Da ist was schiefgelaufen"), tokens only, no design · `haiku`
+- [x] Plain error pages: 404 ("Seite nicht gefunden") and 500 ("Da ist was schiefgelaufen"), tokens only, no design · `haiku`
 - [ ] Favorites store: `localStorage`, most recently added first, shared by all islands · `sonnet`
 
 ## 5. Screens
@@ -79,6 +79,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 **Recipe detail**
 
 - [ ] Image proxy route `/img/[recordId]/[attachmentId]` with long cache headers — [ADR 0005](decisions/0005-image-handling.md). The middleware checks the login for uncached requests only; verify which headers make the Vercel CDN cache a function response · `opus`
+- [ ] Unknown recipe id: the detail page renders `ErrorMessage` with "Rezept nicht gefunden" and status 404 (the generic 404 page only says "Seite nicht gefunden") · `haiku`
 - [ ] Header card in category color: back, heart, "Bearbeiten", optional photo, category, title, source link, Maulti (`heart`/`wave`) · `sonnet`
 - [ ] Meta stickers (Arbeitszeit, Gesamtzeit, kcal/Portion) · `haiku`
 - [ ] Ingredients with serving scaler (island) · `sonnet`

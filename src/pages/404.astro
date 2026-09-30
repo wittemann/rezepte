@@ -1,0 +1,11 @@
+---
+// 404 page (docs/specs/05-design-integration.md, "Plain error pages").
+// Shown only to authenticated users (middleware redirects unauthenticated visitors to login first).
+import Base from '../layouts/Base.astro';
+import ErrorMessage from '../components/ErrorMessage.astro';
+import { TEXT } from './_404.texts.ts';
+---
+
+<Base title={TEXT.title}>
+  <ErrorMessage title={TEXT.title} message={TEXT.message} linkText={TEXT.linkText} />
+</Base>
