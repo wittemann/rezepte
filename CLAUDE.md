@@ -18,6 +18,7 @@ A human developer reviews every change before it's committed. Changes must be sm
 - **Small steps:** one item from `docs/implementation-plan.md` (or a small group of related ones) per commit. Split larger work into several reviewable commits.
 - **Before committing, stop and present the change:** what changed and why, the files touched, test/check results, and anything that deserves a close look (tricky logic, new dependencies, security-relevant code, generated files like `package-lock.json`). Point the reviewer to the diff.
 - **Commit only after the reviewer's explicit OK** for that change. An OK covers that one commit, not later ones. Push only when asked.
+- **Conventional Commits:** `type(scope): subject` (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`), imperative, lowercase subject, scope optional. The body explains why.
 - **Readable code over clever code:** plain names, short functions, comments only where the reason isn't obvious. No unrelated refactors or drive-by changes mixed into a commit.
 - **Recipe data never goes into the repo** (it's public): no exports, texts or even lists of recipe names.
 
