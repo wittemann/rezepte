@@ -27,6 +27,12 @@ Minimal: a delay of about 500 ms on a failed attempt. Good enough for a small, t
 
 The delay is a speed bump, not a lock: serverless functions run in parallel, so an attacker can still send many guesses at once. What actually protects the app is the password itself. **Use a long passphrase** (for example four or more random words), not a short password.
 
+## Known limitation: unknown URLs while logged out
+
+The Vercel adapter sends every unmatched path to the function with a forced 404 status. The middleware's redirect to `/login?next=…` therefore arrives as `404` with an empty body, and browsers ignore the `Location` header on a 404: a logged-out visitor who opens a URL that doesn't exist (e.g. a mistyped link) sees a blank page instead of the login. Seen on the production deployment, 2026-09-30. Existing routes redirect correctly; logged-in visitors get the 404 page.
+
+**Decision (project owner, 2026-09-30): accepted**, too rare to matter for a family app. If it ever does: add a catch-all route (`src/pages/[...path].astro`) so unknown paths reach the middleware as real routes, and verify on a preview deploy.
+
 ## Out of scope
 
 Individual accounts, password reset, 2FA.
