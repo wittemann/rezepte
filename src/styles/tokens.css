@@ -107,6 +107,12 @@
   --segmented-padding: 0.1875rem; /* 3px: track to options */
   --segmented-gap: 0.125rem; /* 2px: between options */
 
+  /* Bottom sheet (design/README.md, "Filter-Sheet" and "Kochmodus") */
+  --sheet-padding: 1.125rem; /* 18px */
+  --sheet-title-size: 1.375rem; /* 22px, as in the filter sheet (ingredients sheet: 20px) */
+  --sheet-max-height: 70dvh; /* higher content scrolls inside the sheet */
+  --backdrop: rgb(0 0 0 / 40%); /* dims the page behind a sheet, same in dark mode */
+
   /* Minimum size of anything tappable */
   --touch-target: 2.75rem; /* 44px */
 }

@@ -62,7 +62,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] Floating tab bar: Start · Rezepte · Favoriten · Neu as in `design/README.md` and the screenshots, not the prototype code ([05-design-integration](specs/05-design-integration.md), Rules); active state, safe-area aware; page padding for it. Open: color of the filled heart when Favoriten is active (README: `ink`, prototype code: accent) · `sonnet`
 - [x] Recipe row (photo or initial tile, name, meta, heart; the prototype draws this heart filled without outline) · `sonnet`
 - [x] Pills and chips, segmented control, buttons (primary/round/outline), speech bubble, meta sticker · `sonnet`
-- [ ] Bottom sheet (filter sheet, ingredients in cooking mode) · `opus`
+- [x] Bottom sheet (filter sheet, ingredients in cooking mode) · `opus`
 - [ ] Toast ("Gespeichert") · `haiku`
 - [ ] Plain error pages: 404 ("Rezept nicht gefunden") and 500 ("Da ist was schiefgelaufen"), tokens only, no design · `haiku`
 - [ ] Favorites store: `localStorage`, most recently added first, shared by all islands · `sonnet`
