@@ -1,0 +1,109 @@
+---
+// One recipe in a list (design/README.md, "Rezept-Zeile"): photo or initial tile, name, meta, heart.
+// The whole row links to the recipe. The heart is decorative; toggling happens on the detail page.
+import type { Recipe } from '../lib/recipes/recipe.ts';
+import { categoryName } from '../lib/recipes/fields.ts';
+import Icon from './Icon.tsx';
+import { recipeRowMeta } from './recipe-row-meta.ts';
+import { TEXT } from './RecipeRow.texts.ts';
+
+interface Props {
+  recipe: Recipe;
+  favorite: boolean;
+}
+
+const { recipe, favorite } = Astro.props;
+const photoUrl = recipe.images[0]?.url;
+// First grapheme, so emoji and letters with combining accents stay whole
+const [firstGrapheme] = new Intl.Segmenter('de').segment(recipe.title);
+const initial = firstGrapheme?.segment.toUpperCase() ?? '?';
+const tileColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
+const meta = recipeRowMeta(recipe);
+---
+
+<a class="row" href={`/rezepte/${recipe.id}`} data-recipe-id={recipe.id}>
+  {photoUrl ? (
+    <img class="thumb" src={photoUrl} alt="" loading="lazy" />
+  ) : (
+    <span class="thumb tile" style={`background: ${tileColor}`} aria-hidden="true">
+      {initial}
+    </span>
+  )}
+  <span class="text">
+    <span class="title">{recipe.title}</span>
+    {meta && <span class="meta">{meta}</span>}
+  </span>
+  {/* Always rendered: favorites live per device (localStorage), so the server can't know them.
+       The favorites store finds rows by data-recipe-id and toggles `hidden` on the client. */}
+  <span class="heart" role="img" aria-label={TEXT.favorite} hidden={!favorite}>
+    <Icon name="heart" size={18} strokeWidth={0} filled />
+  </span>
+</a>
+
+<style>
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    padding: var(--recipe-row-padding);
+    background: var(--surface);
+    color: var(--ink);
+    text-decoration: none;
+    border: var(--border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-s);
+  }
+
+  .thumb {
+    flex: none;
+    width: var(--recipe-row-thumb-size);
+    height: var(--recipe-row-thumb-size);
+    border-radius: var(--radius-s);
+  }
+
+  img.thumb {
+    object-fit: cover;
+    background: var(--sunk);
+  }
+
+  .tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--on-pastel);
+    font-family: var(--font-display);
+    font-size: 1.5rem; /* 24px */
+    font-weight: 600;
+  }
+
+  .text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem; /* 2px */
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-size: 1rem; /* 16px */
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .meta {
+    color: var(--muted);
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 600;
+  }
+
+  .heart {
+    display: flex;
+    color: var(--accent);
+  }
+
+  /* display: flex above would override the hidden attribute */
+  .heart[hidden] {
+    display: none;
+  }
+</style>

@@ -90,6 +90,10 @@
   /* Space pages keep free at the bottom: bar + its distance from the edge + spare = 120px as in the README */
   --tab-bar-clearance: calc(var(--tab-bar-height) + var(--space-m) + 2.5rem);
 
+  /* Recipe row (design/README.md, "Rezept-Zeile") */
+  --recipe-row-thumb-size: 3.25rem; /* 52px: photo or initial tile */
+  --recipe-row-padding: 0.625rem 0.75rem 0.625rem 0.625rem; /* 10px 12px 10px 10px */
+
   /* Minimum size of anything tappable */
   --touch-target: 2.75rem; /* 44px */
 }

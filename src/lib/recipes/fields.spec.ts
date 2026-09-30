@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { IconName } from '../../components/Icon.tsx';
-import { CATEGORIES, MEALS, RECIPE_FIELDS } from './fields.ts';
+import { CATEGORIES, categoryName, MEALS, RECIPE_FIELDS } from './fields.ts';
 
 const tokens = readFileSync(new URL('../../styles/tokens.css', import.meta.url), 'utf8');
 
@@ -28,5 +28,13 @@ describe('CATEGORIES', () => {
 describe('MEALS', () => {
   it.each(MEALS)('$value has a pastel color token ($name)', ({ name }) => {
     expect(tokens).toContain(`--pastel-meal-${name}:`);
+  });
+});
+
+describe('categoryName', () => {
+  it('maps known categories and falls back to "other"', () => {
+    expect(categoryName('Suppe')).toBe('soup');
+    expect(categoryName('Etwas Neues')).toBe('other');
+    expect(categoryName(undefined)).toBe('other');
   });
 });

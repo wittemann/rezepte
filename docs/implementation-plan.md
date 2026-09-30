@@ -60,7 +60,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 - [x] Desktop: limit the app to about one iPhone width (≈ 430 px, in `rem`), centered, as a token; fixed elements (tab bar, bottom sheet, sticky CTA, timer pill) stay within it. The design only covers the phone (390 × 844); on wide screens the login column currently stretches across the whole window · `sonnet`
 - [x] Floating tab bar: Start · Rezepte · Favoriten · Neu as in `design/README.md` and the screenshots, not the prototype code ([05-design-integration](specs/05-design-integration.md), Rules); active state, safe-area aware; page padding for it. Open: color of the filled heart when Favoriten is active (README: `ink`, prototype code: accent) · `sonnet`
-- [ ] Recipe row (photo or initial tile, name, meta, heart; the prototype draws this heart filled without outline) · `sonnet`
+- [x] Recipe row (photo or initial tile, name, meta, heart; the prototype draws this heart filled without outline) · `sonnet`
 - [ ] Pills and chips, segmented control, buttons (primary/round/outline), speech bubble, meta sticker · `sonnet`
 - [ ] Bottom sheet (filter sheet, ingredients in cooking mode) · `opus`
 - [ ] Toast ("Gespeichert") · `haiku`
