@@ -1,0 +1,214 @@
+---
+// Recipe list (design/README.md, "Rezepte"). Rendered on the server; search, meal and filters
+// live in the URL (docs/decisions/0006-forms-and-interactivity.md), so every change is a
+// normal page load. Airtable errors are not caught: Astro shows the 500 page.
+import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import Base from '../../layouts/Base.astro';
+import Button from '../../components/Button.astro';
+import Chip from '../../components/Chip.astro';
+import Icon from '../../components/Icon.tsx';
+import FilterSheet from '../../components/FilterSheet.tsx';
+import { TEXT as FILTER_TEXT } from '../../components/FilterSheet.texts.ts';
+import RecipeList from '../../components/RecipeList.astro';
+import SearchField from '../../components/SearchField.astro';
+import SegmentedControl from '../../components/SegmentedControl.astro';
+import { CATEGORIES, MEALS } from '../../lib/recipes/fields.ts';
+import {
+  LIST_PATH,
+  countActiveFilters,
+  listHref,
+  parseListQuery,
+  toFilterChoices,
+  toSearchParams,
+} from '../../lib/recipes/list-query.ts';
+import { getAll } from '../../lib/recipes/repository.ts';
+import { filterRecipes, searchRecipes } from '../../lib/recipes/search.ts';
+import { TEXT } from './_index.texts.ts';
+
+const { query, filters } = parseListQuery(Astro.url.searchParams);
+const allRecipes = await getAll({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID });
+// What the filter sheet's filters apply to; the sheet counts the matches in the browser
+const searchedInMeal = searchRecipes(filterRecipes(allRecipes, { meal: filters.meal }), query);
+const recipes = filterRecipes(searchedInMeal, filters);
+const countableRecipes = searchedInMeal.map(({ category, totalMinutes, hasInstructions }) => ({
+  category,
+  totalMinutes,
+  hasInstructions,
+}));
+
+const mealOptions = [
+  { label: TEXT.allMeals, meal: undefined },
+  ...MEALS.map((entry) => ({ label: TEXT.mealLabels[entry.name], meal: entry.value })),
+].map(({ label, meal }) => ({
+  label,
+  active: filters.meal === meal,
+  href: listHref({ query, filters: { ...filters, meal } }),
+}));
+
+// The search form sends q itself and keeps the filters and the meal as hidden fields
+const hiddenSearchFields = [...toSearchParams({ query: '', filters }).entries()];
+// The filter form sends the filters itself and keeps the search text and the meal
+const hiddenFilterFields = [
+  ...toSearchParams({ query, filters: { meal: filters.meal } }).entries(),
+];
+const choices = toFilterChoices(filters);
+const activeFilterCount = countActiveFilters(filters);
+---
+
+<Base title={TEXT.title} activeTab="recipes">
+  <main>
+    <header class="heading">
+      <h1 class="title">{TEXT.title}</h1>
+      <p class="count">{query ? TEXT.found(recipes.length) : TEXT.count(recipes.length)}</p>
+    </header>
+    <div class="search">
+      <SearchField
+        {query}
+        hiddenFields={hiddenSearchFields}
+        clearHref={listHref({ query: '', filters })}
+      />
+    </div>
+    <div class="controls">
+      <div class="meals">
+        <SegmentedControl label={TEXT.meals} options={mealOptions} />
+      </div>
+      <FilterSheet client:load recipes={countableRecipes}>
+        <Button
+          slot="opener"
+          variant="outline"
+          raised
+          active={activeFilterCount > 0}
+          attributes={{
+            'aria-haspopup': 'dialog',
+            // The visible number alone would be read as "Filter2"
+            'aria-label': FILTER_TEXT.filterLabel(activeFilterCount),
+            'data-filter-opener': true,
+          }}
+        >
+          <Icon name="filter" size={18} strokeWidth={2.2} />
+          <span aria-hidden="true">{FILTER_TEXT.filter}</span>
+          {activeFilterCount > 0 && <span aria-hidden="true">{activeFilterCount}</span>}
+        </Button>
+        <a slot="reset" class="reset" href={listHref({ query, filters: { meal: filters.meal } })}>
+          {TEXT.reset}
+        </a>
+        <form class="sheetForm" method="get" action={LIST_PATH}>
+          {hiddenFilterFields.map(([name, value]) => (
+            <input type="hidden" {name} {value} />
+          ))}
+          <fieldset class="group">
+            <legend class="legend">{TEXT.category}</legend>
+            <div class="chips">
+              {CATEGORIES.map((category) => (
+                <Chip
+                  label={category.value}
+                  name="category"
+                  value={category.name}
+                  checked={choices.categories.includes(category.name)}
+                />
+              ))}
+            </div>
+          </fieldset>
+          <fieldset class="group">
+            <legend class="legend">{TEXT.other}</legend>
+            <div class="chips">
+              <Chip label={TEXT.quick} name="max30" value="1" checked={choices.quick} />
+              <Chip
+                label={TEXT.withInstructions}
+                name="steps"
+                value="1"
+                checked={choices.withInstructions}
+              />
+            </div>
+          </fieldset>
+          <Button type="submit" size="medium" fullWidth>
+            {/* The island updates this text while chips are toggled */}
+            <span data-apply-label>{FILTER_TEXT.applyLabel(recipes.length)}</span>
+          </Button>
+        </form>
+      </FilterSheet>
+    </div>
+    <div class="list">
+      <RecipeList {recipes} grouped={!query} />
+    </div>
+  </main>
+</Base>
+
+<style>
+  .heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem; /* 2px */
+    padding: var(--space-s) var(--space-page) var(--space-l);
+  }
+
+  .title {
+    font-size: 1.875rem; /* 30px */
+  }
+
+  .count {
+    color: var(--muted);
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+  }
+
+  .search {
+    padding: 0 var(--space-xl) var(--space-l);
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0 var(--space-xl) 1.125rem; /* 18px */
+  }
+
+  .meals {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .list {
+    padding: 0 var(--space-xl);
+  }
+
+  /* Filter sheet content (slotted into the FilterSheet island) */
+  .reset {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    color: var(--accent);
+    font-size: 0.875rem; /* 14px */
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .sheetForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .legend {
+    padding: 0 0 var(--space-xs);
+    color: var(--muted);
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 800;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+</style>

@@ -43,4 +43,5 @@ The visual design is created in **Claude Design**. This spec describes how it be
 | All routes behind login, incl. images                     | Image proxy cached by the CDN without login check  | Deliberate ([ADR 0005](../decisions/0005-image-handling.md))                                 |
 | No error pages                                            | Plain error pages (404, 500), no design for v1     | Rarely seen; not worth a design yet                                                          |
 | No logout                                                 | No logout in v1                                    | Sessions last about a year; see [04-auth](04-auth.md)                                        |
+| Filter sheet: one category at a time (prototype)          | Several categories can be selected                 | Project owner's decision (2026-09-30); the button count still counts categories as one       |
 | Stored in `localStorage` in the prototype (edits, photos) | Written to Airtable                                | As the design README asks; favorites stay per device                                         |
