@@ -1,0 +1,145 @@
+---
+// Buttons (design/README.md). A link with `href`, otherwise a <button> (submit or plain).
+// - primary: accent, call to action. Sizes large (62), medium (54), small (44, flat)
+// - outline: white pill with border, 46 high, e.g. "Bearbeiten", "Filter [n]"
+// - round: 46 px circle with an icon in the slot; `label` names it for screen readers
+interface Shared {
+  href?: string;
+  type?: 'button' | 'submit';
+  fullWidth?: boolean;
+}
+
+interface Primary extends Shared {
+  variant?: 'primary';
+  size?: 'large' | 'medium' | 'small';
+}
+
+interface Flat extends Shared {
+  /** Accent instead of surface. Visual only (the filter button uses it for "filters set"), so no aria-pressed */
+  active?: boolean;
+  /** Hard shadow under the button (the filter button has it) */
+  raised?: boolean;
+  /** White instead of surface, for buttons on a pastel card (stays white in dark mode) */
+  onPastel?: boolean;
+}
+
+interface Outline extends Flat {
+  variant: 'outline';
+}
+
+interface Round extends Flat {
+  variant: 'round';
+  /** Round buttons only show an icon, so they need a name for screen readers */
+  label: string;
+}
+
+export type Props = Primary | Outline | Round;
+
+const props = Astro.props;
+const { href, type = 'button', fullWidth = false } = props;
+
+const Tag = href ? 'a' : 'button';
+const variant = props.variant ?? 'primary';
+const size =
+  props.variant === undefined || props.variant === 'primary' ? (props.size ?? 'large') : undefined;
+const { active, raised, onPastel } =
+  props.variant === 'outline' || props.variant === 'round' ? props : {};
+const label = props.variant === 'round' ? props.label : undefined;
+---
+
+<Tag
+  class:list={['button', variant, size, { active, raised, onPastel, fullWidth }]}
+  href={href}
+  type={href ? undefined : type}
+  aria-label={label}
+>
+  <slot />
+</Tag>
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .fullWidth {
+    display: flex;
+    width: 100%;
+  }
+
+  .primary {
+    padding: 0 var(--space-xl);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  .primary.large {
+    min-height: var(--button-height-large);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-l);
+    font-size: 1.1875rem; /* 19px */
+  }
+
+  .primary.medium {
+    min-height: var(--button-height-medium);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-m);
+    font-size: 1.0625rem; /* 17px */
+  }
+
+  .primary.small {
+    min-height: var(--button-height-small);
+    font-family: inherit;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 800;
+  }
+
+  .outline,
+  .round {
+    background: var(--surface);
+    font-size: 0.875rem; /* 14px */
+    font-weight: 800;
+  }
+
+  .outline {
+    min-height: var(--button-height-outline);
+    padding: 0 var(--space-l);
+    gap: var(--space-xxs);
+  }
+
+  .round {
+    flex: none;
+    width: var(--button-height-outline);
+    height: var(--button-height-outline);
+    padding: 0;
+    font-size: 1.25rem; /* 20px, for text glyphs like − and + */
+  }
+
+  .outline.onPastel,
+  .round.onPastel {
+    background: var(--white);
+    color: var(--on-pastel);
+  }
+
+  .outline.raised,
+  .round.raised {
+    box-shadow: var(--shadow-s);
+  }
+
+  /* After .onPastel so it wins */
+  .outline.active,
+  .round.active {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+// Small card with a label and a value on the recipe page (design/README.md, "Meta-Sticker"),
+// e.g. "Arbeitszeit" / "35 Min.".
+interface Props {
+  label: string;
+  value: string;
+}
+
+const { label, value } = Astro.props;
+---
+
+<div class="sticker">
+  <span class="label">{label}</span>
+  <span class="value">{value}</span>
+</div>
+
+<style>
+  .sticker {
+    display: inline-flex;
+    flex-direction: column;
+    padding: var(--space-xs) var(--space-m);
+    background: var(--surface);
+    border: var(--border);
+    border-radius: var(--radius-xs);
+  }
+
+  .label {
+    color: var(--muted);
+    font-size: var(--font-size-min);
+    font-weight: 800;
+  }
+
+  .value {
+    font-family: var(--font-display);
+    font-size: 1.0625rem; /* 17px */
+    font-weight: 600;
+  }
+</style>

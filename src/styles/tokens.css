@@ -21,6 +21,8 @@
   --line: #eddcc3;
   --accent: oklch(0.56 0.17 30);
   --on-accent: #ffffff;
+  /* Pills and round buttons on pastel cards stay white in dark mode too (text on them: --on-pastel) */
+  --white: #ffffff;
   --outline: #2b2118;
   /* Maulti's accent (lock, heart, confetti): a lighter coral than --accent, as in the design */
   --mascot-accent: #e8674f;
@@ -50,11 +52,12 @@
   --pastel-meal-baking: oklch(var(--pastel-l) var(--pastel-c) 165);
 
   /* Radii. Design: 16–20 small, 22 cards and rows, 28–34 large cards and sheets, pills */
-  --radius-xs: 1rem; /* 16px */
-  --radius-s: 1.125rem; /* 18px: thumbnails, meta stickers */
+  --radius-xs: 1rem; /* 16px: meta stickers */
+  --radius-s: 1.125rem; /* 18px: thumbnails */
   --radius-m: 1.25rem; /* 20px: inputs, meal tiles */
   --radius-card: 1.375rem; /* 22px: cards, recipe rows */
   --radius-l: 1.5rem; /* 24px: speech bubble, photos */
+  --radius-tail: 0.375rem; /* 6px: the speech bubble's corner towards Maulti */
   --radius-xl: 1.75rem; /* 28px: suggestion cards */
   --radius-sheet: 1.875rem; /* 30px: bottom sheet */
   --radius-xxl: 2.125rem; /* 34px: recipe header card */
@@ -68,6 +71,7 @@
   --shadow-l: 0 5px 0 var(--outline);
 
   /* Spacing. Design: page margin 16–20, gaps 8/10/12/14 */
+  --space-xxs: 0.375rem; /* 6px */
   --space-xs: 0.5rem; /* 8px */
   --space-s: 0.625rem; /* 10px */
   --space-m: 0.75rem; /* 12px */
@@ -93,6 +97,15 @@
   /* Recipe row (design/README.md, "Rezept-Zeile") */
   --recipe-row-thumb-size: 3.25rem; /* 52px: photo or initial tile */
   --recipe-row-padding: 0.625rem 0.75rem 0.625rem 0.625rem; /* 10px 12px 10px 10px */
+
+  /* Buttons, chips, segmented control (design/README.md, "Rezepte" and "Rezept-Detail") */
+  --button-height-large: 3.875rem; /* 62px: main call to action */
+  --button-height-medium: 3.375rem; /* 54px: call to action in a sheet */
+  --button-height-small: var(--touch-target); /* 44px */
+  --button-height-outline: 2.875rem; /* 46px: outline and round buttons */
+  --chip-height: 2.5rem; /* 40px: filter chips and segmented options */
+  --segmented-padding: 0.1875rem; /* 3px: track to options */
+  --segmented-gap: 0.125rem; /* 2px: between options */
 
   /* Minimum size of anything tappable */
   --touch-target: 2.75rem; /* 44px */

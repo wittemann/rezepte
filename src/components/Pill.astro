@@ -1,0 +1,36 @@
+---
+// Small label on a card (design/README.md, "Vorschläge" and "Kopfkarte"): the category (white)
+// or the time (dark). Both sit on a pastel background and keep their colors in dark mode.
+interface Props {
+  variant?: 'category' | 'time';
+}
+
+const { variant = 'category' } = Astro.props;
+---
+
+<span class={`pill ${variant}`}>
+  <slot />
+</span>
+
+<style>
+  .pill {
+    display: inline-block;
+    padding: 0.25rem var(--space-s); /* 4px 10px */
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-size-min);
+    font-weight: 800;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  .category {
+    background: var(--white);
+    color: var(--on-pastel);
+  }
+
+  .time {
+    background: var(--outline);
+    color: var(--white);
+  }
+</style>
