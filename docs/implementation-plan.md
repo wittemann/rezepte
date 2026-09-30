@@ -71,9 +71,9 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 **Recipes and favorites**
 
-- [ ] Recipes page: title + count, search field (≥ 16 px against iOS zoom), meal segmented control, filter button with count · `sonnet`
-- [ ] Filter sheet: category chips, "Bis 30 Min.", "Mit Anleitung", reset, "N Rezepte anzeigen" · `sonnet`
-- [ ] Grouped by category without search; flat hit list with search; empty state (Maulti `think`) · `sonnet`
+- [x] Recipes page: title + count, search field (≥ 16 px against iOS zoom), meal segmented control, filter button with count · `sonnet`
+- [x] Filter sheet: category chips, "Bis 30 Min.", "Mit Anleitung", reset, "N Rezepte anzeigen" · `sonnet`
+- [x] Grouped by category without search; flat hit list with search; empty state (Maulti `think`) · `sonnet`
 - [ ] Favorites page; empty state (Maulti `sleep`) · `haiku`
 
 **Recipe detail**
@@ -130,7 +130,27 @@ Playwright against a local dev server with the real Airtable base, read-only ([A
 - [ ] Performance check on a phone over mobile data (target ≈ 1 s per page) · `sonnet`
 - [ ] Dark mode pass on every screen · `sonnet`
 
-## 9. Launch
+## 9. Project-wide reviews
+
+Run after all screens and section 8 are done, before launch. Each review is a read-only sub-agent over the whole project; all run in parallel in one go.
+
+- **Brief:** the area, the relevant specs/ADRs, "read-only, don't edit or commit", "no recipe names or texts in the report" (the repo is public)
+- **Report:** a findings list, each with file:line, what's wrong, why it matters, suggested fix and severity: **blocker** (fix before launch), **should fix**, **nice to have**. Most severe first; "nothing found" is a valid result
+- **Afterwards:** the main session merges the reports, drops duplicates and false positives, and presents them to the human developer. Accepted findings become new items in this plan and are fixed in small, separately reviewed commits (the usual steps). Nothing is fixed inside the review run
+- Model tag = the sub-agent doing the review; bump it if a report looks shallow
+
+- [ ] Security: auth and session handling, middleware coverage, open redirects, input validation and Airtable formula injection on the write path, secrets, security headers, image proxy abuse, error leaks · `opus`
+- [ ] Architecture: layering (`lib` vs components vs pages), data flow, caching and rendering per [ADR 0003](decisions/0003-rendering-and-caching.md), coupling to Airtable, resilience when Airtable is down or rate-limited · `opus`
+- [ ] File structure: folder layout, naming, co-located specs/texts/styles, dead or misplaced files · `haiku`
+- [ ] General code quality: bugs, error handling, edge cases, duplication, type safety, lint-clean but questionable patterns · `sonnet`
+- [ ] Maintainability / readability: plain names (no abbreviations), short functions, comments only where the reason isn't obvious, UI texts in `.texts.ts` files · `sonnet`
+- [ ] Spec/ADR conformance: code matches `docs/specs/` and the ADRs; statuses in `docs/README.md` are true; no `Proposed`/`Open` decision still being built on; docs match reality (env vars, commands) · `sonnet`
+- [ ] Design fidelity: every screen against `design/` (variant `playful`) and [05-design-integration](specs/05-design-integration.md); hardcoded values instead of tokens; light and dark · `sonnet`
+- [ ] Performance: bundle size, hydrated islands, image handling per [ADR 0005](decisions/0005-image-handling.md), cache headers, Airtable calls per page, Vercel free-tier limits · `sonnet`
+- [ ] Dependencies: `npm audit`, outdated and unused packages, licenses, lockfile sanity, versions against current docs · `haiku`
+- [ ] Test quality: coverage gaps, brittle or flaky tests, tests that check implementation instead of behavior, missing edge cases in parsers and scaler · `sonnet`
+
+## 10. Launch
 
 - [ ] **(owner)** Test on the iPhone: add to home screen, cook one recipe end to end (timers, photo step, edit)
 - [ ] **(owner)** Share the URL and passphrase with family and friends
