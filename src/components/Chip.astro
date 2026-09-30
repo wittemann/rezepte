@@ -1,16 +1,28 @@
 ---
-// Filter chip in the filter sheet (design/README.md, "Filter-Sheet"). Active = accent.
-// With `href` it is a link (filter in the URL), otherwise a toggle button.
+// Filter chip (design/README.md, "Filter-Sheet"). Active = accent. Three kinds:
+// - with `name`: a checkbox in a form. Used in the filter sheet of the recipe list (the page
+//   renders it and passes it into the FilterSheet island as children)
+// - with `href`: a link (filter in the URL); no user yet
+// - otherwise a toggle button; no user yet
 interface Props {
   label: string;
   active?: boolean;
   href?: string;
+  /** Checkbox: field name, value and initial state */
+  name?: string;
+  value?: string;
+  checked?: boolean;
 }
 
-const { label, active = false, href } = Astro.props;
+const { label, active = false, href, name, value = 'on', checked = false } = Astro.props;
 ---
 
-{href ? (
+{name !== undefined ? (
+  <label class="chip checkbox">
+    <input class="input" type="checkbox" {name} {value} {checked} />
+    {label}
+  </label>
+) : href ? (
   <a class="chip" href={href} aria-current={active ? 'true' : undefined} data-active={active}>
     {label}
   </a>
@@ -37,8 +49,27 @@ const { label, active = false, href } = Astro.props;
     cursor: pointer;
   }
 
-  .chip[data-active='true'] {
+  .chip[data-active='true'],
+  .checkbox:has(:checked) {
     background: var(--accent);
     color: var(--on-accent);
+  }
+
+  /* The checkbox covers the chip, so the whole chip is tappable and stays focusable */
+  .checkbox {
+    position: relative;
+  }
+
+  .checkbox:has(:focus-visible) {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
   }
 </style>

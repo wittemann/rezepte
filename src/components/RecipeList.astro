@@ -1,0 +1,87 @@
+---
+// The recipes of the list page (design/README.md, "Rezepte"): grouped by category (heading and
+// count) without a search, one flat list with a search, Maulti and a hint when nothing matches.
+import { groupByCategory } from '../lib/recipes/group.ts';
+import type { Recipe } from '../lib/recipes/recipe.ts';
+import Maulti from './Maulti.tsx';
+import RecipeRow from './RecipeRow.astro';
+import { TEXT } from './RecipeList.texts.ts';
+
+interface Props {
+  recipes: Recipe[];
+  /** By category (no search) instead of one flat list */
+  grouped: boolean;
+}
+
+const { recipes, grouped } = Astro.props;
+const groups = grouped ? groupByCategory(recipes) : [{ category: undefined, recipes }];
+---
+
+{recipes.length === 0 ? (
+  <div class="empty">
+    <Maulti pose="think" size={120} />
+    <h2 class="emptyTitle">{TEXT.emptyTitle}</h2>
+    <p class="emptyText">{TEXT.emptyText}</p>
+  </div>
+) : (
+  groups.map((group) => (
+    <section class="group">
+      {grouped && (
+        <h2 class="heading">
+          <span>{group.category ?? TEXT.otherCategory}</span>
+          <span class="count">{group.recipes.length}</span>
+        </h2>
+      )}
+      {group.recipes.map((recipe) => (
+        // Favorites aren't built yet: no row is a favorite
+        <RecipeRow recipe={recipe} favorite={false} />
+      ))}
+    </section>
+  ))
+)}
+
+<style>
+  .group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    padding-bottom: 1.375rem; /* 22px between groups */
+  }
+
+  .heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0 0.25rem; /* 4px */
+    font-size: 1.1875rem; /* 19px */
+  }
+
+  .count {
+    padding: 0.1875rem 0.5625rem; /* 3px 9px */
+    border-radius: var(--radius-pill);
+    background: var(--sunk);
+    font-family: var(--font-body);
+    font-size: var(--font-size-min);
+    font-weight: 800;
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-s);
+    padding: var(--space-xxl) 2rem; /* 24px 32px */
+    text-align: center;
+  }
+
+  .emptyTitle {
+    font-size: 1.375rem; /* 22px */
+  }
+
+  .emptyText {
+    max-width: 16.25rem; /* 260px */
+    color: var(--muted);
+    font-size: 0.9375rem; /* 15px */
+    text-wrap: pretty;
+  }
+</style>

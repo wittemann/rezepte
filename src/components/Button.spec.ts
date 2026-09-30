@@ -64,4 +64,19 @@ describe('Button', () => {
   it('has no aria-label unless given', async () => {
     expect(await renderButton()).not.toContain('aria-label');
   });
+
+  it('passes extra attributes through and lets them win', async () => {
+    const html = await renderButton({
+      variant: 'outline',
+      attributes: {
+        'aria-haspopup': 'dialog',
+        'aria-label': 'Filter, 2 aktiv',
+        'data-marker': true,
+      },
+    });
+    expect(html).toContain('aria-haspopup="dialog"');
+    expect(html).toContain('aria-label="Filter, 2 aktiv"');
+    expect(html).toMatch(/<button[^>]*\sdata-marker[\s>=]/);
+    expect(html).toMatch(/<button[^>]*type="button"/);
+  });
 });

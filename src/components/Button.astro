@@ -7,6 +7,8 @@ interface Shared {
   href?: string;
   type?: 'button' | 'submit';
   fullWidth?: boolean;
+  /** Extra attributes on the element, e.g. `aria-haspopup` or a `data-*` marker; they win over the ones above */
+  attributes?: Record<string, string | boolean | undefined>;
 }
 
 interface Primary extends Shared {
@@ -36,7 +38,7 @@ interface Round extends Flat {
 export type Props = Primary | Outline | Round;
 
 const props = Astro.props;
-const { href, type = 'button', fullWidth = false } = props;
+const { href, type = 'button', fullWidth = false, attributes } = props;
 
 const Tag = href ? 'a' : 'button';
 const variant = props.variant ?? 'primary';
@@ -52,6 +54,7 @@ const label = props.variant === 'round' ? props.label : undefined;
   href={href}
   type={href ? undefined : type}
   aria-label={label}
+  {...attributes}
 >
   <slot />
 </Tag>

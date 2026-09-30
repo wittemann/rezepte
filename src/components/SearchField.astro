@@ -1,0 +1,96 @@
+---
+// Search field of the recipe list (design/README.md, "Rezepte"). A plain GET form: Enter on the
+// keyboard submits it, no JS needed. `hiddenFields` carry the other list state along.
+import { LIST_PATH } from '../lib/recipes/list-query.ts';
+import Icon from './Icon.tsx';
+import { TEXT } from './SearchField.texts.ts';
+
+interface Props {
+  query: string;
+  /** Other URL parameters to keep when searching, as [name, value] pairs */
+  hiddenFields: [string, string][];
+  /** Link that clears the search text (shown while there is one) */
+  clearHref: string;
+}
+
+const { query, hiddenFields, clearHref } = Astro.props;
+---
+
+<form class="field" method="get" action={LIST_PATH} role="search">
+  {hiddenFields.map(([name, value]) => (
+    <input type="hidden" name={name} value={value} />
+  ))}
+  <Icon name="search" size={20} strokeWidth={2.2} />
+  <input
+    class="input"
+    type="search"
+    name="q"
+    value={query}
+    placeholder={TEXT.placeholder}
+    aria-label={TEXT.placeholder}
+    enterkeyhint="search"
+    autocomplete="off"
+  />
+  {query && (
+    <a class="clear" href={clearHref} aria-label={TEXT.clear}>
+      <span aria-hidden="true">{TEXT.clearSymbol}</span>
+    </a>
+  )}
+</form>
+
+<style>
+  .field {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    height: 3.5rem; /* 56px */
+    padding: 0 var(--space-xs) 0 var(--space-xl);
+    background: var(--surface);
+    border: var(--border);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-s);
+  }
+
+  .input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    /* 17px: at least 16px, otherwise iOS zooms into the field */
+    font-size: 1.0625rem;
+    font-weight: 600;
+    appearance: none;
+  }
+
+  .input::placeholder {
+    color: var(--muted);
+  }
+
+  /* The field has its own clear link, without the browser's cross */
+  .input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  .input:focus-visible {
+    outline: none;
+  }
+
+  .field:has(.input:focus-visible) {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .clear {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--touch-target);
+    height: var(--touch-target);
+    border-radius: var(--radius-pill);
+    background: var(--sunk);
+    color: var(--ink);
+    font-weight: 800;
+    text-decoration: none;
+  }
+</style>

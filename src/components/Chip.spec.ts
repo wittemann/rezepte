@@ -2,7 +2,14 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import Chip from './Chip.astro';
 
-async function renderChip(props: { label: string; active?: boolean; href?: string }) {
+async function renderChip(props: {
+  label: string;
+  active?: boolean;
+  href?: string;
+  name?: string;
+  value?: string;
+  checked?: boolean;
+}) {
   const container = await AstroContainer.create();
   return container.renderToString(Chip, { props });
 }
@@ -35,5 +42,26 @@ describe('Chip', () => {
   it('does not mark an inactive link as current', async () => {
     const html = await renderChip({ label: 'Suppe', href: '/x' });
     expect(html).not.toContain('aria-current');
+  });
+
+  it('is a checkbox inside a label with name, value and state', async () => {
+    const html = await renderChip({
+      label: 'Suppe',
+      name: 'category',
+      value: 'soup',
+      checked: true,
+    });
+    expect(html).toMatch(/<label[^>]*>/);
+    expect(html).toMatch(/<input[^>]*type="checkbox"/);
+    expect(html).toContain('name="category"');
+    expect(html).toContain('value="soup"');
+    expect(html).toMatch(/<input[^>]*\schecked[\s>=]/);
+    expect(html).toContain('Suppe');
+    expect(html).not.toContain('<button');
+  });
+
+  it('renders an unchecked checkbox without the checked attribute', async () => {
+    const html = await renderChip({ label: 'Suppe', name: 'category', value: 'soup' });
+    expect(html).not.toMatch(/<input[^>]*\schecked[\s>=]/);
   });
 });
