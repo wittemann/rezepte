@@ -38,7 +38,7 @@ Each item below is done only when it has passed these steps, in this order:
 - [x] `lib/recipes/repository.ts`, reading: `getAll`, `getById` with zod validation, tolerant reads
 - [x] `lib/recipes/repository.ts`, writing: `create`, `update` with `PATCH` + `typecast`, never writing computed fields
 - [x] Search (name and ingredients, name matches first) and filters (meal, category, ≤ 30 min, with instructions)
-- [ ] Suggestions: matching meal, time limit (30/90 min, unknown time counts as matching), deterministic shuffle by day + meal + dice seed, max. 6
+- [x] Suggestions: matching meal, time limit (30/90 min, unknown time counts as matching), deterministic shuffle by day + meal + dice seed, max. 6
 
 ## 3. Auth
 
