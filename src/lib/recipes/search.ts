@@ -32,18 +32,30 @@ export function searchRecipes(recipes: Recipe[], query: string): Recipe[] {
   return [...nameMatches, ...ingredientMatches];
 }
 
+/** What the filters other than the meal look at. */
+export type FilterableRecipe = Pick<Recipe, 'category' | 'totalMinutes' | 'hasInstructions'>;
+
+/**
+ * Whether a recipe passes the filters of the filter sheet (everything but the meal).
+ * The sheet uses it too, to count the matches while chips are toggled.
+ */
+export function matchesSheetFilters(recipe: FilterableRecipe, filters: RecipeFilters): boolean {
+  const { categories = [], maxTotalMinutes, onlyWithInstructions } = filters;
+  if (categories.length > 0 && !(recipe.category && categories.includes(recipe.category))) {
+    return false;
+  }
+  if (maxTotalMinutes !== undefined) {
+    if (recipe.totalMinutes === undefined || recipe.totalMinutes > maxTotalMinutes) return false;
+  }
+  if (onlyWithInstructions && !recipe.hasInstructions) return false;
+  return true;
+}
+
 /** Recipes that satisfy every filter that is set. */
 export function filterRecipes(recipes: Recipe[], filters: RecipeFilters): Recipe[] {
-  const { meal, categories = [], maxTotalMinutes, onlyWithInstructions } = filters;
-  return recipes.filter((recipe) => {
-    if (meal !== undefined && !recipe.meals.includes(meal)) return false;
-    if (categories.length > 0 && !(recipe.category && categories.includes(recipe.category))) {
-      return false;
-    }
-    if (maxTotalMinutes !== undefined) {
-      if (recipe.totalMinutes === undefined || recipe.totalMinutes > maxTotalMinutes) return false;
-    }
-    if (onlyWithInstructions && !recipe.hasInstructions) return false;
-    return true;
-  });
+  const { meal } = filters;
+  return recipes.filter(
+    (recipe) =>
+      (meal === undefined || recipe.meals.includes(meal)) && matchesSheetFilters(recipe, filters),
+  );
 }

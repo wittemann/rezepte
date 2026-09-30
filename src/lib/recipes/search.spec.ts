@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Recipe } from './recipe.ts';
-import { filterRecipes, searchRecipes } from './search.ts';
+import { filterRecipes, matchesSheetFilters, searchRecipes } from './search.ts';
 
 function recipe(overrides: Partial<Recipe> & { title: string }): Recipe {
   return {
@@ -104,5 +104,30 @@ describe('filterRecipes', () => {
     expect(
       titles(filterRecipes(recipes, { ...filters, categories: [...filters.categories] })),
     ).toEqual(['Braten']);
+  });
+});
+
+describe('matchesSheetFilters', () => {
+  const recipeData = { category: 'Suppe', totalMinutes: 20, hasInstructions: true };
+
+  it('matches everything without filters', () => {
+    expect(matchesSheetFilters({ hasInstructions: false }, {})).toBe(true);
+  });
+
+  it('checks category, total time and instructions, and ignores the meal', () => {
+    expect(matchesSheetFilters(recipeData, { categories: ['Suppe', 'Salat'] })).toBe(true);
+    expect(matchesSheetFilters(recipeData, { categories: ['Salat'] })).toBe(false);
+    expect(matchesSheetFilters({ hasInstructions: true }, { categories: ['Salat'] })).toBe(false);
+    expect(matchesSheetFilters(recipeData, { maxTotalMinutes: 20 })).toBe(true);
+    expect(matchesSheetFilters(recipeData, { maxTotalMinutes: 19 })).toBe(false);
+    expect(matchesSheetFilters({ hasInstructions: true }, { maxTotalMinutes: 30 })).toBe(false);
+    expect(matchesSheetFilters({ ...recipeData, hasInstructions: false }, {})).toBe(true);
+    expect(
+      matchesSheetFilters(
+        { ...recipeData, hasInstructions: false },
+        { onlyWithInstructions: true },
+      ),
+    ).toBe(false);
+    expect(matchesSheetFilters(recipeData, { meal: 'Backen' })).toBe(true);
   });
 });
