@@ -2,7 +2,7 @@
 
 Steps to build v1 as defined in [01-requirements](specs/01-requirements.md), following the design in `design/` ([05-design-integration](specs/05-design-integration.md)). An item is ticked off in the commit that completes it.
 
-Legend: **(owner)** = needs the project owner (accounts, secrets, decisions, testing on the phone).
+Legend: **(owner)** = needs the project owner (accounts, secrets, decisions, testing on the phone). `haiku` / `sonnet` / `opus` = the model to use for the sub-agent that builds the item (see "Sub-agents and models").
 
 ## How we work: every item goes through a manual review
 
@@ -14,6 +14,15 @@ Each item below is done only when it has passed these steps, in this order:
 4. **Manual review (human developer):** read the diff until it's understood. Ask questions, request changes, or give an explicit OK. If a change is too big to follow, it gets split
 5. **Commit:** only after the OK, one commit per reviewed change, with a message that explains why. The commit that completes an item also ticks it off here
 6. **Push:** when the developer asks; CI then runs on GitHub
+
+## Sub-agents and models
+
+Open items are built by a sub-agent, not in the main session, to keep the main context small. The main session only briefs it, runs the checks and presents the result (steps 3–5 stay with the main session and the human reviewer; a sub-agent never commits).
+
+- **Brief:** the plan item, the relevant specs/ADRs, the files to touch, "don't commit", and the check commands
+- **Model per item** (the tag at the end of the line): `haiku` = small, mechanical, follows an existing pattern; `sonnet` = default, normal feature work; `opus` = tricky logic, security, caching, browser APIs or anything hard to review afterwards
+- **Review before presenting:** as soon as the sub-agent is back, the main thread reviews the result (`/code-review` on the uncommitted changes, in a different model than the one that built it, so it doesn't repeat the same blind spots). Findings go back to a sub-agent to fix, then it is reviewed again. Repeat until nothing is left. Only then present to the human developer (step 3 below)
+- Bump the model when a result needs rework; the tag is a starting point
 
 ## 1. Foundation
 
@@ -49,67 +58,67 @@ Each item below is done only when it has passed these steps, in this order:
 
 ## 4. App shell and shared components
 
-- [ ] Desktop: limit the app to about one iPhone width (≈ 430 px, in `rem`), centered, as a token; fixed elements (tab bar, bottom sheet, sticky CTA, timer pill) stay within it. The design only covers the phone (390 × 844); on wide screens the login column currently stretches across the whole window
-- [ ] Floating tab bar: Start · Rezepte · Favoriten · Neu as in `design/README.md` and the screenshots, not the prototype code ([05-design-integration](specs/05-design-integration.md), Rules); active state, safe-area aware; page padding for it. Open: color of the filled heart when Favoriten is active (README: `ink`, prototype code: accent)
-- [ ] Recipe row (photo or initial tile, name, meta, heart; the prototype draws this heart filled without outline)
-- [ ] Pills and chips, segmented control, buttons (primary/round/outline), speech bubble, meta sticker
-- [ ] Bottom sheet (filter sheet, ingredients in cooking mode)
-- [ ] Toast ("Gespeichert")
-- [ ] Plain error pages: 404 ("Rezept nicht gefunden") and 500 ("Da ist was schiefgelaufen"), tokens only, no design
-- [ ] Favorites store: `localStorage`, most recently added first, shared by all islands
+- [ ] Desktop: limit the app to about one iPhone width (≈ 430 px, in `rem`), centered, as a token; fixed elements (tab bar, bottom sheet, sticky CTA, timer pill) stay within it. The design only covers the phone (390 × 844); on wide screens the login column currently stretches across the whole window · `sonnet`
+- [ ] Floating tab bar: Start · Rezepte · Favoriten · Neu as in `design/README.md` and the screenshots, not the prototype code ([05-design-integration](specs/05-design-integration.md), Rules); active state, safe-area aware; page padding for it. Open: color of the filled heart when Favoriten is active (README: `ink`, prototype code: accent) · `sonnet`
+- [ ] Recipe row (photo or initial tile, name, meta, heart; the prototype draws this heart filled without outline) · `sonnet`
+- [ ] Pills and chips, segmented control, buttons (primary/round/outline), speech bubble, meta sticker · `sonnet`
+- [ ] Bottom sheet (filter sheet, ingredients in cooking mode) · `opus`
+- [ ] Toast ("Gespeichert") · `haiku`
+- [ ] Plain error pages: 404 ("Rezept nicht gefunden") and 500 ("Da ist was schiefgelaufen"), tokens only, no design · `haiku`
+- [ ] Favorites store: `localStorage`, most recently added first, shared by all islands · `sonnet`
 
 ## 5. Screens
 
 **Recipes and favorites**
 
-- [ ] Recipes page: title + count, search field (≥ 16 px against iOS zoom), meal segmented control, filter button with count
-- [ ] Filter sheet: category chips, "Bis 30 Min.", "Mit Anleitung", reset, "N Rezepte anzeigen"
-- [ ] Grouped by category without search; flat hit list with search; empty state (Maulti `think`)
-- [ ] Favorites page; empty state (Maulti `sleep`)
+- [ ] Recipes page: title + count, search field (≥ 16 px against iOS zoom), meal segmented control, filter button with count · `sonnet`
+- [ ] Filter sheet: category chips, "Bis 30 Min.", "Mit Anleitung", reset, "N Rezepte anzeigen" · `sonnet`
+- [ ] Grouped by category without search; flat hit list with search; empty state (Maulti `think`) · `sonnet`
+- [ ] Favorites page; empty state (Maulti `sleep`) · `haiku`
 
 **Recipe detail**
 
-- [ ] Image proxy route `/img/[recordId]/[attachmentId]` with long cache headers — [ADR 0005](decisions/0005-image-handling.md). The middleware checks the login for uncached requests only; verify which headers make the Vercel CDN cache a function response
-- [ ] Header card in category color: back, heart, "Bearbeiten", optional photo, category, title, source link, Maulti (`heart`/`wave`)
-- [ ] Meta stickers (Arbeitszeit, Gesamtzeit, kcal/Portion)
-- [ ] Ingredients with serving scaler (island)
-- [ ] Steps "So geht's" with sections, number circles, timer chips; hint box; notes expandable
-- [ ] Stub state: "Noch ohne Anleitung" + "Rezept ergänzen"
-- [ ] Sticky CTA "Los, wir kochen!"
+- [ ] Image proxy route `/img/[recordId]/[attachmentId]` with long cache headers — [ADR 0005](decisions/0005-image-handling.md). The middleware checks the login for uncached requests only; verify which headers make the Vercel CDN cache a function response · `opus`
+- [ ] Header card in category color: back, heart, "Bearbeiten", optional photo, category, title, source link, Maulti (`heart`/`wave`) · `sonnet`
+- [ ] Meta stickers (Arbeitszeit, Gesamtzeit, kcal/Portion) · `haiku`
+- [ ] Ingredients with serving scaler (island) · `sonnet`
+- [ ] Steps "So geht's" with sections, number circles, timer chips; hint box; notes expandable · `sonnet`
+- [ ] Stub state: "Noch ohne Anleitung" + "Rezept ergänzen" · `haiku`
+- [ ] Sticky CTA "Los, wir kochen!" · `haiku`
 
 **Start**
 
-- [ ] Greeting by time of day with Maulti `wave` and speech bubble
-- [ ] Meal tiles and time segmented control with defaults (before 11 → Frühstück; Mon–Fri → Wenig Zeit)
-- [ ] Suggestion carousel (scroll-snap, tilted cards, "Nochmal würfeln", empty state)
-- [ ] Favorites preview (max. 4) and "Stöbern" category grid linking to the filtered list
+- [ ] Greeting by time of day with Maulti `wave` and speech bubble · `haiku`
+- [ ] Meal tiles and time segmented control with defaults (before 11 → Frühstück; Mon–Fri → Wenig Zeit) · `sonnet`
+- [ ] Suggestion carousel (scroll-snap, tilted cards, "Nochmal würfeln", empty state) · `sonnet`
+- [ ] Favorites preview (max. 4) and "Stöbern" category grid linking to the filtered list · `sonnet`
 
 **Cooking mode**
 
-- [ ] Step view: close, progress dots, ingredients sheet (scaled), Maulti `cook`, step card with section label
-- [ ] Swipe (50 px threshold) and buttons ← / Weiter / Fertig
-- [ ] Screen Wake Lock while cooking
-- [ ] Timers: several in parallel, persisted across pages, pill at the top, alarm overlay (Maulti `alarm`) with sound and vibration — [ADR 0012](decisions/0012-pwa-and-timers.md)
-- [ ] Photo step for recipes without a photo: camera input, resize to max. 1200 px, upload action to Airtable's upload-attachment endpoint (verify current API)
+- [ ] Step view: close, progress dots, ingredients sheet (scaled), Maulti `cook`, step card with section label · `sonnet`
+- [ ] Swipe (50 px threshold) and buttons ← / Weiter / Fertig · `sonnet`
+- [ ] Screen Wake Lock while cooking · `haiku`
+- [ ] Timers: several in parallel, persisted across pages, pill at the top, alarm overlay (Maulti `alarm`) with sound and vibration — [ADR 0012](decisions/0012-pwa-and-timers.md) · `opus`
+- [ ] Photo step for recipes without a photo: camera input, resize to max. 1200 px, upload action to Airtable's upload-attachment endpoint (verify current API) · `opus`
 
 **Edit and new**
 
-- [ ] One form for both: name, category chips, meals (multiple), servings, times (`h:mm`), ingredients and instructions with help text, source, link, notes; "Sichern" disabled without a name
-- [ ] Astro Action with zod: create or `PATCH` only the app's fields; redirect to the detail page; toast "Gespeichert"
-- [ ] Hint "Änderungen sind für alle in der Familie sichtbar."
+- [ ] One form for both: name, category chips, meals (multiple), servings, times (`h:mm`), ingredients and instructions with help text, source, link, notes; "Sichern" disabled without a name · `sonnet`
+- [ ] Astro Action with zod: create or `PATCH` only the app's fields; redirect to the detail page; toast "Gespeichert" · `sonnet`
+- [ ] Hint "Änderungen sind für alle in der Familie sichtbar." · `haiku`
 
 ## 6. Installable app
 
-- [ ] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon; manifest link in `Base.astro`
-- [ ] Replace `favicon.svg` / `favicon.ico` (still Astro's default logo) with Maulti
+- [ ] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon; manifest link in `Base.astro` · `sonnet`
+- [ ] Replace `favicon.svg` / `favicon.ico` (still Astro's default logo) with Maulti · `haiku`
 
 ## 7. Monitoring and quality
 
 - [ ] **(owner)** Create the Sentry account (EU region) and project; add `SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` to Vercel — [ADR 0009](decisions/0009-error-monitoring.md)
-- [ ] `@sentry/astro`: errors + replay on error, inputs masked, login POST scrubbed, explicit reports for Airtable errors, 429s and skipped records
-- [ ] Accessibility pass: keyboard, contrast, 44 px targets, large system text size
-- [ ] Performance check on a phone over mobile data (target ≈ 1 s per page)
-- [ ] Dark mode pass on every screen
+- [ ] `@sentry/astro`: errors + replay on error, inputs masked, login POST scrubbed, explicit reports for Airtable errors, 429s and skipped records · `opus`
+- [ ] Accessibility pass: keyboard, contrast, 44 px targets, large system text size · `sonnet`
+- [ ] Performance check on a phone over mobile data (target ≈ 1 s per page) · `sonnet`
+- [ ] Dark mode pass on every screen · `sonnet`
 
 ## 8. Launch
 
