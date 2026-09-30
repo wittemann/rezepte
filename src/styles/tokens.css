@@ -76,6 +76,20 @@
   --space-page: 1.25rem; /* 20px: side margin of every page */
   --space-xxl: 1.5rem; /* 24px: side margin of the login screen */
 
+  /* Widest the app gets; on larger screens it stays this wide, centered (design covers phones only) */
+  --app-max-width: 26.875rem; /* 430px */
+
+  /* Smallest text size in the design (labels, badges) */
+  --font-size-min: 0.75rem; /* 12px */
+
+  /* Floating tab bar (design/README.md, "Tab-Leiste") */
+  --tab-bar-height: 4.25rem; /* 68px */
+  --tab-bar-gap: 0.125rem; /* 2px: icon to label */
+  --tab-bar-dot-size: 0.3125rem; /* 5px: dot under the active tab */
+  --tab-bar-dot-offset: 0.3125rem; /* 5px: dot to the bottom edge */
+  /* Space pages keep free at the bottom: bar + its distance from the edge + spare = 120px as in the README */
+  --tab-bar-clearance: calc(var(--tab-bar-height) + var(--space-m) + 2.5rem);
+
   /* Minimum size of anything tappable */
   --touch-target: 2.75rem; /* 44px */
 }

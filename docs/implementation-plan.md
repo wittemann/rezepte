@@ -10,7 +10,7 @@ Each item below is done only when it has passed these steps, in this order:
 
 1. **Build:** Claude implements the item in a small, focused change (one item, or a few closely related ones). Logic comes with tests
 2. **Check:** format, lint, type check, tests and build pass locally (`npm run format:check`, `lint`, `check`, `test`, `build`)
-3. **Present:** Claude summarizes what changed and why, lists the files, reports the check results and points out what deserves a close look (tricky logic, new dependencies, security-relevant code, generated files)
+3. **Present:** Claude summarizes what changed and why, lists the files, reports the check results and points out what deserves a close look (tricky logic, new dependencies, security-relevant code, generated files). Visual changes are shown in the browser (dev server, Browser pane) so the reviewer can see them, not just read the diff
 4. **Manual review (human developer):** read the diff until it's understood. Ask questions, request changes, or give an explicit OK. If a change is too big to follow, it gets split
 5. **Commit:** only after the OK, one commit per reviewed change, with a message that explains why. The commit that completes an item also ticks it off here
 6. **Push:** when the developer asks; CI then runs on GitHub
@@ -58,8 +58,8 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 ## 4. App shell and shared components
 
-- [ ] Desktop: limit the app to about one iPhone width (≈ 430 px, in `rem`), centered, as a token; fixed elements (tab bar, bottom sheet, sticky CTA, timer pill) stay within it. The design only covers the phone (390 × 844); on wide screens the login column currently stretches across the whole window · `sonnet`
-- [ ] Floating tab bar: Start · Rezepte · Favoriten · Neu as in `design/README.md` and the screenshots, not the prototype code ([05-design-integration](specs/05-design-integration.md), Rules); active state, safe-area aware; page padding for it. Open: color of the filled heart when Favoriten is active (README: `ink`, prototype code: accent) · `sonnet`
+- [x] Desktop: limit the app to about one iPhone width (≈ 430 px, in `rem`), centered, as a token; fixed elements (tab bar, bottom sheet, sticky CTA, timer pill) stay within it. The design only covers the phone (390 × 844); on wide screens the login column currently stretches across the whole window · `sonnet`
+- [x] Floating tab bar: Start · Rezepte · Favoriten · Neu as in `design/README.md` and the screenshots, not the prototype code ([05-design-integration](specs/05-design-integration.md), Rules); active state, safe-area aware; page padding for it. Open: color of the filled heart when Favoriten is active (README: `ink`, prototype code: accent) · `sonnet`
 - [ ] Recipe row (photo or initial tile, name, meta, heart; the prototype draws this heart filled without outline) · `sonnet`
 - [ ] Pills and chips, segmented control, buttons (primary/round/outline), speech bubble, meta sticker · `sonnet`
 - [ ] Bottom sheet (filter sheet, ingredients in cooking mode) · `opus`
