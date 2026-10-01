@@ -14,6 +14,7 @@
   - Playwright, one smoke test first: login → list → detail
   - Runs against a local dev server with a test `.env`, **never against production data**
   - Airtable: originally a separate test base or mocked responses. Previews and prod share the real base (06-deployment), so tests must not write there
+  - **Update 2026-10-01:** e2e runs use a separate read-only token (`AIRTABLE_E2E_TOKEN`, `data.records:read` only), so a test cannot write even by mistake
   - Runs in the CI workflow from ADR 0008
 
 ## Consequences

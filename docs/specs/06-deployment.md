@@ -23,6 +23,7 @@
 | `SESSION_SECRET`               | random, 32+ bytes (`openssl rand -base64 32`)                                                                   | Vercel (prod + preview), `.env`             |
 | `AIRTABLE_TOKEN`               | Personal Access Token, scoped to this base only: `data.records:read`, `data.records:write`, `schema.bases:read` | Vercel (prod + preview), `.env`             |
 | `AIRTABLE_BASE_ID`             | `app…`                                                                                                          | Vercel (prod + preview), `.env`             |
+| `AIRTABLE_E2E_TOKEN`           | read-only token for the e2e tests: `data.records:read` only, this base only                                     | `.env`, GitHub Actions secret               |
 | `SENTRY_DSN`                   | Sentry project key (public by design); if unset, Sentry is off                                                  | Vercel (prod + preview), optional in `.env` |
 | `SENTRY_AUTH_TOKEN`            | **secret**, for the source-map upload at build time                                                             | Vercel only                                 |
 | `SENTRY_ORG`, `SENTRY_PROJECT` | for the source-map upload                                                                                       | Vercel only                                 |

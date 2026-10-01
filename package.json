@@ -21,7 +21,8 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "hash-password": "node scripts/hash-password.ts",
-    "airtable:schema": "node --env-file=.env scripts/airtable-schema.ts"
+    "airtable:schema": "node --env-file=.env scripts/airtable-schema.ts",
+    "test:e2e": "playwright test --pass-with-no-tests"
   },
   "allowScripts": {
     "esbuild": true
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
     "@types/node": "~24.19.0",
     "eslint": "^10.11.0",
     "eslint-plugin-astro": "^3.2.1",

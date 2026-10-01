@@ -1,5 +1,5 @@
-# Lint, type check, test, build and secret scan (docs/decisions/0008-tooling.md).
-# Needs no secrets, so PRs from forks can run it safely.
+# Lint, type check, test, build, e2e tests and secret scan (docs/decisions/0008-tooling.md).
+# All jobs but e2e need no secrets, so PRs from forks can run them safely.
 name: CI
 
 on:
@@ -25,6 +25,28 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
+
+  # Needs the Airtable secrets, which PRs from forks don't get: skipped there.
+  e2e:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      AIRTABLE_E2E_TOKEN: ${{ secrets.AIRTABLE_E2E_TOKEN }}
+      AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/
 
   secret-scan:
     runs-on: ubuntu-latest
