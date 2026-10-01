@@ -7,12 +7,12 @@ describe('CookButton', () => {
   it('is a link to cooking mode with the call to action', async () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(CookButton, {
-      props: { href: '/rezepte/recX1/kochen' },
+      props: { href: '/rezepte/recX1/cook' },
     });
     const link = new new Window().DOMParser()
       .parseFromString(html, 'text/html')
       .querySelector('a')!;
     expect(link.textContent?.trim()).toBe('Los, wir kochen!');
-    expect(link.getAttribute('href')).toBe('/rezepte/recX1/kochen');
+    expect(link.getAttribute('href')).toBe('/rezepte/recX1/cook');
   });
 });

@@ -80,11 +80,11 @@ describe('recipe page', () => {
 
   it('offers cooking mode only for a recipe with instructions', async () => {
     const full = (await renderPage(makeRecipe({ id: 'recX1' }))).document;
-    expect(full.querySelector('a[href="/rezepte/recX1/kochen"]')?.textContent?.trim()).toBe(
+    expect(full.querySelector('a[href="/rezepte/recX1/cook"]')?.textContent?.trim()).toBe(
       'Los, wir kochen!',
     );
 
     const stub = (await renderPage(makeRecipe({ id: 'recX1', hasInstructions: false }))).document;
-    expect(stub.querySelector('a[href="/rezepte/recX1/kochen"]')).toBeNull();
+    expect(stub.querySelector('a[href="/rezepte/recX1/cook"]')).toBeNull();
   });
 });

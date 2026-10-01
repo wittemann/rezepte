@@ -34,7 +34,7 @@ if (!recipe) Astro.response.status = 404;
       )}
       {recipe.hasInstructions && <Steps method={recipe.method} category={recipe.category} />}
       {recipe.notes && <Notes notes={recipe.notes} />}
-      {recipe.hasInstructions && <CookButton href={`/rezepte/${recipe.id}/kochen`} />}
+      {recipe.hasInstructions && <CookButton href={`/rezepte/${recipe.id}/cook`} />}
     </main>
   </Base>
 ) : (
