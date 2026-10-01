@@ -37,4 +37,12 @@ describe('recipe page', () => {
     expect(document.querySelector('h1')?.textContent).toBe('Beispiel Suppe');
     expect(document.querySelector('a[href="/favoriten"]')).toBeNull();
   });
+
+  it('answers 404 with its own message for an unknown recipe', async () => {
+    const { response, document } = await renderPage(undefined);
+    expect(response.status).toBe(404);
+    expect(document.title).toBe('Rezept nicht gefunden');
+    expect(document.querySelector('h1')?.textContent).toBe('Rezept nicht gefunden');
+    expect(document.querySelector('main a')?.getAttribute('href')).toBe('/rezepte');
+  });
 });

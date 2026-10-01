@@ -3,22 +3,36 @@
 // (docs/decisions/0003-rendering-and-caching.md). Airtable errors are not caught: Astro shows
 // the 500 page.
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import ErrorMessage from '../../components/ErrorMessage.astro';
 import RecipeHeader from '../../components/RecipeHeader.astro';
 import Base from '../../layouts/Base.astro';
 import { getById } from '../../lib/recipes/repository.ts';
+import { TEXT } from './_[id].texts.ts';
 
 const recipe = await getById(
   { token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID },
   Astro.params.id ?? '',
 );
-if (!recipe) return Astro.rewrite('/404');
+// The generic 404 page only says "Seite nicht gefunden"
+if (!recipe) Astro.response.status = 404;
 ---
 
-<Base title={recipe.title}>
-  <main>
-    <RecipeHeader {recipe} />
-  </main>
-</Base>
+{recipe ? (
+  <Base title={recipe.title}>
+    <main>
+      <RecipeHeader {recipe} />
+    </main>
+  </Base>
+) : (
+  <Base title={TEXT.notFoundTitle}>
+    <ErrorMessage
+      title={TEXT.notFoundTitle}
+      message={TEXT.notFoundMessage}
+      linkText={TEXT.notFoundLink}
+      href="/rezepte"
+    />
+  </Base>
+)}
 
 <style>
   main {

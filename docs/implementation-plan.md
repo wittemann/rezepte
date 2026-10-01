@@ -90,7 +90,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 - [x] Image proxy route `/img/[recordId]/[attachmentId]` with long cache headers — [ADR 0005](decisions/0005-image-handling.md). The middleware checks the login for uncached requests only; verify which headers make the Vercel CDN cache a function response · `opus`
 - [x] Header card in category color: back, heart, "Bearbeiten", optional photo, category, title, source link, Maulti (`heart`/`wave`) · `sonnet`
-- [ ] Unknown recipe id: the detail page renders `ErrorMessage` with "Rezept nicht gefunden" and status 404 (the generic 404 page only says "Seite nicht gefunden") · `haiku`
+- [x] Unknown recipe id: the detail page renders `ErrorMessage` with "Rezept nicht gefunden" and status 404 (the generic 404 page only says "Seite nicht gefunden") · `haiku`
 - [ ] Meta stickers (Arbeitszeit, Gesamtzeit, kcal/Portion) · `haiku`
 - [ ] Ingredients with serving scaler (island) · `sonnet`
 - [ ] Steps "So geht's" with sections, number circles, timer chips; hint box; notes expandable · `sonnet`
