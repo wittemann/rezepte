@@ -127,6 +127,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 - [ ] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon; manifest link in `Base.astro` · `sonnet`
 - [ ] Replace `favicon.svg` / `favicon.ico` (still Astro's default logo) with Maulti · `haiku`
+- [ ] Home-screen app on iPhone: page headline sits under the iOS status bar blur (seen on Rezepte list); fix top clearance, check on device · `sonnet`
 
 ## 7. End-to-end tests (rest)
 
