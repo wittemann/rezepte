@@ -9,6 +9,7 @@ const ICONS = {
   plus: 'M12 5v14M5 12h14',
   filter: 'M4 7h16M7 12h10M10 17h4',
   back: 'M19 12H5M11 6l-6 6l6 6',
+  timer: 'M12 6a7 7 0 1 0 0 14a7 7 0 1 0 0-14M12 9v4l3 2M10 3h4',
 };
 
 // One per category; names match the --pastel-cat-* tokens

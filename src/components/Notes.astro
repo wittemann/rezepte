@@ -1,0 +1,72 @@
+---
+// Notes and tips of a recipe, collapsed until tapped (design/README.md, "Rezept-Detail").
+// A native <details>, so it works without JavaScript; CSS swaps "Anzeigen" and "Ausblenden".
+import { TEXT } from './Notes.texts.ts';
+
+type Props = {
+  notes: string;
+};
+
+const { notes } = Astro.props;
+---
+
+<details class="notes">
+  <summary class="summary">
+    <span class="title">{TEXT.title}</span>
+    <span class="toggle show">{TEXT.show}</span>
+    <span class="toggle hide">{TEXT.hide}</span>
+  </summary>
+  <p class="text">{notes}</p>
+</details>
+
+<style>
+  .notes {
+    margin: 1.25rem var(--space-xl) 0; /* 20px 16px 0 */
+    padding: 0.125rem var(--space-xl); /* 2px 16px */
+    background: var(--surface);
+    border: var(--border);
+    border-radius: var(--radius-card);
+  }
+
+  .summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 3.125rem; /* 50px */
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-size: 1rem; /* 16px */
+    font-weight: 600;
+  }
+
+  .toggle {
+    color: var(--accent);
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 800;
+  }
+
+  .hide,
+  .notes[open] .show {
+    display: none;
+  }
+
+  .notes[open] .hide {
+    display: inline;
+  }
+
+  .text {
+    padding-bottom: var(--space-l);
+    color: var(--muted);
+    font-size: 0.9375rem; /* 15px */
+    line-height: 1.55;
+    white-space: pre-line;
+  }
+</style>

@@ -4,6 +4,7 @@ import { Window } from 'happy-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Recipe } from '../../lib/recipes/recipe.ts';
 import { parseIngredients } from '../../lib/recipes/ingredients.ts';
+import { parseMethod } from '../../lib/recipes/method.ts';
 import { makeRecipe } from '../../lib/recipes/test-recipe.ts';
 import RecipePage from './[id].astro';
 
@@ -55,5 +56,16 @@ describe('recipe page', () => {
     const { document } = await renderPage(makeRecipe({ ingredients, servings: 4 }));
     expect(document.querySelector('h2')?.textContent).toBe('Zutaten');
     expect(document.body.textContent).toContain('200 g');
+  });
+
+  it('shows steps for a recipe with instructions and the notes when there are some', async () => {
+    const recipe = makeRecipe({ method: parseMethod('1. Backen.'), notes: 'Beispielnotiz' });
+    const { document } = await renderPage(recipe);
+    expect(document.querySelector('.steps .text')?.textContent).toBe('Backen.');
+    expect(document.querySelector('details')?.textContent).toContain('Beispielnotiz');
+
+    const bare = (await renderPage(makeRecipe({ hasInstructions: false }))).document;
+    expect(bare.querySelector('.steps')).toBeNull();
+    expect(bare.querySelector('details')).toBeNull();
   });
 });

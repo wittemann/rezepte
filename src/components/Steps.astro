@@ -1,0 +1,146 @@
+---
+// "So geht's" (design/README.md, "Rezept-Detail"): a card per step with a number circle in the
+// category color, section headings in the accent color, a timer chip where the text names a time,
+// and the hint box after the last step. Numbers continue across sections.
+import type { Method } from '../lib/recipes/method.ts';
+import { categoryName } from '../lib/recipes/fields.ts';
+import { formatTimerLabel } from '../lib/recipes/time.ts';
+import Icon from './Icon.tsx';
+import { TEXT } from './Steps.texts.ts';
+
+type Props = {
+  method: Method;
+  /** Color of the number circles */
+  category?: string;
+};
+
+const { method, category } = Astro.props;
+const circleColor = `var(--pastel-cat-${categoryName(category)})`;
+
+// Number of the first step of each section
+let stepCount = 0;
+const sections = method.sections.map((section) => {
+  const firstNumber = stepCount + 1;
+  stepCount += section.steps.length;
+  return { ...section, firstNumber };
+});
+---
+
+<section class="section">
+  <h2 class="title">{TEXT.title}</h2>
+  {sections.map((section) => (
+    <>
+      {section.title && <h3 class="heading">{section.title}</h3>}
+      <ol class="steps" start={section.firstNumber}>
+        {section.steps.map((step, index) => (
+          <li class="step">
+            <span class="number" style={`background: ${circleColor}`}>
+              {section.firstNumber + index}
+            </span>
+            <div class="body">
+              <p class="text">{step.text}</p>
+              {step.timerMinutes !== undefined && (
+                <span class="timer" data-timer-minutes={step.timerMinutes}>
+                  <Icon name="timer" size={16} strokeWidth={2.2} />
+                  {formatTimerLabel(step.timerMinutes)} · {TEXT.timerSuffix}
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </>
+  ))}
+  {method.hint && <p class="hint">{method.hint}</p>}
+</section>
+
+<style>
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    padding: 1.75rem var(--space-xl) 0; /* 28px 16px 0 */
+  }
+
+  .title {
+    padding: 0 0.25rem; /* 4px */
+    font-size: 1.375rem; /* 22px */
+  }
+
+  .heading {
+    padding: 0.375rem 0.25rem 0; /* 6px 4px 0 */
+    color: var(--accent);
+    font-size: 0.9375rem; /* 15px */
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step {
+    display: flex;
+    gap: var(--space-m);
+    align-items: flex-start;
+    padding: var(--space-l);
+    background: var(--surface);
+    border: var(--border);
+    border-radius: var(--radius-card);
+  }
+
+  .number {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--step-number-size);
+    height: var(--step-number-size);
+    color: var(--on-pastel);
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-display);
+    font-size: 1rem; /* 16px */
+    font-weight: 600;
+  }
+
+  .body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    padding-top: 0.25rem; /* 4px */
+  }
+
+  .text {
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  .timer {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xxs);
+    min-height: var(--timer-chip-height);
+    padding: 0 var(--space-l);
+    background: var(--sunk);
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    font-size: 0.875rem; /* 14px */
+    font-weight: 800;
+  }
+
+  .hint {
+    padding: var(--space-l) var(--space-xl);
+    background: var(--sunk);
+    border-radius: var(--radius-card);
+    font-size: 0.9375rem; /* 15px */
+    line-height: 1.5;
+    white-space: pre-line;
+  }
+</style>

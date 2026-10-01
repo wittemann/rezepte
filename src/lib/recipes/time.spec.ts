@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  formatTimerLabel,
   formatDuration,
   formatDurationInput,
   formatDurationShort,
@@ -26,6 +27,19 @@ describe('formatDuration', () => {
     [150, '2 Std. 30 Min.'],
   ])('formats %s minutes as "%s"', (minutes, text) => {
     expect(formatDuration(minutes)).toBe(text);
+  });
+});
+
+describe('formatTimerLabel', () => {
+  it('spells out minutes, with singular and decimal comma', () => {
+    expect(formatTimerLabel(25)).toBe('25 Minuten');
+    expect(formatTimerLabel(1)).toBe('1 Minute');
+    expect(formatTimerLabel(2.5)).toBe('2,5 Minuten');
+  });
+
+  it('reads like a duration from one hour on', () => {
+    expect(formatTimerLabel(60)).toBe('1 Std.');
+    expect(formatTimerLabel(90)).toBe('1 Std. 30 Min.');
   });
 });
 

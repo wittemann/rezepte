@@ -5,8 +5,10 @@
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
 import ErrorMessage from '../../components/ErrorMessage.astro';
 import Ingredients from '../../components/Ingredients.tsx';
+import Notes from '../../components/Notes.astro';
 import RecipeHeader from '../../components/RecipeHeader.astro';
 import RecipeMeta from '../../components/RecipeMeta.astro';
+import Steps from '../../components/Steps.astro';
 import Base from '../../layouts/Base.astro';
 import { getById } from '../../lib/recipes/repository.ts';
 import { TEXT } from './_[id].texts.ts';
@@ -27,6 +29,8 @@ if (!recipe) Astro.response.status = 404;
       {recipe.ingredients.length > 0 && (
         <Ingredients client:load ingredients={recipe.ingredients} servings={recipe.servings} />
       )}
+      {recipe.hasInstructions && <Steps method={recipe.method} category={recipe.category} />}
+      {recipe.notes && <Notes notes={recipe.notes} />}
     </main>
   </Base>
 ) : (
