@@ -1,0 +1,30 @@
+---
+// The row of meta stickers under the header card: work time, total time, calories per serving.
+// Renders nothing when the recipe has none of them.
+import type { Recipe } from '../lib/recipes/recipe.ts';
+import MetaSticker from './MetaSticker.astro';
+import { recipeMetaStickers } from './recipe-meta-stickers.ts';
+
+type Props = {
+  recipe: Recipe;
+};
+
+const stickers = recipeMetaStickers(Astro.props.recipe);
+---
+
+{stickers.length > 0 && (
+  <div class="stickers">
+    {stickers.map((sticker) => (
+      <MetaSticker {...sticker} />
+    ))}
+  </div>
+)}
+
+<style>
+  .stickers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    padding: var(--space-xxl) var(--space-xl) 0;
+  }
+</style>

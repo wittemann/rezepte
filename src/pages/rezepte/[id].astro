@@ -5,6 +5,7 @@
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
 import ErrorMessage from '../../components/ErrorMessage.astro';
 import RecipeHeader from '../../components/RecipeHeader.astro';
+import RecipeMeta from '../../components/RecipeMeta.astro';
 import Base from '../../layouts/Base.astro';
 import { getById } from '../../lib/recipes/repository.ts';
 import { TEXT } from './_[id].texts.ts';
@@ -21,6 +22,7 @@ if (!recipe) Astro.response.status = 404;
   <Base title={recipe.title}>
     <main>
       <RecipeHeader {recipe} />
+      <RecipeMeta {recipe} />
     </main>
   </Base>
 ) : (
