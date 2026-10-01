@@ -75,7 +75,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] **(owner)** Create the field `Favorit seit` (dateTime, with time) in the Airtable table `Rezepte`; the field ID goes into [03-data-model](specs/03-data-model.md)
 - [x] Map `favoritedAt` (`fields.ts`, `record.ts`, `recipe.ts`) with tests; sorting helper "newest first" · `sonnet`
 - [x] Action `setFavorite` (sets the state instead of toggling; login-protected by the middleware; writes `Favorit seit` = now or empty) · `sonnet`
-- [ ] `FavoriteButton` island: heart, optimistic update, rollback + toast on error; wire the real `favorite` prop into the recipe row · `sonnet`
+- [x] `FavoriteButton` island: heart, optimistic update, rollback + toast on error; wire the real `favorite` prop into the recipe row · `sonnet`
 
 ## 5. Screens
 

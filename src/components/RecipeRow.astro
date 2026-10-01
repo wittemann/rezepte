@@ -1,18 +1,19 @@
 ---
 // One recipe in a list (design/README.md, "Rezept-Zeile"): photo or initial tile, name, meta, heart.
-// The whole row links to the recipe. The heart is decorative; toggling happens on the detail page.
+// The whole row links to the recipe. The heart only shows that it is a favorite; toggling happens on
+// the detail page (FavoriteButton).
 import type { Recipe } from '../lib/recipes/recipe.ts';
 import { categoryName } from '../lib/recipes/fields.ts';
+import { isFavorite } from '../lib/recipes/favorites.ts';
 import Icon from './Icon.tsx';
 import { recipeRowMeta } from './recipe-row-meta.ts';
 import { TEXT } from './RecipeRow.texts.ts';
 
 type Props = {
   recipe: Recipe;
-  favorite: boolean;
 };
 
-const { recipe, favorite } = Astro.props;
+const { recipe } = Astro.props;
 const photoUrl = recipe.images[0]?.url;
 // First grapheme, so emoji and letters with combining accents stay whole
 const [firstGrapheme] = new Intl.Segmenter('de').segment(recipe.title);
@@ -33,11 +34,11 @@ const meta = recipeRowMeta(recipe);
     <span class="title">{recipe.title}</span>
     {meta && <span class="meta">{meta}</span>}
   </span>
-  {/* Always rendered: favorites live per device (localStorage), so the server can't know them.
-       The favorites store finds rows by data-recipe-id and toggles `hidden` on the client. */}
-  <span class="heart" role="img" aria-label={TEXT.favorite} hidden={!favorite}>
-    <Icon name="heart" size={18} strokeWidth={0} filled />
-  </span>
+  {isFavorite(recipe) && (
+    <span class="heart" role="img" aria-label={TEXT.favorite}>
+      <Icon name="heart" size={18} strokeWidth={0} filled />
+    </span>
+  )}
 </a>
 
 <style>
@@ -100,10 +101,5 @@ const meta = recipeRowMeta(recipe);
   .heart {
     display: flex;
     color: var(--accent);
-  }
-
-  /* display: flex above would override the hidden attribute */
-  .heart[hidden] {
-    display: none;
   }
 </style>

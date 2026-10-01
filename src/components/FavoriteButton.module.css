@@ -1,0 +1,23 @@
+/*
+ * The heart in the recipe header (design/README.md, "Rezept-Detail"): round white button like the
+ * other header buttons (Button, variant round, onPastel). Filled in the accent color for a favorite.
+ */
+
+.button {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--button-height-outline);
+  height: var(--button-height-outline);
+  padding: 0;
+  background: var(--white);
+  color: var(--on-pastel);
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.favorite {
+  color: var(--accent);
+}

@@ -33,8 +33,7 @@ const groups = grouped ? groupByCategory(recipes) : [{ category: undefined, reci
         </h2>
       )}
       {group.recipes.map((recipe) => (
-        // Favorites aren't built yet: no row is a favorite
-        <RecipeRow recipe={recipe} favorite={false} />
+        <RecipeRow {recipe} />
       ))}
     </section>
   ))

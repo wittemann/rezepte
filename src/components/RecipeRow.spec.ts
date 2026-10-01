@@ -7,12 +7,12 @@ import RecipeRow from './RecipeRow.astro';
 
 const recipe = makeRecipe({ category: 'Suppe', servings: 4, totalMinutes: 65 });
 
-async function renderRow(overrides: Partial<Recipe> = {}, favorite = false): Promise<string> {
+async function renderRow(overrides: Partial<Recipe> = {}): Promise<string> {
   const container = await AstroContainer.create();
   // Icon is a Preact component
   container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
   return container.renderToString(RecipeRow, {
-    props: { recipe: { ...recipe, ...overrides }, favorite },
+    props: { recipe: { ...recipe, ...overrides } },
   });
 }
 
@@ -56,20 +56,18 @@ describe('RecipeRow', () => {
     expect(html).toContain('Noch ohne Anleitung');
   });
 
-  it('renders the heart filled and visible for a favorite', async () => {
-    const html = await renderRow({}, true);
-    const heart = heartTag(html);
-    expect(heart).toContain('aria-label="Favorit"');
-    expect(heart).not.toContain('hidden');
+  it('renders the heart filled for a favorite', async () => {
+    const html = await renderRow({ favoritedAt: '2026-10-01T08:00:00.000Z' });
+    expect(heartTag(html)).toContain('aria-label="Favorit"');
     expect(html).toContain('fill="currentColor"');
   });
 
-  it('renders the heart hidden when not a favorite', async () => {
-    expect(heartTag(await renderRow({}, false))).toMatch(/\shidden[\s>=]/);
+  it('marks the link with the recipe id', async () => {
+    expect(await renderRow()).toContain('data-recipe-id="recExample1"');
   });
 
-  it('marks the link with the recipe id for the favorites store', async () => {
-    expect(await renderRow()).toContain('data-recipe-id="recExample1"');
+  it('renders no heart when not a favorite', async () => {
+    expect(heartTag(await renderRow())).toBe('');
   });
 
   it('keeps a decomposed accented letter whole', async () => {
