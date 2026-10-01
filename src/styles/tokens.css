@@ -118,6 +118,9 @@
   --recipe-mascot-overlap: 1rem; /* 16px: Maulti reaches below the card */
   --recipe-title-clearance: 5.5rem; /* 88px: keeps a long title clear of Maulti */
 
+  /* Ingredient list (design/README.md, "Rezept-Detail") */
+  --ingredient-amount-width: 5rem; /* 80px: the bold amount column */
+
   /* Bottom sheet (design/README.md, "Filter-Sheet" and "Kochmodus") */
   --sheet-padding: 1.125rem; /* 18px */
   --sheet-title-size: 1.375rem; /* 22px, as in the filter sheet (ingredients sheet: 20px) */

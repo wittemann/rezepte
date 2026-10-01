@@ -3,6 +3,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { Window } from 'happy-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Recipe } from '../../lib/recipes/recipe.ts';
+import { parseIngredients } from '../../lib/recipes/ingredients.ts';
 import { makeRecipe } from '../../lib/recipes/test-recipe.ts';
 import RecipePage from './[id].astro';
 
@@ -44,5 +45,15 @@ describe('recipe page', () => {
     expect(document.title).toBe('Rezept nicht gefunden');
     expect(document.querySelector('h1')?.textContent).toBe('Rezept nicht gefunden');
     expect(document.querySelector('main a')?.getAttribute('href')).toBe('/rezepte');
+  });
+
+  it('shows the ingredients only when the recipe has some', async () => {
+    const without = await renderPage(makeRecipe());
+    expect(without.document.body.textContent).not.toContain('Zutaten');
+
+    const ingredients = parseIngredients('200 g Mehl');
+    const { document } = await renderPage(makeRecipe({ ingredients, servings: 4 }));
+    expect(document.querySelector('h2')?.textContent).toBe('Zutaten');
+    expect(document.body.textContent).toContain('200 g');
   });
 });
