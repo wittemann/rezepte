@@ -8,7 +8,7 @@ Legend: **(owner)** = needs the project owner (accounts, secrets, decisions, tes
 
 Each item below is done only when it has passed these steps, in this order:
 
-1. **Build:** Claude implements the item in a small, focused change (one item, or a few closely related ones). Logic comes with tests
+1. **Build:** Claude implements the item in a small, focused change (one item, or a few closely related ones). Logic comes with tests. A user-facing feature also gets an e2e test (section 7) when that is feasible and useful: a flow a browser can exercise without writing data, not a re-check of what unit tests cover or a test of markup
 2. **Check:** format, lint, type check, tests and build pass locally (`npm run format:check`, `lint`, `check`, `test`, `build`)
 3. **Present:** Claude summarizes what changed and why, lists the files, reports the check results and points out what deserves a close look (tricky logic, new dependencies, security-relevant code, generated files). Visual changes are shown in the browser (dev server, Browser pane) so the reviewer can see them, not just read the diff, in light and dark mode
 4. **Manual review (human developer):** read the diff until it's understood. Ask questions, request changes, or give an explicit OK. If a change is too big to follow, it gets split
@@ -133,7 +133,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 Setup and smoke test are in section 5, right after the recipe detail. Playwright against a local dev server with the real Airtable base, read-only ([ADR 0010](decisions/0010-e2e-tests-deferred.md)). Tests never write and never contain recipe names or texts (the repo is public): they pick whatever the first recipe is.
 
-- [ ] Added with their screens: search and filter, favorites, start suggestions, cooking mode with timers · `sonnet`
+- [ ] Added with their screens, from now on as a rule: search and filter, favorites, start suggestions, cooking mode with timers · `sonnet`
 - [ ] Edit and new recipe: needs a test base or a cleanup step, since it writes; decide when we get there · `opus`
 
 ## 8. Quality passes

@@ -19,6 +19,7 @@ A human developer reviews every change before it's committed. Changes must be sm
 - **Before committing, stop and present the change:** what changed and why, the files touched, test/check results, and anything that deserves a close look (tricky logic, new dependencies, security-relevant code, generated files like `package-lock.json`). Point the reviewer to the diff.
 - **Commit only after the reviewer's explicit OK** for that change. An OK covers that one commit, not later ones. Push only when asked.
 - **Conventional Commits:** `type(scope): subject` (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`), imperative, lowercase subject, scope optional. The body explains why.
+- **E2E tests:** new user-facing features get a Playwright test (`e2e/`) when feasible and useful: a real flow, read-only against the live base, no recipe data. No filler tests that only restate unit tests or markup.
 - **Readable code over clever code:** plain names, short functions, comments only where the reason isn't obvious. No unrelated refactors or drive-by changes mixed into a commit.
 - **`type`, not `interface`:** enforced by ESLint. Extend with intersections (`A & { … }`).
 - **Return types:** let TypeScript infer. Write one only when it gives a measurable benefit: a public type that must stay narrower or wider than the body, a type predicate, recursion, overloads, or a literal union that would widen. Not for consistency. ESLint forbids them (type predicates excepted); a justified one needs `eslint-disable-next-line no-restricted-syntax -- <reason>`.
