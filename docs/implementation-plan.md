@@ -72,7 +72,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] Plain error pages: 404 ("Seite nicht gefunden") and 500 ("Da ist was schiefgelaufen"), tokens only, no design · `haiku`
 - [x] Use `type` instead of `interface`: enable `@typescript-eslint/consistent-type-definitions: ['error', 'type']`, run `--fix`, convert the `extends` chain in `Button.astro` by hand (intersections), add the convention to `CLAUDE.md` · `haiku`
 - [x] **(owner)** Create the field `Favorit seit` (dateTime, with time) in the Airtable table `Rezepte`; the field ID goes into [03-data-model](specs/03-data-model.md)
-- [ ] Map `favoritedAt` (`fields.ts`, `record.ts`, `recipe.ts`) with tests; sorting helper "newest first" · `sonnet`
+- [x] Map `favoritedAt` (`fields.ts`, `record.ts`, `recipe.ts`) with tests; sorting helper "newest first" · `sonnet`
 - [ ] Action `toggleFavorite` (login-protected, writes `Favorit seit` = now or empty) · `sonnet`
 - [ ] `FavoriteButton` island: heart, optimistic update, rollback + toast on error; wire the real `favorite` prop into the recipe row · `sonnet`
 

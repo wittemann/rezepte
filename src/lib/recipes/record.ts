@@ -44,6 +44,7 @@ const recordFieldsSchema = z.object({
   // Shown as a link, so only http(s): a "javascript:" URL must never reach an href.
   [RECIPE_FIELDS.sourceUrl]: z.url({ protocol: /^https?$/ }).optional(),
   [RECIPE_FIELDS.notes]: z.string().optional(),
+  [RECIPE_FIELDS.favoritedAt]: z.iso.datetime().optional(),
 });
 
 type RecordFields = z.infer<typeof recordFieldsSchema>;
@@ -90,6 +91,7 @@ function toRecipe(record: AirtableRecord, fields: RecordFields): Recipe {
     source: fields[RECIPE_FIELDS.source],
     sourceUrl: fields[RECIPE_FIELDS.sourceUrl],
     notes: fields[RECIPE_FIELDS.notes],
+    favoritedAt: fields[RECIPE_FIELDS.favoritedAt],
     createdAt: record.createdTime,
   };
 }

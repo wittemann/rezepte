@@ -26,6 +26,7 @@ export type Recipe = {
   source?: string; // "Chefkoch", "YouTube", …
   sourceUrl?: string; // http(s) only
   notes?: string;
+  favoritedAt?: string; // ISO timestamp; set = favorite (shared by everyone), newest first
   createdAt: string; // ISO timestamp, when the Airtable record was created
 };
 

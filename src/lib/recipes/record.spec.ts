@@ -47,6 +47,7 @@ describe('readRecord', () => {
         source: 'Testquelle',
         sourceUrl: 'https://example.org/testsuppe',
         notes: 'Schmeckt auch kalt.',
+        favoritedAt: '2026-10-01T08:30:00.000Z',
       }),
     );
 
@@ -73,7 +74,14 @@ describe('readRecord', () => {
       source: 'Testquelle',
       sourceUrl: 'https://example.org/testsuppe',
       notes: 'Schmeckt auch kalt.',
+      favoritedAt: '2026-10-01T08:30:00.000Z',
     });
+  });
+
+  it('leaves out an invalid "Favorit seit" and keeps the recipe', () => {
+    const { recipe, invalidFields } = readRecord(testRecord({ favoritedAt: 'gestern' }));
+    expect(invalidFields).toEqual(['favoritedAt']);
+    expect(recipe?.favoritedAt).toBeUndefined();
   });
 
   it('trims the title', () => {

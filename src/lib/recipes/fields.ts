@@ -19,6 +19,7 @@ export const RECIPE_FIELDS = {
   source: 'fldFlH3z4ScSU3oJz', // Quelle
   sourceUrl: 'fldqeCigWMnW400lN', // Original-Link
   notes: 'fldavsvzGmItYK5Va', // Notizen
+  favoritedAt: 'fldYS250RG0Aa3mzC', // Favorit seit: dateTime, set = favorite (shared by everyone)
 } as const;
 
 /**
