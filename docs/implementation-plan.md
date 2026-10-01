@@ -96,8 +96,6 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] Steps "So geht's" with sections, number circles, timer chips; hint box; notes expandable · `sonnet`
 - [x] Stub state: "Noch ohne Anleitung" + "Rezept ergänzen" · `haiku`
 - [x] Sticky CTA "Los, wir kochen!" · `haiku`
-- [ ] No double-tap zoom on the servings stepper: tapping − or + quickly zooms the page on iOS. Add `touch-action: manipulation` to the stepper buttons (or globally to buttons and links); check other quickly tapped controls · `haiku`
-- [ ] No sideways scrolling on the recipe page: the page must never be wider than the screen. Not reproducible in the browser at 375 px with normal text; with a very large system text size the servings stepper pushes past the right edge. Find the cause on a real iPhone, then check all screens with large text · `sonnet`
 
 **End-to-end tests** (as soon as login → list → detail works, [ADR 0010](decisions/0010-e2e-tests-deferred.md); details in section 7)
 
@@ -143,6 +141,8 @@ Setup and smoke test are in section 5, right after the recipe detail. Playwright
 - [ ] Accessibility pass: keyboard, contrast, 44 px targets, large system text size · `sonnet`
 - [ ] Performance check on a phone over mobile data (target ≈ 1 s per page) · `sonnet`
 - [ ] Dark mode pass on every screen · `sonnet`
+- [ ] No double-tap zoom on the servings stepper: tapping − or + quickly zooms the page on iOS. Add `touch-action: manipulation` to the stepper buttons (or globally to buttons and links); check other quickly tapped controls · `haiku`
+- [ ] No sideways scrolling on the recipe page: the page must never be wider than the screen. Not reproducible in the browser at 375 px with normal text; with a very large system text size the servings stepper pushes past the right edge. Find the cause on a real iPhone, then check all screens with large text · `sonnet`
 
 ## 9. Project-wide reviews
 
