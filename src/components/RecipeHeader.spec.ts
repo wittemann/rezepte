@@ -28,7 +28,7 @@ describe('RecipeHeader', () => {
     const edit = [...document.querySelectorAll('a')].find(
       (a) => a.textContent?.trim() === 'Bearbeiten',
     );
-    expect(edit?.getAttribute('href')).toBe('/rezepte/recX1/bearbeiten');
+    expect(edit?.getAttribute('href')).toBe('/rezepte/recX1/edit');
   });
 
   it('uses the category color, a neutral one for an unknown category', async () => {

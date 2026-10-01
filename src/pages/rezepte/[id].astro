@@ -28,7 +28,7 @@ if (!recipe) Astro.response.status = 404;
     <main>
       <RecipeHeader {recipe} />
       <RecipeMeta {recipe} />
-      {!recipe.hasInstructions && <StubNotice editHref={`/rezepte/${recipe.id}/bearbeiten`} />}
+      {!recipe.hasInstructions && <StubNotice editHref={`/rezepte/${recipe.id}/edit`} />}
       {recipe.ingredients.length > 0 && (
         <Ingredients client:load ingredients={recipe.ingredients} servings={recipe.servings} />
       )}

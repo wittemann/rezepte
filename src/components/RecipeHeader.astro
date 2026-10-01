@@ -28,7 +28,7 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
     </Button>
     <div class="actions-end">
       <FavoriteButton client:load recipeId={recipe.id} {favorite} />
-      <Button variant="outline" onPastel href={`/rezepte/${recipe.id}/bearbeiten`}>
+      <Button variant="outline" onPastel href={`/rezepte/${recipe.id}/edit`}>
         {TEXT.edit}
       </Button>
     </div>
