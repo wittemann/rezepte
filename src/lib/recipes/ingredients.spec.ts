@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { parseIngredients, type Quantity } from './ingredients.ts';
+import { parseIngredients } from './ingredients.ts';
 
 /** The quantity parsed from a single line. */
-function quantityOf(line: string): Quantity | undefined {
+function quantityOf(line: string) {
   const [parsed] = parseIngredients(line);
   return parsed.kind === 'item' ? parsed.quantity : undefined;
 }

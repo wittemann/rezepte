@@ -7,7 +7,7 @@ import RecipeRow from './RecipeRow.astro';
 
 const recipe = makeRecipe({ category: 'Suppe', servings: 4, totalMinutes: 65 });
 
-async function renderRow(overrides: Partial<Recipe> = {}): Promise<string> {
+async function renderRow(overrides: Partial<Recipe> = {}) {
   const container = await AstroContainer.create();
   // Icon is a Preact component
   container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
@@ -17,7 +17,7 @@ async function renderRow(overrides: Partial<Recipe> = {}): Promise<string> {
 }
 
 /** Opening tag of the heart wrapper */
-function heartTag(html: string): string {
+function heartTag(html: string) {
   return /<span class="heart[^>]*>/.exec(html)?.[0] ?? '';
 }
 

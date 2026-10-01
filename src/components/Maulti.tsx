@@ -17,7 +17,7 @@ const ACCENT = 'var(--mascot-accent)';
 const FONT = 'var(--font-display)';
 
 // Fork marks pressed into the dough edge
-function forks(): string {
+function forks() {
   let d = '';
   for (let x = 24; x <= 96; x += 6) d += `M${x} 43.5v4.5M${x} 98v4.5`;
   for (let y = 52; y <= 94; y += 6) d += `M17.5 ${y}h4.5M98 ${y}h4.5`;
@@ -25,7 +25,7 @@ function forks(): string {
 }
 const FORKS = forks();
 
-function brows(pose: MaultiPose): [string, string] {
+function brows(pose: MaultiPose) {
   switch (pose) {
     case 'think':
       return ['M42 59 Q47 55 53 58', 'M67 56 Q73 54 78 57'];

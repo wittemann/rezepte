@@ -55,7 +55,7 @@ const QUANTITY_LINE = new RegExp(
   String.raw`^(?:(ca\.|knapp|etwa)\s+)?(${AMOUNT})(?:\s*[–-]\s*(${AMOUNT}))?(?:\s+(.*))?$`,
 );
 
-export function parseIngredients(text: string | undefined): IngredientLine[] {
+export function parseIngredients(text: string | undefined) {
   return (text ?? '')
     .split('\n')
     .map((line) => line.trim())
@@ -63,13 +63,15 @@ export function parseIngredients(text: string | undefined): IngredientLine[] {
     .map(parseLine);
 }
 
-function parseLine(line: string): IngredientLine {
-  if (line.endsWith(':')) return { kind: 'heading', text: line.slice(0, -1).trim() };
+function parseLine(line: string) {
+  if (line.endsWith(':')) return { kind: 'heading' as const, text: line.slice(0, -1).trim() };
   const quantity = parseQuantity(line);
-  return quantity ? { kind: 'item', text: line, quantity } : { kind: 'item', text: line };
+  return quantity
+    ? { kind: 'item' as const, text: line, quantity }
+    : { kind: 'item' as const, text: line };
 }
 
-function parseQuantity(line: string): Quantity | undefined {
+function parseQuantity(line: string) {
   const match = QUANTITY_LINE.exec(line);
   if (!match) return undefined;
   const [, prefix, minText, maxText, afterAmount = ''] = match;
@@ -86,7 +88,7 @@ function parseQuantity(line: string): Quantity | undefined {
 }
 
 /** The unit at the start of `text`, if it's followed by a space or the end of the line. */
-function findUnit(text: string): string | undefined {
+function findUnit(text: string) {
   return UNITS.find(
     (unit) =>
       text.startsWith(unit) && (text.length === unit.length || /\s/.test(text[unit.length])),
@@ -94,6 +96,6 @@ function findUnit(text: string): string | undefined {
 }
 
 /** "1,5" → 1.5 */
-function amountValue(amount: string): number {
+function amountValue(amount: string) {
   return Number(amount.replace(',', '.'));
 }

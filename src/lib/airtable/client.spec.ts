@@ -6,7 +6,6 @@ import {
   listTables,
   RATE_LIMIT_WAIT_MS,
   updateRecord,
-  type AirtableRecord,
 } from './client.ts';
 
 const TOKEN = 'patTestToken.notARealOne';
@@ -14,11 +13,11 @@ const TABLE_ID = 'tblTestTable';
 const TABLE_URL = 'https://api.airtable.com/v0/appTestBase/tblTestTable';
 const TABLE_PATH = '/v0/appTestBase/tblTestTable';
 
-function testRecord(id: string): AirtableRecord {
+function testRecord(id: string) {
   return { id, createdTime: '2026-09-27T10:00:00.000Z', fields: { fldTitle: `Title of ${id}` } };
 }
 
-function jsonResponse(body: unknown, status = 200): Response {
+function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status });
 }
 

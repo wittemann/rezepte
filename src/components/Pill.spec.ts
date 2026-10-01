@@ -2,7 +2,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import Pill from './Pill.astro';
 
-async function renderPill(variant?: 'category' | 'time'): Promise<string> {
+async function renderPill(variant?: 'category' | 'time') {
   const container = await AstroContainer.create();
   return container.renderToString(Pill, { props: { variant }, slots: { default: 'Suppe' } });
 }

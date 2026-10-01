@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseMethod } from './method.ts';
 
 /** The timer of a single step. */
-function timerOf(stepText: string): number | undefined {
+function timerOf(stepText: string) {
   return parseMethod(`1. ${stepText}`).sections[0].steps[0].timerMinutes;
 }
 

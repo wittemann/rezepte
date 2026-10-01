@@ -45,12 +45,12 @@ type ErrorResponse = {
   error?: string | { type?: string; message?: string };
 };
 
-function wait(ms: number): Promise<void> {
+function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /** Airtable's error type and message, if the response has them. */
-async function readErrorReason(response: Response): Promise<string | undefined> {
+async function readErrorReason(response: Response) {
   try {
     const { error } = (await response.json()) as ErrorResponse;
     if (typeof error === 'string') return error;
@@ -62,11 +62,7 @@ async function readErrorReason(response: Response): Promise<string | undefined> 
 }
 
 /** An AirtableError that says which request failed and why. */
-async function toAirtableError(
-  response: Response,
-  method: string,
-  url: URL,
-): Promise<AirtableError> {
+async function toAirtableError(response: Response, method: string, url: URL) {
   let message = `Airtable ${method} ${url.pathname} failed with ${response.status}`;
   const reason = await readErrorReason(response);
   if (reason) message += ` (${reason})`;
@@ -79,7 +75,7 @@ type HttpMethod = 'GET' | 'POST' | 'PATCH';
 const RECORD_ID = /^rec[A-Za-z0-9]+$/;
 
 /** Whether `id` looks like an Airtable record ID. Anything else is never sent to Airtable. */
-export function isRecordId(id: string): boolean {
+export function isRecordId(id: string) {
   return RECORD_ID.test(id);
 }
 
@@ -92,7 +88,7 @@ async function requestJson(
   method: HttpMethod,
   url: URL,
   body?: unknown,
-): Promise<unknown> {
+) {
   const { fetch = globalThis.fetch, delay = wait } = connection;
   const headers: Record<string, string> = { Authorization: `Bearer ${connection.token}` };
   const init: RequestInit = { method, headers };
@@ -118,7 +114,7 @@ export async function listRecords(
   connection: AirtableConnection,
   tableId: string,
   options: { filterByFormula?: string } = {},
-): Promise<AirtableRecord[]> {
+) {
   const records: AirtableRecord[] = [];
   let offset: string | undefined;
   do {
@@ -142,7 +138,7 @@ export type AirtableTable = {
 };
 
 /** All tables of the base with their fields (metadata API, needs the `schema.bases:read` scope). */
-export async function listTables(connection: AirtableConnection): Promise<AirtableTable[]> {
+export async function listTables(connection: AirtableConnection) {
   const url = new URL(`${API_URL}/meta/bases/${connection.baseId}/tables`);
   const { tables } = (await requestJson(connection, 'GET', url)) as { tables: AirtableTable[] };
   return tables;
@@ -156,7 +152,7 @@ export async function createRecord(
   connection: AirtableConnection,
   tableId: string,
   fields: Record<string, unknown>,
-): Promise<AirtableRecord> {
+) {
   const url = new URL(`${API_URL}/${connection.baseId}/${tableId}`);
   const body = { fields, typecast: true, returnFieldsByFieldId: true };
   return (await requestJson(connection, 'POST', url, body)) as AirtableRecord;
@@ -177,7 +173,7 @@ export async function updateRecord(
   tableId: string,
   recordId: string,
   fields: Record<string, unknown>,
-): Promise<AirtableRecord> {
+) {
   if (!isRecordId(recordId)) throw new Error(`Not an Airtable record ID: ${recordId}`);
   const url = new URL(`${API_URL}/${connection.baseId}/${tableId}/${recordId}`);
   const body = { fields, typecast: true, returnFieldsByFieldId: true };

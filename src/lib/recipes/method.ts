@@ -37,7 +37,7 @@ const TIME = new RegExp(
   'iu',
 );
 
-export function parseMethod(text: string | undefined): Method {
+export function parseMethod(text: string | undefined) {
   const blocks = splitBlocks(text ?? '');
   const lastNumbered = blocks.findLastIndex(
     (block) => block.kind === 'paragraph' && block.numbered,
@@ -61,7 +61,7 @@ export function parseMethod(text: string | undefined): Method {
  * continue it, joined with a space (a line break inside a step). Text before the first numbered
  * step is kept as an unnumbered step.
  */
-function splitBlocks(text: string): Block[] {
+function splitBlocks(text: string) {
   const blocks: Block[] = [];
   let previousLineBlank = true;
   for (const rawLine of text.split('\n')) {
@@ -86,7 +86,7 @@ function splitBlocks(text: string): Block[] {
 }
 
 /** Blocks into sections: each heading starts one, steps before the first heading get none. */
-function groupSections(blocks: Block[]): MethodSection[] {
+function groupSections(blocks: Block[]) {
   const sections: MethodSection[] = [];
   for (const block of blocks) {
     if (block.kind === 'heading') {
@@ -103,7 +103,7 @@ function groupSections(blocks: Block[]): MethodSection[] {
   return sections;
 }
 
-function parseStep(text: string): Step {
+function parseStep(text: string) {
   const timerMinutes = findTimerMinutes(text);
   return timerMinutes ? { text, timerMinutes } : { text };
 }
@@ -113,7 +113,7 @@ function parseStep(text: string): Step {
  * Not rounded to whole minutes ("2,5 Minuten" → 2.5), only to whole seconds to drop floating
  * point noise. "0 Minuten" gives no timer.
  */
-function findTimerMinutes(text: string): number | undefined {
+function findTimerMinutes(text: string) {
   const match = TIME.exec(text);
   if (!match) return undefined;
   const [, amountText, unit] = match;

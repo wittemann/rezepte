@@ -16,8 +16,8 @@ export const SESSION_COOKIE_OPTIONS: AstroCookieSetOptions = {
   maxAge: SESSION_MAX_AGE_SECONDS,
 };
 
-function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+function wait(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -28,7 +28,7 @@ export async function checkPassword(
   password: FormDataEntryValue | null,
   storedHash: string,
   delay: (ms: number) => Promise<void> = wait,
-): Promise<boolean> {
+) {
   const correct =
     typeof password === 'string' && password !== '' && (await verifyPassword(password, storedHash));
   if (!correct) await delay(FAILED_LOGIN_DELAY_MS);

@@ -19,7 +19,7 @@ import { readRecord } from './record.ts';
 const byTitle = new Intl.Collator('de').compare;
 
 /** All recipes that can be read, sorted by title (German order: "Äpfel" next to "Apfel"). */
-export async function getAll(connection: AirtableConnection): Promise<Recipe[]> {
+export async function getAll(connection: AirtableConnection) {
   const records = await listRecords(connection, RECIPES_TABLE_ID);
   const recipes: Recipe[] = [];
   for (const record of records) {
@@ -30,16 +30,13 @@ export async function getAll(connection: AirtableConnection): Promise<Recipe[]> 
 }
 
 /** One recipe, or undefined if there is none with this ID or it has no title (→ 404 page). */
-export async function getById(
-  connection: AirtableConnection,
-  id: RecipeId,
-): Promise<Recipe | undefined> {
+export async function getById(connection: AirtableConnection, id: RecipeId) {
   const record = await findRecord(connection, id);
   return record ? readAndReport(record) : undefined;
 }
 
 /** Saves a new recipe and returns it as Airtable saved it. Throws a ZodError for invalid input. */
-export async function create(connection: AirtableConnection, input: RecipeInput): Promise<Recipe> {
+export async function create(connection: AirtableConnection, input: RecipeInput) {
   const fields = toRecordFields(input);
   const record = await createRecord(connection, RECIPES_TABLE_ID, fields);
   return readSavedRecord(record);
@@ -49,11 +46,7 @@ export async function create(connection: AirtableConnection, input: RecipeInput)
  * Changes a recipe (PATCH: all writable fields, nothing else) and returns it as saved,
  * or undefined if there is no recipe with this ID. Throws a ZodError for invalid input.
  */
-export async function update(
-  connection: AirtableConnection,
-  id: RecipeId,
-  input: RecipeInput,
-): Promise<Recipe | undefined> {
+export async function update(connection: AirtableConnection, id: RecipeId, input: RecipeInput) {
   if (!isRecordId(id)) return undefined;
   const fields = toRecordFields(input); // before any request, so invalid input sends nothing
   // Checked first, at the cost of one extra request: a PATCH with an unknown ID answers 403, which
@@ -82,10 +75,7 @@ export async function setFavorite(
 }
 
 /** The record with this ID in the recipe table, or undefined. */
-async function findRecord(
-  connection: AirtableConnection,
-  id: RecipeId,
-): Promise<AirtableRecord | undefined> {
+async function findRecord(connection: AirtableConnection, id: RecipeId) {
   // Anything that isn't a record ID can't be a recipe; checking it also keeps the formula safe.
   if (!isRecordId(id)) return undefined;
   // A filtered list instead of GET …/{id}: for an unknown ID, that answers 403 (not 404), which
@@ -97,13 +87,13 @@ async function findRecord(
 }
 
 // A just-saved record always has a title (toRecordFields requires one), so not reading it is a bug.
-function readSavedRecord(record: AirtableRecord): Recipe {
+function readSavedRecord(record: AirtableRecord) {
   const recipe = readAndReport(record);
   if (!recipe) throw new Error(`Saved recipe record ${record.id} could not be read`);
   return recipe;
 }
 
-function readAndReport(record: AirtableRecord): Recipe | undefined {
+function readAndReport(record: AirtableRecord) {
   const { recipe, invalidFields } = readRecord(record);
   if (invalidFields.length > 0) reportInvalidRecord(record.id, invalidFields, recipe === undefined);
   return recipe;
@@ -111,7 +101,7 @@ function readAndReport(record: AirtableRecord): Recipe | undefined {
 
 // A plain log for now; Sentry (warning level, tagged with record ID and fields) replaces it
 // later, see docs/decisions/0009-error-monitoring.md.
-function reportInvalidRecord(recordId: string, invalidFields: string[], skipped: boolean): void {
+function reportInvalidRecord(recordId: string, invalidFields: string[], skipped: boolean) {
   const outcome = skipped ? 'skipped' : 'fields left out';
   console.warn(`Recipe record ${recordId}: ${outcome} (invalid: ${invalidFields.join(', ')})`);
 }

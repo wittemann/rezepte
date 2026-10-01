@@ -6,13 +6,13 @@ import { hashPassword } from '../src/lib/auth/password.ts';
 const MIN_LENGTH = 16;
 
 /** Reads one line from the terminal without echoing it. */
-function promptHidden(question: string): Promise<string> {
+function promptHidden(question: string) {
   if (!stdin.isTTY) throw new Error('Run this in an interactive terminal.');
   stdout.write(question);
   stdin.setRawMode(true);
   stdin.resume();
   stdin.setEncoding('utf8');
-  return new Promise((resolve) => {
+  return new Promise<string>((resolve) => {
     let input = '';
     const onData = (chunk: string) => {
       for (const char of chunk) {

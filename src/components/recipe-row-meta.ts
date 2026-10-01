@@ -8,7 +8,7 @@ const SEPARATOR = ' · ';
 
 export function recipeRowMeta(
   recipe: Pick<Recipe, 'hasInstructions' | 'totalMinutes' | 'workMinutes' | 'servings'>,
-): string {
+) {
   if (!recipe.hasInstructions) return TEXT.noInstructions;
 
   // Total time when known, else the work time (as in the design prototype)
@@ -20,6 +20,6 @@ export function recipeRowMeta(
   return parts.filter((part) => part !== undefined).join(SEPARATOR);
 }
 
-function formatServings(servings: number): string {
+function formatServings(servings: number) {
   return `${String(servings).replace('.', ',')} ${servings === 1 ? TEXT.singleServing : TEXT.servings}`;
 }

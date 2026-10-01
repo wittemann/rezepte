@@ -1,19 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import { ZodError } from 'zod';
-import type { AirtableRecord } from '../airtable/client.ts';
 import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import { create, getAll, getById, setFavorite, update } from './repository.ts';
 
 const TABLE_URL = `https://api.airtable.com/v0/appTestBase/${RECIPES_TABLE_ID}`;
 
-function testRecord(id: string, fields: Record<string, unknown>): AirtableRecord {
+function testRecord(id: string, fields: Record<string, unknown>) {
   return { id, createdTime: '2026-09-27T10:00:00.000Z', fields };
 }
 
 const titled = (id: string, title: string) => testRecord(id, { [RECIPE_FIELDS.title]: title });
 
-function jsonResponse(body: unknown, status = 200): Response {
+function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status });
 }
 

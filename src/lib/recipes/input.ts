@@ -67,7 +67,7 @@ export const recipeInputSchema = z.object({
  * clears what was emptied in the form. Never included: Kalorien pro Portion (formula),
  * Kalorien gesamt and Meine Bewertung (not used by the app), Foto (upload only, ADR 0005).
  */
-export function toRecordFields(input: RecipeInput): Record<string, unknown> {
+export function toRecordFields(input: RecipeInput) {
   const recipe = recipeInputSchema.parse(input);
   return {
     [RECIPE_FIELDS.title]: recipe.title,
@@ -84,6 +84,6 @@ export function toRecordFields(input: RecipeInput): Record<string, unknown> {
   };
 }
 
-function optionalSeconds(minutes: number | undefined): number | null {
+function optionalSeconds(minutes: number | undefined) {
   return minutes === undefined ? null : minutesToSeconds(minutes);
 }

@@ -7,7 +7,7 @@ const CALORIES_TOTAL_FIELD_ID = 'fldBz3DRCMbeL1qvF'; // Kalorien gesamt
 const RATING_FIELD_ID = 'fldNQWaV85W4mRwgu'; // Meine Bewertung
 
 /** A made-up input with only a title, plus the given fields. */
-function testInput(fields: Partial<RecipeInput> = {}): RecipeInput {
+function testInput(fields: Partial<RecipeInput> = {}) {
   return { title: 'Testsuppe', meals: [], ingredientsText: '', stepsText: '', ...fields };
 }
 
@@ -105,7 +105,7 @@ describe('toRecordFields', () => {
 });
 
 describe('recipeInputSchema', () => {
-  function invalidFields(input: unknown): string[] {
+  function invalidFields(input: unknown) {
     const result = recipeInputSchema.safeParse(input);
     return result.success ? [] : result.error.issues.map((issue) => String(issue.path[0]));
   }

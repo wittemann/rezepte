@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Recipe } from './recipe.ts';
 import { filterRecipes, matchesSheetFilters, searchRecipes } from './search.ts';
 
-function recipe(overrides: Partial<Recipe> & { title: string }): Recipe {
+function recipe(overrides: Partial<Recipe> & { title: string }) {
   return {
     id: overrides.title,
     meals: [],

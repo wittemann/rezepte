@@ -12,7 +12,7 @@ const BASE = new URL('https://app.invalid');
  * Returns `next` as a local path (path, query and hash), or `/` if it's missing,
  * would lead to another site, or points back to the login page.
  */
-export function safeNextPath(next: string | null | undefined): string {
+export function safeNextPath(next: string | null | undefined) {
   if (!next || !next.startsWith('/')) return FALLBACK;
 
   // Browsers read `//host`, `/\host` and paths with tabs or line breaks as links to

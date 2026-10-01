@@ -15,12 +15,12 @@ const WHOLE_AMOUNTS_FROM = 20;
 const QUARTER_SIGNS: Record<number, string> = { 0.25: '¼', 0.5: '½', 0.75: '¾' };
 
 /** Factor for all amounts: 2 servings of a recipe written for 4 → 0.5. `baseServings` must be > 0. */
-export function servingsFactor(chosenServings: number, baseServings: number): number {
+export function servingsFactor(chosenServings: number, baseServings: number) {
   return chosenServings / baseServings;
 }
 
 /** Stepper "+": ½ steps below 2 servings (½ → 1 → 1½ → 2), whole steps from there. */
-export function nextServings(servings: number): number {
+export function nextServings(servings: number) {
   return servings < WHOLE_STEPS_FROM ? servings + 0.5 : servings + 1;
 }
 
@@ -28,13 +28,13 @@ export function nextServings(servings: number): number {
  * Stepper "−": the reverse of `nextServings`, never below ½. Whole steps stop at 2, so an odd
  * base like 2,5 servings still reaches the ½ steps.
  */
-export function previousServings(servings: number): number {
+export function previousServings(servings: number) {
   if (servings > WHOLE_STEPS_FROM) return Math.max(WHOLE_STEPS_FROM, servings - 1);
   return Math.max(MIN_SERVINGS, servings - 0.5);
 }
 
 /** The quantity with min and max scaled and rounded. Unit, prefix and rest stay as they are. */
-export function scaleQuantity(quantity: Quantity, factor: number): Quantity {
+export function scaleQuantity(quantity: Quantity, factor: number) {
   const scaled: Quantity = { ...quantity, min: scaleAmount(quantity.min, factor) };
   if (quantity.max !== undefined) {
     const max = scaleAmount(quantity.max, factor);
@@ -50,7 +50,7 @@ export function scaleQuantity(quantity: Quantity, factor: number): Quantity {
  * Factor 1 keeps the amount exactly as written (no "0,3 TL" → "¼ TL" on the original recipe).
  * A small amount that would round to 0 is kept to one decimal, at least 0,1, so it doesn't vanish.
  */
-export function scaleAmount(amount: number, factor: number): number {
+export function scaleAmount(amount: number, factor: number) {
   if (factor === 1) return amount;
   const scaled = amount * factor;
   if (scaled >= WHOLE_AMOUNTS_FROM) return Math.round(scaled);
@@ -63,7 +63,7 @@ export function scaleAmount(amount: number, factor: number): number {
  * An amount for display in German: whole and quarter values with ¼ ½ ¾ ("1½", "¾", "250"),
  * anything else with a decimal comma ("0,3", "22,3"), as in unscaled or tiny amounts.
  */
-export function formatAmount(amount: number): string {
+export function formatAmount(amount: number) {
   const whole = Math.floor(amount);
   const quarterSign = QUARTER_SIGNS[amount - whole];
   if (amount === whole) return String(whole);
@@ -73,7 +73,7 @@ export function formatAmount(amount: number): string {
 }
 
 /** The bold amount column: prefix, amount or range with en dash, unit ("ca. 1½–2 EL"). */
-export function formatQuantity(quantity: Quantity): string {
+export function formatQuantity(quantity: Quantity) {
   const amounts =
     quantity.max === undefined
       ? formatAmount(quantity.min)

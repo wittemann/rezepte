@@ -22,7 +22,7 @@ vi.mock('../../lib/recipes/repository.ts', async () => {
   };
 });
 
-async function renderPage(search = ''): Promise<string> {
+async function renderPage(search = '') {
   const container = await AstroContainer.create();
   container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
   container.addClientRenderer({ name: '@astrojs/preact', entrypoint: '@astrojs/preact/client.js' });
@@ -36,7 +36,7 @@ function parseDocument(html: string) {
 }
 
 /** Titles of the listed recipes, sorted (grouping changes the page order) */
-function listedTitles(html: string): string[] {
+function listedTitles(html: string) {
   const titles = parseDocument(html).querySelectorAll('[data-recipe-id] .title');
   return [...titles].map((element) => element.textContent).sort();
 }

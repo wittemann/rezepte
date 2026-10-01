@@ -21,7 +21,7 @@ A human developer reviews every change before it's committed. Changes must be sm
 - **Conventional Commits:** `type(scope): subject` (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`), imperative, lowercase subject, scope optional. The body explains why.
 - **Readable code over clever code:** plain names, short functions, comments only where the reason isn't obvious. No unrelated refactors or drive-by changes mixed into a commit.
 - **`type`, not `interface`:** enforced by ESLint. Extend with intersections (`A & { … }`).
-- **Return types:** let TypeScript infer. Write one only when it gives a measurable benefit: a public type that must stay narrower or wider than the body, a type predicate, recursion, overloads, or a literal union that would widen. Not for consistency.
+- **Return types:** let TypeScript infer. Write one only when it gives a measurable benefit: a public type that must stay narrower or wider than the body, a type predicate, recursion, overloads, or a literal union that would widen. Not for consistency. ESLint forbids them (type predicates excepted); a justified one needs `eslint-disable-next-line no-restricted-syntax -- <reason>`.
 - **Recipe data never goes into the repo** (it's public): no exports, texts or even lists of recipe names.
 
 ## Decisions and libraries

@@ -12,7 +12,7 @@ const recipes = [
   makeRecipe({ id: 'recD', title: 'Beispiel Ohne', category: undefined }),
 ];
 
-async function renderList(list: Recipe[], grouped: boolean): Promise<string> {
+async function renderList(list: Recipe[], grouped: boolean) {
   const container = await AstroContainer.create();
   // Icon and Maulti are Preact components
   container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });

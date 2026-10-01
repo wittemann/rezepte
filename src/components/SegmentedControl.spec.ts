@@ -2,7 +2,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import SegmentedControl, { type SegmentedOption } from './SegmentedControl.astro';
 
-async function renderControl(options: SegmentedOption[]): Promise<string> {
+async function renderControl(options: SegmentedOption[]) {
   const container = await AstroContainer.create();
   return container.renderToString(SegmentedControl, {
     props: { label: 'Wie viel Zeit?', options },

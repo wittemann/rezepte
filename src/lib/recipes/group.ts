@@ -10,7 +10,7 @@ export type CategoryGroup = {
 };
 
 /** One group per category in display order, each keeping the input order; empty groups are left out. */
-export function groupByCategory(recipes: Recipe[]): CategoryGroup[] {
+export function groupByCategory(recipes: Recipe[]) {
   const groups: CategoryGroup[] = CATEGORIES.map((entry) => ({
     category: entry.value,
     recipes: recipes.filter((recipe) => recipe.category === entry.value),

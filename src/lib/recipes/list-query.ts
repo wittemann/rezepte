@@ -20,7 +20,7 @@ export type ListQuery = {
 };
 
 /** Reads the list state from URL parameters; unknown or invalid values count as not set. */
-export function parseListQuery(params: URLSearchParams): ListQuery {
+export function parseListQuery(params: URLSearchParams) {
   const query = (params.get('q') ?? '').trim().slice(0, MAX_QUERY_LENGTH);
   const meal = MEALS.find((entry) => entry.name === params.get('meal'))?.value;
   const requestedCategories = params.getAll('category');
@@ -38,7 +38,7 @@ export function parseListQuery(params: URLSearchParams): ListQuery {
 }
 
 /** The inverse of parseListQuery; parameters that aren't set are left out. */
-export function toSearchParams({ query, filters }: ListQuery): URLSearchParams {
+export function toSearchParams({ query, filters }: ListQuery) {
   const params = new URLSearchParams();
   if (query) params.set('q', query);
   const meal = MEALS.find((entry) => entry.value === filters.meal);
@@ -52,7 +52,7 @@ export function toSearchParams({ query, filters }: ListQuery): URLSearchParams {
 }
 
 /** Link to the list with this state. */
-export function listHref(listQuery: ListQuery): string {
+export function listHref(listQuery: ListQuery) {
   const search = toSearchParams(listQuery).toString();
   return search ? `${LIST_PATH}?${search}` : LIST_PATH;
 }
@@ -61,7 +61,7 @@ export function listHref(listQuery: ListQuery): string {
  * Number on the filter button: categories count as one filter however many are chosen,
  * like in the design. The meal has its own control and isn't counted.
  */
-export function countActiveFilters(filters: RecipeFilters): number {
+export function countActiveFilters(filters: RecipeFilters) {
   return [
     (filters.categories?.length ?? 0) > 0,
     filters.maxTotalMinutes !== undefined,
@@ -70,11 +70,7 @@ export function countActiveFilters(filters: RecipeFilters): number {
 }
 
 /** The filter sheet's form values: which chips are checked (categories by their URL name). */
-export function toFilterChoices(filters: RecipeFilters): {
-  categories: string[];
-  quick: boolean;
-  withInstructions: boolean;
-} {
+export function toFilterChoices(filters: RecipeFilters) {
   return {
     categories: CATEGORIES.filter((entry) => filters.categories?.includes(entry.value)).map(
       (entry) => entry.name,

@@ -11,7 +11,7 @@ export type RecipeFilters = {
   onlyWithInstructions?: boolean; // "Mit Anleitung"
 };
 
-function normalize(text: string): string {
+function normalize(text: string) {
   return text.trim().toLocaleLowerCase('de');
 }
 
@@ -19,7 +19,7 @@ function normalize(text: string): string {
  * Recipes whose name or ingredients contain the query (case-insensitive).
  * Name matches come first; each group keeps the input order. An empty query matches all.
  */
-export function searchRecipes(recipes: Recipe[], query: string): Recipe[] {
+export function searchRecipes(recipes: Recipe[], query: string) {
   const needle = normalize(query);
   if (needle === '') return recipes;
 
@@ -39,7 +39,7 @@ export type FilterableRecipe = Pick<Recipe, 'category' | 'totalMinutes' | 'hasIn
  * Whether a recipe passes the filters of the filter sheet (everything but the meal).
  * The sheet uses it too, to count the matches while chips are toggled.
  */
-export function matchesSheetFilters(recipe: FilterableRecipe, filters: RecipeFilters): boolean {
+export function matchesSheetFilters(recipe: FilterableRecipe, filters: RecipeFilters) {
   const { categories = [], maxTotalMinutes, onlyWithInstructions } = filters;
   if (categories.length > 0 && !(recipe.category && categories.includes(recipe.category))) {
     return false;
@@ -52,7 +52,7 @@ export function matchesSheetFilters(recipe: FilterableRecipe, filters: RecipeFil
 }
 
 /** Recipes that satisfy every filter that is set. */
-export function filterRecipes(recipes: Recipe[], filters: RecipeFilters): Recipe[] {
+export function filterRecipes(recipes: Recipe[], filters: RecipeFilters) {
   const { meal } = filters;
   return recipes.filter(
     (recipe) =>

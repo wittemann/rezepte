@@ -38,9 +38,7 @@ export const CATEGORIES = [
 ] as const;
 
 /** Name for the `--pastel-cat-*` tokens and category icons; unknown or missing category → "other" (neutral color, no icon). */
-export function categoryName(
-  category: string | undefined,
-): (typeof CATEGORIES)[number]['name'] | 'other' {
+export function categoryName(category: string | undefined) {
   return CATEGORIES.find((entry) => entry.value === category)?.name ?? 'other';
 }
 

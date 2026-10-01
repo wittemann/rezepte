@@ -3,7 +3,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import TabBar, { type TabId } from './TabBar.astro';
 
-async function renderBar(active: TabId): Promise<string> {
+async function renderBar(active: TabId) {
   const container = await AstroContainer.create();
   // Icon is a Preact component
   container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
@@ -11,7 +11,7 @@ async function renderBar(active: TabId): Promise<string> {
 }
 
 /** The href of every link matching the pattern, in page order */
-function hrefs(html: string, linkPattern: RegExp): string[] {
+function hrefs(html: string, linkPattern: RegExp) {
   const links = html.match(/<a\b[^>]*>/g) ?? [];
   return links
     .filter((link) => linkPattern.test(link))

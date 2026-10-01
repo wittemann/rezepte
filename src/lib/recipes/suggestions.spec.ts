@@ -3,7 +3,7 @@ import type { Meal } from './fields.ts';
 import type { Recipe } from './recipe.ts';
 import { MAX_SUGGESTIONS, suggestRecipes } from './suggestions.ts';
 
-function recipe(title: string, meals: Meal[], totalMinutes?: number): Recipe {
+function recipe(title: string, meals: Meal[], totalMinutes?: number) {
   return { id: title, title, meals, totalMinutes } as Recipe;
 }
 

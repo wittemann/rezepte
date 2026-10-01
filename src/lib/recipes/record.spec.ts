@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import type { AirtableRecord } from '../airtable/client.ts';
 import { RECIPE_FIELDS } from './fields.ts';
 import { imageUrl, readRecord } from './record.ts';
 
 const CREATED = '2026-09-27T10:00:00.000Z';
 
 /** A made-up record with the given fields (keyed by domain name) and a title. */
-function testRecord(fields: Partial<Record<keyof typeof RECIPE_FIELDS, unknown>>): AirtableRecord {
+function testRecord(fields: Partial<Record<keyof typeof RECIPE_FIELDS, unknown>>) {
   const byFieldId: Record<string, unknown> = { [RECIPE_FIELDS.title]: 'Testsuppe' };
   for (const [name, value] of Object.entries(fields)) {
     byFieldId[RECIPE_FIELDS[name as keyof typeof RECIPE_FIELDS]] = value;

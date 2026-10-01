@@ -2,12 +2,12 @@
 
 import type { Recipe } from './recipe.ts';
 
-export function isFavorite(recipe: Recipe): boolean {
+export function isFavorite(recipe: Recipe) {
   return recipe.favoritedAt !== undefined;
 }
 
 /** The favorites, most recently marked first. */
-export function sortFavorites(recipes: Recipe[]): Recipe[] {
+export function sortFavorites(recipes: Recipe[]) {
   return recipes
     .filter(isFavorite)
     .sort((a, b) => Date.parse(b.favoritedAt!) - Date.parse(a.favoritedAt!));

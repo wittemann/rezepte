@@ -5,15 +5,15 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 export const SESSION_COOKIE = 'session';
 export const SESSION_MAX_AGE_SECONDS = 365 * 24 * 60 * 60;
 
-function sign(issuedAt: string, secret: string): string {
+function sign(issuedAt: string, secret: string) {
   return createHmac('sha256', secret).update(issuedAt).digest('base64url');
 }
 
-function nowInSeconds(): number {
+function nowInSeconds() {
   return Math.floor(Date.now() / 1000);
 }
 
-export function createSessionToken(secret: string, issuedAt = nowInSeconds()): string {
+export function createSessionToken(secret: string, issuedAt = nowInSeconds()) {
   const issuedAtText = String(issuedAt);
   return `${issuedAtText}.${sign(issuedAtText, secret)}`;
 }
@@ -26,7 +26,7 @@ export function verifySessionToken(
   token: string | undefined,
   secret: string,
   now = nowInSeconds(),
-): boolean {
+) {
   if (!token) return false;
   const parts = token.split('.');
   if (parts.length !== 2) return false;

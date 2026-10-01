@@ -4,13 +4,13 @@ import Button, { type Props as ButtonProps } from './Button.astro';
 
 type Props = Record<string, unknown>;
 
-async function renderButton(props: Props = {}, slot = 'Los geht’s'): Promise<string> {
+async function renderButton(props: Props = {}, slot = 'Los geht’s') {
   const container = await AstroContainer.create();
   return container.renderToString(Button, { props, slots: { default: slot } });
 }
 
 /** The CSS classes of the first element */
-function classes(html: string): string[] {
+function classes(html: string) {
   return (/class="([^"]*)"/.exec(html)?.[1] ?? '').split(' ');
 }
 

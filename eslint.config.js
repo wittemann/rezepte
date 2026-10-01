@@ -10,5 +10,17 @@ export default tseslint.config(
   tseslint.configs.recommended,
   astro.configs.recommended,
   { rules: { '@typescript-eslint/consistent-type-definitions': ['error', 'type'] } },
+  // Explicit return types only where they earn it (CLAUDE.md); those carry a disable comment
+  {
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: ':function[returnType]:not([returnType.typeAnnotation.type="TSTypePredicate"])',
+          message: 'Let TypeScript infer the return type (CLAUDE.md, "Return types").',
+        },
+      ],
+    },
+  },
   { languageOptions: { globals: { ...globals.node } } },
 );

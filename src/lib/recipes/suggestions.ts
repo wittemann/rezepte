@@ -15,7 +15,7 @@ export type SuggestionRequest = {
 };
 
 /** Up to MAX_SUGGESTIONS recipes of the meal within the time limit, in shuffled order. */
-export function suggestRecipes(recipes: Recipe[], request: SuggestionRequest): Recipe[] {
+export function suggestRecipes(recipes: Recipe[], request: SuggestionRequest) {
   const { meal, maxTotalMinutes, day, diceSeed } = request;
   const matching = recipes.filter(
     (recipe) =>
@@ -38,7 +38,7 @@ export function suggestRecipes(recipes: Recipe[], request: SuggestionRequest): R
  * JavaScript has no built-in for this (`crypto.subtle` is async, `Math.random` can't be seeded).
  * This is FNV-1a: mix in each character with an XOR and a multiplication.
  */
-function hash(text: string): number {
+function hash(text: string) {
   let value = 0x811c9dc5; // FNV's fixed start value
   for (const character of text) {
     value ^= character.charCodeAt(0);

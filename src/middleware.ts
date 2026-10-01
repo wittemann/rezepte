@@ -6,7 +6,7 @@ import { SESSION_COOKIE, verifySessionToken } from './lib/auth/session.ts';
 
 const LOGIN_PATH = '/login';
 
-function isLoginPage(pathname: string): boolean {
+function isLoginPage(pathname: string) {
   return pathname === LOGIN_PATH || pathname === `${LOGIN_PATH}/`;
 }
 

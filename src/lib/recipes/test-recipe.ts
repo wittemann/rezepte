@@ -2,7 +2,7 @@
 // so a new required field on Recipe is added here once instead of in every spec.
 import type { Recipe } from './recipe.ts';
 
-export function makeRecipe(overrides: Partial<Recipe> = {}): Recipe {
+export function makeRecipe(overrides: Partial<Recipe> = {}) {
   return {
     id: 'recExample1',
     title: 'Beispielrezept A',

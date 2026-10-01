@@ -8,7 +8,7 @@ import type { AirtableRecord } from '../airtable/client.ts';
 import { MEALS, RECIPE_FIELDS, type Meal } from './fields.ts';
 import { parseIngredients } from './ingredients.ts';
 import { parseMethod } from './method.ts';
-import type { Recipe, RecipeImage } from './recipe.ts';
+import type { Recipe } from './recipe.ts';
 import { secondsToMinutes } from './time.ts';
 
 /** What reading a record gave: the recipe, and the fields that were left out. */
@@ -50,27 +50,31 @@ const recordFieldsSchema = z.object({
 type RecordFields = z.infer<typeof recordFieldsSchema>;
 
 /** The app-internal image URL (ADR 0005); the image proxy route serves it. */
-export function imageUrl(recordId: string, attachmentId: string): string {
+export function imageUrl(recordId: string, attachmentId: string) {
   return `/img/${encodeURIComponent(recordId)}/${encodeURIComponent(attachmentId)}`;
 }
 
 /** Checks the record's fields and turns it into a Recipe. Never throws. */
-export function readRecord(record: AirtableRecord): RecordReading {
+export function readRecord(record: AirtableRecord) {
   const result = recordFieldsSchema.safeParse(record.fields);
-  if (result.success) return { recipe: toRecipe(record, result.data), invalidFields: [] };
+  if (result.success)
+    return { recipe: toRecipe(record, result.data), invalidFields: [] } as RecordReading;
 
   const invalidFieldIds = [...new Set(result.error.issues.map((issue) => String(issue.path[0])))];
   const invalidFields = invalidFieldIds.map(fieldName);
-  if (invalidFieldIds.includes(RECIPE_FIELDS.title)) return { invalidFields };
+  if (invalidFieldIds.includes(RECIPE_FIELDS.title)) return { invalidFields } as RecordReading;
 
   // Leave out the fields with a wrong shape; the rest passed, so this parse succeeds.
   const validFields = Object.fromEntries(
     Object.entries(record.fields).filter(([fieldId]) => !invalidFieldIds.includes(fieldId)),
   );
-  return { recipe: toRecipe(record, recordFieldsSchema.parse(validFields)), invalidFields };
+  return {
+    recipe: toRecipe(record, recordFieldsSchema.parse(validFields)),
+    invalidFields,
+  } as RecordReading;
 }
 
-function toRecipe(record: AirtableRecord, fields: RecordFields): Recipe {
+function toRecipe(record: AirtableRecord, fields: RecordFields) {
   const ingredientsText = fields[RECIPE_FIELDS.ingredients] ?? '';
   const stepsText = fields[RECIPE_FIELDS.steps] ?? '';
   return {
@@ -97,19 +101,16 @@ function toRecipe(record: AirtableRecord, fields: RecordFields): Recipe {
 }
 
 /** Meals the app knows; other values have no color or suggestion slot, so they're left out. */
-function knownMeals(values: string[]): Meal[] {
+function knownMeals(values: string[]) {
   return values.filter((value): value is Meal => MEAL_VALUES.includes(value));
 }
 
-function optionalMinutes(seconds: number | undefined): number | undefined {
+function optionalMinutes(seconds: number | undefined) {
   return seconds === undefined ? undefined : secondsToMinutes(seconds);
 }
 
 /** Image attachments only; other files (a PDF, say) aren't shown. */
-function toImages(
-  recordId: string,
-  attachments: z.infer<typeof attachmentSchema>[],
-): RecipeImage[] {
+function toImages(recordId: string, attachments: z.infer<typeof attachmentSchema>[]) {
   return attachments
     .filter((attachment) => attachment.type?.startsWith('image/'))
     .map((attachment) => ({
@@ -121,7 +122,7 @@ function toImages(
 }
 
 /** Field ID → domain name ("fldCRBNH34d7JR7OC" → "title"), for readable reports. */
-function fieldName(fieldId: string): string {
+function fieldName(fieldId: string) {
   const entry = Object.entries(RECIPE_FIELDS).find(([, id]) => id === fieldId);
   return entry ? entry[0] : fieldId;
 }

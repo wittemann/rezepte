@@ -2,7 +2,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import ErrorMessage from './ErrorMessage.astro';
 
-async function render(props: Record<string, string>): Promise<string> {
+async function render(props: Record<string, string>) {
   const container = await AstroContainer.create();
   return container.renderToString(ErrorMessage, { props });
 }
