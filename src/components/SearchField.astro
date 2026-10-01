@@ -5,13 +5,13 @@ import { LIST_PATH } from '../lib/recipes/list-query.ts';
 import Icon from './Icon.tsx';
 import { TEXT } from './SearchField.texts.ts';
 
-interface Props {
+type Props = {
   query: string;
   /** Other URL parameters to keep when searching, as [name, value] pairs */
   hiddenFields: [string, string][];
   /** Link that clears the search text (shown while there is one) */
   clearHref: string;
-}
+};
 
 const { query, hiddenFields, clearHref } = Astro.props;
 ---

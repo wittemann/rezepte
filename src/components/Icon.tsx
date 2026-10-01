@@ -26,7 +26,7 @@ const PATHS = { ...ICONS, ...CATEGORY_ICONS };
 
 export type IconName = keyof typeof PATHS;
 
-interface Props {
+type Props = {
   name: IconName;
   /** Width and height in px at default text size (design values: 18–36) */
   size?: number;
@@ -34,7 +34,7 @@ interface Props {
   strokeWidth?: number;
   /** Filled shape, e.g. the heart of an active favorite */
   filled?: boolean;
-}
+};
 
 export default function Icon({ name, size = 24, strokeWidth = 2, filled = false }: Props) {
   const sizeRem = `${size / 16}rem`;

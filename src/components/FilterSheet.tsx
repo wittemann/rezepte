@@ -19,7 +19,7 @@ import { matchesSheetFilters, type FilterableRecipe } from '../lib/recipes/searc
 import BottomSheet from './BottomSheet.tsx';
 import { TEXT } from './FilterSheet.texts.ts';
 
-interface Props {
+type Props = {
   /** The recipes the filters apply to (search and meal already applied), for counting */
   recipes: FilterableRecipe[];
   // These come from Astro slots, which TypeScript doesn't see as required props
@@ -29,7 +29,7 @@ interface Props {
   reset?: ComponentChildren;
   /** The form */
   children?: ComponentChildren;
-}
+};
 
 export default function FilterSheet({ recipes, opener, reset, children }: Props) {
   const [open, setOpen] = useState(false);

@@ -7,10 +7,10 @@ import Icon from './Icon.tsx';
 import { recipeRowMeta } from './recipe-row-meta.ts';
 import { TEXT } from './RecipeRow.texts.ts';
 
-interface Props {
+type Props = {
   recipe: Recipe;
   favorite: boolean;
-}
+};
 
 const { recipe, favorite } = Astro.props;
 const photoUrl = recipe.images[0]?.url;

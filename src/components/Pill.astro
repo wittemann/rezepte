@@ -1,9 +1,9 @@
 ---
 // Small label on a card (design/README.md, "Vorschläge" and "Kopfkarte"): the category (white)
 // or the time (dark). Both sit on a pastel background and keep their colors in dark mode.
-interface Props {
+type Props = {
   variant?: 'category' | 'time';
-}
+};
 
 const { variant = 'category' } = Astro.props;
 ---

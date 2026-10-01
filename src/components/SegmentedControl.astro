@@ -3,18 +3,18 @@
 // "Wie viel Zeit?"). Sunk track, the active option is raised with surface and border.
 // An option with `href` is a link (state in the URL), otherwise a toggle button.
 // Options may have a second line (`hint`).
-export interface SegmentedOption {
+export type SegmentedOption = {
   label: string;
   hint?: string;
   active: boolean;
   href?: string;
-}
+};
 
-interface Props {
+type Props = {
   /** Names the group for screen readers */
   label: string;
   options: SegmentedOption[];
-}
+};
 
 const { label, options } = Astro.props;
 ---

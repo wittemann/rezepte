@@ -5,11 +5,11 @@ import '../styles/tokens.css';
 import '../styles/global.css';
 import TabBar, { type TabId } from '../components/TabBar.astro';
 
-interface Props {
+type Props = {
   title: string;
   /** Shows the tab bar with this tab highlighted; leave out on pages without it (login) */
   activeTab?: TabId;
-}
+};
 
 const { title, activeTab } = Astro.props;
 ---

@@ -7,11 +7,11 @@
 
 export type MaultiPose = 'wave' | 'think' | 'cook' | 'cheer' | 'sleep' | 'heart' | 'alarm' | 'lock';
 
-interface Props {
+type Props = {
   pose?: MaultiPose;
   /** Width and height in px at default text size (design values: 64–170) */
   size?: number;
-}
+};
 
 const ACCENT = 'var(--mascot-accent)';
 const FONT = 'var(--font-display)';

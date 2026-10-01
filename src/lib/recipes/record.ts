@@ -12,10 +12,10 @@ import type { Recipe, RecipeImage } from './recipe.ts';
 import { secondsToMinutes } from './time.ts';
 
 /** What reading a record gave: the recipe, and the fields that were left out. */
-export interface RecordReading {
+export type RecordReading = {
   recipe?: Recipe; // missing when the record has no title
   invalidFields: string[]; // domain names from RECIPE_FIELDS, e.g. "servings"
-}
+};
 
 const MEAL_VALUES: readonly string[] = MEALS.map((meal) => meal.value);
 

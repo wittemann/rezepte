@@ -3,37 +3,37 @@
 // - primary: accent, call to action. Sizes large (62), medium (54), small (44, flat)
 // - outline: white pill with border, 46 high, e.g. "Bearbeiten", "Filter [n]"
 // - round: 46 px circle with an icon in the slot; `label` names it for screen readers
-interface Shared {
+type Shared = {
   href?: string;
   type?: 'button' | 'submit';
   fullWidth?: boolean;
   /** Extra attributes on the element, e.g. `aria-haspopup` or a `data-*` marker; they win over the ones above */
   attributes?: Record<string, string | boolean | undefined>;
-}
+};
 
-interface Primary extends Shared {
+type Primary = Shared & {
   variant?: 'primary';
   size?: 'large' | 'medium' | 'small';
-}
+};
 
-interface Flat extends Shared {
+type Flat = Shared & {
   /** Accent instead of surface. Visual only (the filter button uses it for "filters set"), so no aria-pressed */
   active?: boolean;
   /** Hard shadow under the button (the filter button has it) */
   raised?: boolean;
   /** White instead of surface, for buttons on a pastel card (stays white in dark mode) */
   onPastel?: boolean;
-}
+};
 
-interface Outline extends Flat {
+type Outline = Flat & {
   variant: 'outline';
-}
+};
 
-interface Round extends Flat {
+type Round = Flat & {
   variant: 'round';
   /** Round buttons only show an icon, so they need a name for screen readers */
   label: string;
-}
+};
 
 export type Props = Primary | Outline | Round;
 

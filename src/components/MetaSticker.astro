@@ -1,10 +1,10 @@
 ---
 // Small card with a label and a value on the recipe page (design/README.md, "Meta-Sticker"),
 // e.g. "Arbeitszeit" / "35 Min.".
-interface Props {
+type Props = {
   label: string;
   value: string;
-}
+};
 
 const { label, value } = Astro.props;
 ---

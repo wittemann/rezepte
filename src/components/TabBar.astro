@@ -14,9 +14,9 @@ const TABS: { id: TabId | null; href: string; label: string; icon: IconName }[] 
   { id: null, href: '/neu', label: TEXT.create, icon: 'plus' },
 ];
 
-interface Props {
+type Props = {
   active: TabId;
-}
+};
 
 const { active } = Astro.props;
 ---

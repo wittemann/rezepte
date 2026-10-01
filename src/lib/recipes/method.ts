@@ -2,20 +2,20 @@
 // Format: "Data conventions" in docs/specs/03-data-model.md; timer rule: design/README.md,
 // "Regeln & Logik". Never fails: text it doesn't understand is kept as a step or in the hint.
 
-export interface Method {
+export type Method = {
   sections: MethodSection[];
   hint?: string; // paragraphs after the last numbered step, one per line
-}
+};
 
-export interface MethodSection {
+export type MethodSection = {
   title?: string; // "Teig:" → "Teig"; no title for steps before the first heading
   steps: Step[];
-}
+};
 
-export interface Step {
+export type Step = {
   text: string; // without the number: "1. Mehl sieben." → "Mehl sieben."
   timerMinutes?: number; // from the first time in the text: "1,5 Std." → 90
-}
+};
 
 /** A paragraph or heading line, before sections and hint are sorted out. */
 type Block =

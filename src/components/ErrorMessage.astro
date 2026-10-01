@@ -1,12 +1,12 @@
 ---
 // Plain error message with a link back to the start page (docs/specs/05-design-integration.md,
 // "Plain error pages"). Used by the 404 and 500 pages.
-interface Props {
+type Props = {
   title: string;
   message: string;
   linkText: string;
   href?: string;
-}
+};
 
 const { title, message, linkText, href = '/' } = Astro.props;
 ---

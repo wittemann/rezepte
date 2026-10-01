@@ -70,7 +70,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] Bottom sheet (filter sheet, ingredients in cooking mode) · `opus`
 - [x] Toast ("Gespeichert") · `haiku`
 - [x] Plain error pages: 404 ("Seite nicht gefunden") and 500 ("Da ist was schiefgelaufen"), tokens only, no design · `haiku`
-- [ ] Use `type` instead of `interface`: enable `@typescript-eslint/consistent-type-definitions: ['error', 'type']`, run `--fix`, convert the `extends` chain in `Button.astro` by hand (intersections), add the convention to `CLAUDE.md` · `haiku`
+- [x] Use `type` instead of `interface`: enable `@typescript-eslint/consistent-type-definitions: ['error', 'type']`, run `--fix`, convert the `extends` chain in `Button.astro` by hand (intersections), add the convention to `CLAUDE.md` · `haiku`
 - [ ] Favorites store: `localStorage`, most recently added first, shared by all islands · `sonnet`
 
 ## 5. Screens

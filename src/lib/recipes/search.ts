@@ -4,12 +4,12 @@
 import type { Meal } from './fields.ts';
 import type { Recipe } from './recipe.ts';
 
-export interface RecipeFilters {
+export type RecipeFilters = {
   meal?: Meal; // undefined = "Alle"
   categories?: string[]; // empty or undefined = any category
   maxTotalMinutes?: number; // "Bis 30 Min."; recipes without a total time don't match
   onlyWithInstructions?: boolean; // "Mit Anleitung"
-}
+};
 
 function normalize(text: string): string {
   return text.trim().toLocaleLowerCase('de');

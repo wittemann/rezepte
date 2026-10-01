@@ -6,10 +6,10 @@ import Maulti from './Maulti.tsx';
 import styles from './LoginForm.module.css';
 import { TEXT } from './LoginForm.texts.ts';
 
-interface Props {
+type Props = {
   /** The last attempt had a wrong password */
   error?: boolean;
-}
+};
 
 export default function LoginForm({ error = false }: Props) {
   const [showError, setShowError] = useState(error);

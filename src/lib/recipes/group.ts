@@ -3,11 +3,11 @@
 import { CATEGORIES, categoryName, type Category } from './fields.ts';
 import type { Recipe } from './recipe.ts';
 
-export interface CategoryGroup {
+export type CategoryGroup = {
   /** The Airtable category; undefined = recipes without a (known) category, shown last */
   category: Category | undefined;
   recipes: Recipe[];
-}
+};
 
 /** One group per category in display order, each keeping the input order; empty groups are left out. */
 export function groupByCategory(recipes: Recipe[]): CategoryGroup[] {

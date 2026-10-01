@@ -20,6 +20,7 @@ A human developer reviews every change before it's committed. Changes must be sm
 - **Commit only after the reviewer's explicit OK** for that change. An OK covers that one commit, not later ones. Push only when asked.
 - **Conventional Commits:** `type(scope): subject` (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`), imperative, lowercase subject, scope optional. The body explains why.
 - **Readable code over clever code:** plain names, short functions, comments only where the reason isn't obvious. No unrelated refactors or drive-by changes mixed into a commit.
+- **`type`, not `interface`:** enforced by ESLint. Extend with intersections (`A & { … }`).
 - **Recipe data never goes into the repo** (it's public): no exports, texts or even lists of recipe names.
 
 ## Decisions and libraries

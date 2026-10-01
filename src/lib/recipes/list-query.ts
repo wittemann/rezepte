@@ -13,11 +13,11 @@ export const QUICK_MINUTES = 30;
 
 const MAX_QUERY_LENGTH = 100;
 
-export interface ListQuery {
+export type ListQuery = {
   /** Search text, trimmed; empty = no search */
   query: string;
   filters: RecipeFilters;
-}
+};
 
 /** Reads the list state from URL parameters; unknown or invalid values count as not set. */
 export function parseListQuery(params: URLSearchParams): ListQuery {

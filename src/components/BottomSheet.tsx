@@ -11,7 +11,7 @@ import { useEffect, useId, useRef } from 'preact/hooks';
 import styles from './BottomSheet.module.css';
 import { TEXT } from './BottomSheet.texts.ts';
 
-interface Props {
+type Props = {
   open: boolean;
   /** Called when the user closes the sheet (Escape, backdrop, close button) */
   onClose: () => void;
@@ -20,7 +20,7 @@ interface Props {
   /** Shown at the top right instead of the close button (e.g. "Zurücksetzen") */
   headerAction?: ComponentChildren;
   children: ComponentChildren;
-}
+};
 
 export default function BottomSheet({ open, onClose, title, headerAction, children }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);

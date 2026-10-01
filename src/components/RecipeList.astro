@@ -7,11 +7,11 @@ import Maulti from './Maulti.tsx';
 import RecipeRow from './RecipeRow.astro';
 import { TEXT } from './RecipeList.texts.ts';
 
-interface Props {
+type Props = {
   recipes: Recipe[];
   /** By category (no search) instead of one flat list */
   grouped: boolean;
-}
+};
 
 const { recipes, grouped } = Astro.props;
 const groups = grouped ? groupByCategory(recipes) : [{ category: undefined, recipes }];

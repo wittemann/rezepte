@@ -1,13 +1,13 @@
 ---
 // Maulti's speech bubble (design/README.md, "Start"): small muted line above a headline.
 // The pointed corner is the bottom left, towards Maulti.
-interface Props {
+type Props = {
   /** Small line, e.g. the greeting */
   lead: string;
   headline: string;
   /** Heading element of the headline; h1 suits the start page */
   headingLevel?: 'h1' | 'h2' | 'h3';
-}
+};
 
 const { lead, headline, headingLevel: Heading = 'h1' } = Astro.props;
 ---

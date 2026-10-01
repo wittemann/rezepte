@@ -6,13 +6,13 @@ export type IngredientLine =
   | { kind: 'heading'; text: string } // "Für den Teig:" → "Für den Teig"
   | { kind: 'item'; text: string; quantity?: Quantity }; // text = the whole line as written
 
-export interface Quantity {
+export type Quantity = {
   min: number; // "2–3" → min 2, max 3
   max?: number;
   unit?: string; // one of UNITS: "g", "EL", …
   prefix?: QuantityPrefix; // "ca. 200 g" → "ca."
   rest: string; // the text after amount and unit: "Mehl (Type 550)"
-}
+};
 
 export type QuantityPrefix = 'ca.' | 'knapp' | 'etwa';
 

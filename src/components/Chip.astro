@@ -4,7 +4,7 @@
 //   renders it and passes it into the FilterSheet island as children)
 // - with `href`: a link (filter in the URL); no user yet
 // - otherwise a toggle button; no user yet
-interface Props {
+type Props = {
   label: string;
   active?: boolean;
   href?: string;
@@ -12,7 +12,7 @@ interface Props {
   name?: string;
   value?: string;
   checked?: boolean;
-}
+};
 
 const { label, active = false, href, name, value = 'on', checked = false } = Astro.props;
 ---

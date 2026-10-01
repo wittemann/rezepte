@@ -7,12 +7,12 @@ import type { Recipe } from './recipe.ts';
 
 export const MAX_SUGGESTIONS = 6;
 
-export interface SuggestionRequest {
+export type SuggestionRequest = {
   meal: Meal;
   maxTotalMinutes?: number; // "Wenig Zeit": 30, or 90 for baking; undefined = "Viel Zeit"
   day: string; // e.g. "2026-09-30"; the picks change daily
   diceSeed: number; // 0 first, +1 per "Nochmal würfeln"
-}
+};
 
 /** Up to MAX_SUGGESTIONS recipes of the meal within the time limit, in shuffled order. */
 export function suggestRecipes(recipes: Recipe[], request: SuggestionRequest): Recipe[] {

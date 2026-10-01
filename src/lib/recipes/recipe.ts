@@ -8,7 +8,7 @@ import type { Method } from './method.ts';
 /** Airtable record ID, e.g. "recAbc123…". */
 export type RecipeId = string;
 
-export interface Recipe {
+export type Recipe = {
   id: RecipeId;
   title: string;
   category?: string; // one of CATEGORIES normally; unknown values are shown with a neutral color
@@ -27,11 +27,11 @@ export interface Recipe {
   sourceUrl?: string; // http(s) only
   notes?: string;
   createdAt: string; // ISO timestamp, when the Airtable record was created
-}
+};
 
-export interface RecipeImage {
+export type RecipeImage = {
   id: string; // Airtable attachment ID
   url: string; // app-internal image route (ADR 0005), never the raw Airtable URL
   width?: number;
   height?: number;
-}
+};

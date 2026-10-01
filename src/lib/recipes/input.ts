@@ -17,7 +17,7 @@ import {
 import { minutesToSeconds } from './time.ts';
 
 /** A recipe as the form saves it. Missing optional fields are written as empty. */
-export interface RecipeInput {
+export type RecipeInput = {
   title: string; // required, not blank
   category?: Category; // only the known categories (the form offers them as chips)
   meals: Meal[]; // empty = no start page suggestions
@@ -29,7 +29,7 @@ export interface RecipeInput {
   source?: Source; // only the known sources
   sourceUrl?: string; // http(s) only
   notes?: string;
-}
+};
 
 const CATEGORY_VALUES: Category[] = CATEGORIES.map((category) => category.value);
 const MEAL_VALUES: Meal[] = MEALS.map((meal) => meal.value);

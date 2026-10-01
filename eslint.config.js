@@ -9,5 +9,6 @@ export default tseslint.config(
   js.configs.recommended,
   tseslint.configs.recommended,
   astro.configs.recommended,
+  { rules: { '@typescript-eslint/consistent-type-definitions': ['error', 'type'] } },
   { languageOptions: { globals: { ...globals.node } } },
 );

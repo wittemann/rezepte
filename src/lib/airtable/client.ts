@@ -8,11 +8,11 @@ const API_URL = 'https://api.airtable.com/v0';
 export const RATE_LIMIT_WAIT_MS = 30_000;
 
 /** A record as Airtable returns it: `fields` keyed by field ID, empty fields left out. */
-export interface AirtableRecord {
+export type AirtableRecord = {
   id: string;
   createdTime: string;
   fields: Record<string, unknown>;
-}
+};
 
 /** Airtable answered with an error status, e.g. 404 or 429. */
 export class AirtableError extends Error {
@@ -26,24 +26,24 @@ export class AirtableError extends Error {
 }
 
 /** Which base to talk to and how. Every call takes one of these. */
-export interface AirtableConnection {
+export type AirtableConnection = {
   token: string;
   baseId: string;
   /** Replaced in tests. */
   fetch?: typeof fetch;
   /** Replaced in tests, so they don't wait 30 seconds. */
   delay?: (ms: number) => Promise<void>;
-}
+};
 
-interface ListRecordsResponse {
+type ListRecordsResponse = {
   records: AirtableRecord[];
   offset?: string; // only while more pages follow
-}
+};
 
 // Airtable describes errors as {"error": "NOT_FOUND"} or {"error": {"type": "…", "message": "…"}}.
-interface ErrorResponse {
+type ErrorResponse = {
   error?: string | { type?: string; message?: string };
-}
+};
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -134,12 +134,12 @@ export async function listRecords(
 }
 
 /** A table in the base's schema, with the parts the app looks at. */
-export interface AirtableTable {
+export type AirtableTable = {
   id: string;
   name: string;
   primaryFieldId: string;
   fields: { id: string; name: string; type: string }[];
-}
+};
 
 /** All tables of the base with their fields (metadata API, needs the `schema.bases:read` scope). */
 export async function listTables(connection: AirtableConnection): Promise<AirtableTable[]> {
