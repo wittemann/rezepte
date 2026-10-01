@@ -68,4 +68,13 @@ describe('recipe page', () => {
     expect(bare.querySelector('.steps')).toBeNull();
     expect(bare.querySelector('details')).toBeNull();
   });
+
+  it('shows the stub notice instead of steps for a recipe without instructions', async () => {
+    const stub = (await renderPage(makeRecipe({ id: 'recX1', hasInstructions: false }))).document;
+    expect(stub.body.textContent).toContain('Hier fehlt noch die Anleitung');
+    expect(stub.querySelector('a[href="/rezepte/recX1/bearbeiten"].primary')).not.toBeNull();
+
+    const full = (await renderPage(makeRecipe())).document;
+    expect(full.body.textContent).not.toContain('Hier fehlt noch die Anleitung');
+  });
 });

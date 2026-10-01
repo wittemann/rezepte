@@ -1,0 +1,50 @@
+---
+// Shown instead of the steps for a recipe without instructions, an idea (design/README.md,
+// "Rezept-Detail"): Maulti thinking, a message and a button to the edit form.
+import Button from './Button.astro';
+import Maulti from './Maulti.tsx';
+import { TEXT } from './StubNotice.texts.ts';
+
+type Props = {
+  /** Where "Rezept ergänzen" leads: the edit form of the recipe */
+  editHref: string;
+};
+
+const { editHref } = Astro.props;
+---
+
+<div class="notice">
+  <Maulti pose="think" size={64} />
+  <div class="body">
+    <p class="message">{TEXT.message}</p>
+    <Button size="small" href={editHref}>
+      {TEXT.action}
+    </Button>
+  </div>
+</div>
+
+<style>
+  .notice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    margin: 1.25rem var(--space-xl) 0; /* 20px 16px 0 */
+    padding: var(--space-xl);
+    border: 2px dashed var(--muted);
+    border-radius: var(--radius-l);
+  }
+
+  .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-s);
+  }
+
+  .message {
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+    line-height: 1.4;
+  }
+</style>

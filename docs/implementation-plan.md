@@ -94,7 +94,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] Meta stickers (Arbeitszeit, Gesamtzeit, kcal/Portion) · `haiku`
 - [x] Ingredients with serving scaler (island) · `sonnet`
 - [x] Steps "So geht's" with sections, number circles, timer chips; hint box; notes expandable · `sonnet`
-- [ ] Stub state: "Noch ohne Anleitung" + "Rezept ergänzen" · `haiku`
+- [x] Stub state: "Noch ohne Anleitung" + "Rezept ergänzen" · `haiku`
 - [ ] Sticky CTA "Los, wir kochen!" · `haiku`
 
 **End-to-end tests** (as soon as login → list → detail works, [ADR 0010](decisions/0010-e2e-tests-deferred.md); details in section 7)
