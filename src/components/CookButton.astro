@@ -1,0 +1,37 @@
+---
+// "Los, wir kochen!": the call to action that stays at the bottom of the recipe page and starts
+// cooking mode (design/README.md, "Rezept-Detail"). It floats within the app column like the tab
+// bar; a spacer keeps the end of the page from hiding behind it.
+import Button from './Button.astro';
+import { TEXT } from './CookButton.texts.ts';
+
+type Props = {
+  /** Cooking mode of the recipe */
+  href: string;
+};
+
+const { href } = Astro.props;
+---
+
+<div class="spacer" aria-hidden="true"></div>
+<div class="dock">
+  <Button size="large" fullWidth {href}>
+    {TEXT.label}
+  </Button>
+</div>
+
+<style>
+  .spacer {
+    /* Button, its distance from the edge and spare room (130px in the design, with the 62px button) */
+    height: calc(var(--button-height-large) + var(--space-xl) + 3.25rem + var(--safe-bottom));
+  }
+
+  .dock {
+    position: fixed;
+    left: max(var(--safe-left), var(--space-xl));
+    right: max(var(--safe-right), var(--space-xl));
+    bottom: calc(var(--safe-bottom) + var(--space-xl));
+    max-width: calc(var(--app-max-width) - 2 * var(--space-xl));
+    margin: 0 auto;
+  }
+</style>

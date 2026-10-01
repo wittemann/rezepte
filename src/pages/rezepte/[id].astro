@@ -3,6 +3,7 @@
 // (docs/decisions/0003-rendering-and-caching.md). Airtable errors are not caught: Astro shows
 // the 500 page.
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import CookButton from '../../components/CookButton.astro';
 import ErrorMessage from '../../components/ErrorMessage.astro';
 import Ingredients from '../../components/Ingredients.tsx';
 import Notes from '../../components/Notes.astro';
@@ -33,6 +34,7 @@ if (!recipe) Astro.response.status = 404;
       )}
       {recipe.hasInstructions && <Steps method={recipe.method} category={recipe.category} />}
       {recipe.notes && <Notes notes={recipe.notes} />}
+      {recipe.hasInstructions && <CookButton href={`/rezepte/${recipe.id}/kochen`} />}
     </main>
   </Base>
 ) : (
