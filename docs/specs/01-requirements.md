@@ -19,7 +19,7 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 
 - One list with search (name **and** ingredients) and grouping by category
 - Meal filter and a filter sheet: category, "Bis 30 Min.", "Mit Anleitung"
-- Favorites tab (favorites stored **per device** in `localStorage`)
+- Favorites tab (favorites are **shared by everyone**, stored in Airtable)
 
 **Recipe detail**
 

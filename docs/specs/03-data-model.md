@@ -31,6 +31,7 @@ interface Recipe {
   source?: string; // "Chefkoch", "YouTube", …
   sourceUrl?: string;
   notes?: string;
+  favoritedAt?: string; // ISO timestamp; set → favorite (shared by everyone), newest first
   createdAt: string;
 }
 
@@ -66,29 +67,30 @@ interface RecipeImage {
 
 Constants (from the design): `CATEGORIES` = Hauptgericht, Beilage, Salat, Suppe, Grillen, Dessert, Backen, Grundrezept; `MEALS` as in the type above.
 
-**Not in Airtable:** favorites are stored **per device** in `localStorage` (design decision), not in the base.
+Favorites are **shared by everyone** (one shared password, no personal accounts): the field `Favorit seit` holds the time the recipe was marked. Empty → not a favorite. Deviates from the design README, which says per device ([05-design-integration](05-design-integration.md)).
 
 ## Airtable mapping
 
 Table `Rezepte` = `tblsuZ3AUOqkpY1vk`. The code uses the **field ID** (ADR 0002); the name is for humans. Durations come from the API in **seconds**.
 
-| Domain field                      | Airtable field       | Field ID            | Type                     | App writes?                |
-| --------------------------------- | -------------------- | ------------------- | ------------------------ | -------------------------- |
-| `title`                           | Name                 | `fldCRBNH34d7JR7OC` | singleLineText (primary) | yes, required              |
-| `category`                        | Kategorie            | `fldqzw4p8KhQ5s4l8` | singleSelect             | yes                        |
-| `meals`                           | Mahlzeit             | `fldj4rzvZS4HBehTQ` | multipleSelects          | yes                        |
-| `servings`                        | Portionen            | `fldahLlPF8xIsZD0Q` | number                   | yes                        |
-| `workMinutes`                     | Arbeitszeit          | `fldjztn4ZPOpPCz90` | duration (`h:mm`)        | yes                        |
-| `totalMinutes`                    | Gesamtzeit           | `fldf7iHYnrUpyX5SB` | duration (`h:mm`)        | yes                        |
-| `ingredientsText` → `ingredients` | Zutaten              | `fldG4ZG49PFX7YMb9` | multilineText            | yes                        |
-| `stepsText` → `method`            | Zubereitung          | `fldOK5mDwNTRgjzmQ` | multilineText            | yes                        |
-| –                                 | Kalorien gesamt      | `fldBz3DRCMbeL1qvF` | number (whole recipe)    | no (not in the edit form)  |
-| `caloriesPerServing`              | Kalorien pro Portion | `fldbfkuTs6teEZiz3` | **formula**              | **never**                  |
-| `images`                          | Foto                 | `fldshOL4NdmkjPqXe` | multipleAttachments      | via upload only (ADR 0005) |
-| `source`                          | Quelle               | `fldFlH3z4ScSU3oJz` | singleSelect             | yes                        |
-| `sourceUrl`                       | Original-Link        | `fldqeCigWMnW400lN` | url                      | yes                        |
-| –                                 | Meine Bewertung      | `fldNQWaV85W4mRwgu` | rating                   | no (not used by the app)   |
-| `notes`                           | Notizen              | `fldavsvzGmItYK5Va` | multilineText            | yes                        |
+| Domain field                      | Airtable field       | Field ID              | Type                     | App writes?                |
+| --------------------------------- | -------------------- | --------------------- | ------------------------ | -------------------------- |
+| `title`                           | Name                 | `fldCRBNH34d7JR7OC`   | singleLineText (primary) | yes, required              |
+| `category`                        | Kategorie            | `fldqzw4p8KhQ5s4l8`   | singleSelect             | yes                        |
+| `meals`                           | Mahlzeit             | `fldj4rzvZS4HBehTQ`   | multipleSelects          | yes                        |
+| `servings`                        | Portionen            | `fldahLlPF8xIsZD0Q`   | number                   | yes                        |
+| `workMinutes`                     | Arbeitszeit          | `fldjztn4ZPOpPCz90`   | duration (`h:mm`)        | yes                        |
+| `totalMinutes`                    | Gesamtzeit           | `fldf7iHYnrUpyX5SB`   | duration (`h:mm`)        | yes                        |
+| `ingredientsText` → `ingredients` | Zutaten              | `fldG4ZG49PFX7YMb9`   | multilineText            | yes                        |
+| `stepsText` → `method`            | Zubereitung          | `fldOK5mDwNTRgjzmQ`   | multilineText            | yes                        |
+| –                                 | Kalorien gesamt      | `fldBz3DRCMbeL1qvF`   | number (whole recipe)    | no (not in the edit form)  |
+| `caloriesPerServing`              | Kalorien pro Portion | `fldbfkuTs6teEZiz3`   | **formula**              | **never**                  |
+| `images`                          | Foto                 | `fldshOL4NdmkjPqXe`   | multipleAttachments      | via upload only (ADR 0005) |
+| `source`                          | Quelle               | `fldFlH3z4ScSU3oJz`   | singleSelect             | yes                        |
+| `sourceUrl`                       | Original-Link        | `fldqeCigWMnW400lN`   | url                      | yes                        |
+| –                                 | Meine Bewertung      | `fldNQWaV85W4mRwgu`   | rating                   | no (not used by the app)   |
+| `notes`                           | Notizen              | `fldavsvzGmItYK5Va`   | multilineText            | yes                        |
+| `favoritedAt`                     | Favorit seit         | _tbd (owner creates)_ | dateTime (with time)     | yes, only via the heart    |
 
 `Mahlzeit` and the category `Grillen` were added on 2026-09-26 for the design, filled with the suggestions from `design/Mahlzeit-Zuordnung.csv` (6 recipes moved to `Grillen`; 15 recipes have no meal).
 

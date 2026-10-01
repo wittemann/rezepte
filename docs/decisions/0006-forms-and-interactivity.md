@@ -4,14 +4,14 @@
 
 ## Context
 
-The app edits recipes, and the design has a lot of client-side interaction: serving scaler, search and filter sheet, suggestion carousel with "Nochmal würfeln", favorites in `localStorage`, cooking mode with swipe, timers and the photo step (resize before upload, ADR 0005). The edit form itself is simple: text fields, chips and textareas, no dynamic lists or drag and drop.
+The app edits recipes, and the design has a lot of client-side interaction: serving scaler, search and filter sheet, suggestion carousel with "Nochmal würfeln", favorites (heart), cooking mode with swipe, timers and the photo step (resize before upload, ADR 0005). The edit form itself is simple: text fields, chips and textareas, no dynamic lists or drag and drop.
 
 ## Decision
 
 - **Mutations** go through Astro Actions with zod validation on the server. Forms work without JS (progressive enhancement)
 - **Islands** only where interaction really needs it. One framework for all islands, no mixing
 - **Island framework: Preact** (with the official `@astrojs/preact` integration). React API at about 3 kB; chosen by the project owner (2026-09-26) for the familiar React style
-- No global client state and no SPA routing. State that has to survive a page change (favorites, running timers) lives in `localStorage` or the URL
+- No global client state and no SPA routing. State that has to survive a page change (running timers) lives in `localStorage` or the URL. Favorites are shared and live in Airtable (`Favorit seit`), toggled through an Action; the design's per-device `localStorage` favorites were dropped (2026-10-01)
 
 ## Consequences
 
