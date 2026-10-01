@@ -84,7 +84,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] Recipes page: title + count, search field (≥ 16 px against iOS zoom), meal segmented control, filter button with count · `sonnet`
 - [x] Filter sheet: category chips, "Bis 30 Min.", "Mit Anleitung", reset, "N Rezepte anzeigen" · `sonnet`
 - [x] Grouped by category without search; flat hit list with search; empty state (Maulti `think`) · `sonnet`
-- [ ] Favorites page; empty state (Maulti `sleep`) · `haiku`
+- [x] Favorites page; empty state (Maulti `sleep`) · `haiku`
 
 **Recipe detail**
 

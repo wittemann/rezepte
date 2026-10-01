@@ -3,7 +3,7 @@
 // count) without a search, one flat list with a search, Maulti and a hint when nothing matches.
 import { groupByCategory } from '../lib/recipes/group.ts';
 import type { Recipe } from '../lib/recipes/recipe.ts';
-import Maulti from './Maulti.tsx';
+import EmptyState from './EmptyState.astro';
 import RecipeRow from './RecipeRow.astro';
 import { TEXT } from './RecipeList.texts.ts';
 
@@ -18,11 +18,7 @@ const groups = grouped ? groupByCategory(recipes) : [{ category: undefined, reci
 ---
 
 {recipes.length === 0 ? (
-  <div class="empty">
-    <Maulti pose="think" size={120} />
-    <h2 class="emptyTitle">{TEXT.emptyTitle}</h2>
-    <p class="emptyText">{TEXT.emptyText}</p>
-  </div>
+  <EmptyState pose="think" title={TEXT.emptyTitle} text={TEXT.emptyText} />
 ) : (
   groups.map((group) => (
     <section class="group">
@@ -62,25 +58,5 @@ const groups = grouped ? groupByCategory(recipes) : [{ category: undefined, reci
     font-family: var(--font-body);
     font-size: var(--font-size-min);
     font-weight: 800;
-  }
-
-  .empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-s);
-    padding: var(--space-xxl) 2rem; /* 24px 32px */
-    text-align: center;
-  }
-
-  .emptyTitle {
-    font-size: 1.375rem; /* 22px */
-  }
-
-  .emptyText {
-    max-width: 16.25rem; /* 260px */
-    color: var(--muted);
-    font-size: 0.9375rem; /* 15px */
-    text-wrap: pretty;
   }
 </style>

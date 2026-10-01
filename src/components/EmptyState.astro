@@ -1,0 +1,40 @@
+---
+// Maulti with a title and a hint, for lists without entries (design/README.md: "Rezepte", "Favoriten").
+import Maulti, { type MaultiPose } from './Maulti.tsx';
+
+type Props = {
+  pose: MaultiPose;
+  title: string;
+  text: string;
+};
+
+const { pose, title, text } = Astro.props;
+---
+
+<div class="empty">
+  <Maulti {pose} size={120} />
+  <h2 class="title">{title}</h2>
+  <p class="text">{text}</p>
+</div>
+
+<style>
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-s);
+    padding: var(--space-xxl) 2rem; /* 24px 32px */
+    text-align: center;
+  }
+
+  .title {
+    font-size: 1.375rem; /* 22px */
+  }
+
+  .text {
+    max-width: 16.25rem; /* 260px */
+    color: var(--muted);
+    font-size: 0.9375rem; /* 15px */
+    text-wrap: pretty;
+  }
+</style>

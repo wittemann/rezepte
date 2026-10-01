@@ -1,0 +1,58 @@
+---
+// Favorites (design/README.md, "Favoriten"): every recipe marked with the heart, most recently
+// marked first. Shared by everyone, so it comes straight from Airtable
+// (docs/specs/03-data-model.md). Airtable errors are not caught: Astro shows the 500 page.
+import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import EmptyState from '../components/EmptyState.astro';
+import RecipeRow from '../components/RecipeRow.astro';
+import Base from '../layouts/Base.astro';
+import { sortFavorites } from '../lib/recipes/favorites.ts';
+import { getAll } from '../lib/recipes/repository.ts';
+import { TEXT } from './_favoriten.texts.ts';
+
+const recipes = sortFavorites(await getAll({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID }));
+---
+
+<Base title={TEXT.title} activeTab="favorites">
+  <main>
+    <header class="heading">
+      <h1 class="title">{TEXT.title}</h1>
+      <p class="count">{TEXT.count(recipes.length)}</p>
+    </header>
+    {recipes.length === 0 ? (
+      <EmptyState pose="sleep" title={TEXT.emptyTitle} text={TEXT.emptyText} />
+    ) : (
+      <div class="list">
+        {recipes.map((recipe) => (
+          <RecipeRow {recipe} />
+        ))}
+      </div>
+    )}
+  </main>
+</Base>
+
+<style>
+  .heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem; /* 2px */
+    padding: var(--space-s) var(--space-page) var(--space-l);
+  }
+
+  .title {
+    font-size: 1.875rem; /* 30px */
+  }
+
+  .count {
+    color: var(--muted);
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    padding: 0 var(--space-xl);
+  }
+</style>
