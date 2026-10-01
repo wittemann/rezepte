@@ -11,7 +11,7 @@ import {
   type AirtableConnection,
   type AirtableRecord,
 } from '../airtable/client.ts';
-import { RECIPES_TABLE_ID } from './fields.ts';
+import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import type { Recipe, RecipeId } from './recipe.ts';
 import { readRecord } from './record.ts';
@@ -60,6 +60,23 @@ export async function update(
   // must stay a real permission error. This also makes sure the record is in the recipe table
   // (Airtable finds record IDs across all tables of a base).
   if (!(await findRecord(connection, id))) return undefined;
+  const record = await updateRecord(connection, RECIPES_TABLE_ID, id, fields);
+  return readSavedRecord(record);
+}
+
+/**
+ * Marks a recipe as favorite (sets "Favorit seit" to `now`) or not (clears it) and returns it as
+ * saved, or undefined if there is no recipe with this ID. Writes only that field, so it never
+ * touches the rest of the recipe. Marking an existing favorite again moves it to the front.
+ */
+export async function setFavorite(
+  connection: AirtableConnection,
+  id: RecipeId,
+  favorite: boolean,
+  now: Date = new Date(),
+) {
+  if (!(await findRecord(connection, id))) return undefined; // same reason as in update()
+  const fields = { [RECIPE_FIELDS.favoritedAt]: favorite ? now.toISOString() : null };
   const record = await updateRecord(connection, RECIPES_TABLE_ID, id, fields);
   return readSavedRecord(record);
 }

@@ -3,7 +3,7 @@ import { ZodError } from 'zod';
 import type { AirtableRecord } from '../airtable/client.ts';
 import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
-import { create, getAll, getById, update } from './repository.ts';
+import { create, getAll, getById, setFavorite, update } from './repository.ts';
 
 const TABLE_URL = `https://api.airtable.com/v0/appTestBase/${RECIPES_TABLE_ID}`;
 
@@ -288,5 +288,63 @@ describe('update', () => {
     await expect(update(connection, 'recA', testInput)).rejects.toThrow(
       'Saved recipe record recA could not be read',
     );
+  });
+});
+
+describe('setFavorite', () => {
+  const now = new Date('2026-10-01T08:30:00.000Z');
+
+  it('checks the record exists, then patches only "Favorit seit" with the time', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse(
+        testRecord('recA', {
+          [RECIPE_FIELDS.title]: 'Testsuppe',
+          [RECIPE_FIELDS.favoritedAt]: '2026-10-01T08:30:00.000Z',
+        }),
+      ),
+    );
+
+    const recipe = await setFavorite(connection, 'recA', true, now);
+
+    const patch = requestAt(fetch, 1);
+    expect(patch.method).toBe('PATCH');
+    expect(patch.url.href).toBe(`${TABLE_URL}/recA`);
+    expect(patch.body).toEqual({
+      fields: { [RECIPE_FIELDS.favoritedAt]: '2026-10-01T08:30:00.000Z' },
+      typecast: true,
+      returnFieldsByFieldId: true,
+    });
+    expect(recipe?.favoritedAt).toBe('2026-10-01T08:30:00.000Z');
+  });
+
+  it('clears the field when removing the favorite', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse(titled('recA', 'Testsuppe')),
+    );
+
+    const recipe = await setFavorite(connection, 'recA', false, now);
+
+    expect(requestAt(fetch, 1).body).toMatchObject({
+      fields: { [RECIPE_FIELDS.favoritedAt]: null },
+    });
+    expect(recipe?.favoritedAt).toBeUndefined();
+  });
+
+  it('returns undefined without patching for an unknown record or a bad ID', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse({ records: [] }));
+
+    expect(await setFavorite(connection, 'recMissing', true, now)).toBeUndefined();
+    expect(await setFavorite(connection, 'recA/../x', true, now)).toBeUndefined();
+    expect(fetch).toHaveBeenCalledTimes(1); // only the lookup of the first call
+  });
+
+  it('passes errors of the PATCH on', async () => {
+    const { connection } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse({ error: 'ERROR' }, 500),
+    );
+    await expect(setFavorite(connection, 'recA', true, now)).rejects.toMatchObject({ status: 500 });
   });
 });
