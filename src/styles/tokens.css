@@ -112,6 +112,12 @@
   --segmented-padding: 0.1875rem; /* 3px: track to options */
   --segmented-gap: 0.125rem; /* 2px: between options */
 
+  /* Recipe header card (design/README.md, "Rezept-Detail") */
+  --recipe-header-margin: 0 var(--space-s); /* 0 10px */
+  --recipe-photo-height: 12.5rem; /* 200px */
+  --recipe-mascot-overlap: 1rem; /* 16px: Maulti reaches below the card */
+  --recipe-title-clearance: 5.5rem; /* 88px: keeps a long title clear of Maulti */
+
   /* Bottom sheet (design/README.md, "Filter-Sheet" and "Kochmodus") */
   --sheet-padding: 1.125rem; /* 18px */
   --sheet-title-size: 1.375rem; /* 22px, as in the filter sheet (ingredients sheet: 20px) */

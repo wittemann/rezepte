@@ -8,6 +8,7 @@ const ICONS = {
   heart: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z',
   plus: 'M12 5v14M5 12h14',
   filter: 'M4 7h16M7 12h10M10 17h4',
+  back: 'M19 12H5M11 6l-6 6l6 6',
 };
 
 // One per category; names match the --pastel-cat-* tokens

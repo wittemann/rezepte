@@ -1,0 +1,122 @@
+---
+// Header card of the recipe page (design/README.md, "Rezept-Detail"): back, heart, "Bearbeiten",
+// optional photo, category, title, source and Maulti. The card has the color of the category.
+import type { Recipe } from '../lib/recipes/recipe.ts';
+import { categoryName } from '../lib/recipes/fields.ts';
+import { isFavorite } from '../lib/recipes/favorites.ts';
+import Button from './Button.astro';
+import FavoriteButton from './FavoriteButton.tsx';
+import Icon from './Icon.tsx';
+import Maulti from './Maulti.tsx';
+import Pill from './Pill.astro';
+import { TEXT } from './RecipeHeader.texts.ts';
+
+type Props = {
+  recipe: Recipe;
+};
+
+const { recipe } = Astro.props;
+const favorite = isFavorite(recipe);
+const photoUrl = recipe.images[0]?.url;
+const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
+---
+
+<header class="card" style={`background: ${cardColor}`}>
+  <div class="actions">
+    <Button variant="round" onPastel href="/rezepte" label={TEXT.back}>
+      <Icon name="back" size={22} strokeWidth={2.4} />
+    </Button>
+    <div class="actions-end">
+      <FavoriteButton client:load recipeId={recipe.id} {favorite} />
+      <Button variant="outline" onPastel href={`/rezepte/${recipe.id}/bearbeiten`}>
+        {TEXT.edit}
+      </Button>
+    </div>
+  </div>
+  {photoUrl && <img class="photo" src={photoUrl} alt="" />}
+  {recipe.category && (
+    <div class="category">
+      <Pill>{recipe.category}</Pill>
+    </div>
+  )}
+  <h1 class="title">{recipe.title}</h1>
+  {recipe.source && (
+    <p class="source">
+      {TEXT.sourcePrefix}{' '}
+      {recipe.sourceUrl ? (
+        <a href={recipe.sourceUrl} rel="noopener noreferrer">
+          {recipe.source}
+        </a>
+      ) : (
+        recipe.source
+      )}
+    </p>
+  )}
+  <div class="mascot">
+    <Maulti pose={favorite ? 'heart' : 'wave'} size={108} />
+  </div>
+</header>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    margin: var(--recipe-header-margin);
+    padding: var(--space-m) var(--space-l) var(--space-xxl);
+    color: var(--on-pastel);
+    border: var(--border-thick);
+    border-radius: var(--radius-xxl);
+    box-shadow: var(--shadow-l);
+  }
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .actions-end {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .photo {
+    width: 100%;
+    height: var(--recipe-photo-height);
+    object-fit: cover;
+    background: var(--sunk);
+    border: var(--border);
+    border-radius: var(--radius-l);
+  }
+
+  .category {
+    display: flex;
+  }
+
+  .title {
+    padding-right: var(--recipe-title-clearance);
+    font-size: 1.75rem; /* 28px */
+    line-height: 1.15;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  .source {
+    padding-right: var(--recipe-title-clearance);
+    font-size: 0.9375rem; /* 15px */
+    font-weight: 600;
+  }
+
+  .source a {
+    color: inherit;
+  }
+
+  .mascot {
+    position: absolute;
+    right: var(--space-xs);
+    bottom: calc(-1 * var(--recipe-mascot-overlap));
+  }
+</style>
