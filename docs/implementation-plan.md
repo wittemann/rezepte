@@ -100,7 +100,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 **End-to-end tests** (as soon as login → list → detail works, [ADR 0010](decisions/0010-e2e-tests-deferred.md); details in section 7)
 
 - [x] Set up Playwright: config, `npm run test:e2e`, dev server started by the config, login helper using a test password hash and session secret from a local `.env` (never committed); Chromium only, phone viewport; CI job in the workflow from [ADR 0008](decisions/0008-tooling.md) with secrets from GitHub · `sonnet`
-- [ ] Smoke test: login (wrong password shows the error, right one gets in) → recipes list → first recipe detail · `sonnet`
+- [x] Smoke test: login (wrong password shows the error, right one gets in) → recipes list → first recipe detail · `sonnet`
 
 **Start**
 
