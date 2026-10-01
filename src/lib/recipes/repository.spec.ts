@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } fr
 import { ZodError } from 'zod';
 import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
-import { create, getAll, getById, setFavorite, update } from './repository.ts';
+import { create, getAll, getById, getImageUrl, setFavorite, update } from './repository.ts';
 
 const TABLE_URL = `https://api.airtable.com/v0/appTestBase/${RECIPES_TABLE_ID}`;
 
@@ -345,5 +345,37 @@ describe('setFavorite', () => {
       jsonResponse({ error: 'ERROR' }, 500),
     );
     await expect(setFavorite(connection, 'recA', true, now)).rejects.toMatchObject({ status: 500 });
+  });
+});
+
+describe('getImageUrl', () => {
+  const withImage = testRecord('recA1', {
+    [RECIPE_FIELDS.title]: 'Beispiel',
+    [RECIPE_FIELDS.images]: [
+      { id: 'attOne', type: 'image/jpeg', url: 'https://cdn.example.test/one' },
+    ],
+  });
+
+  it('looks the record up and returns the current URL of the attachment', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse({ records: [withImage] }));
+    expect(await getImageUrl(connection, 'recA1', 'attOne', 'full')).toBe(
+      'https://cdn.example.test/one',
+    );
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns undefined for an unknown recipe or attachment', async () => {
+    const { connection } = connectionAnswering(
+      jsonResponse({ records: [] }),
+      jsonResponse({ records: [withImage] }),
+    );
+    expect(await getImageUrl(connection, 'recA1', 'attOne', 'full')).toBeUndefined();
+    expect(await getImageUrl(connection, 'recA1', 'attOther', 'full')).toBeUndefined();
+  });
+
+  it('returns undefined without asking Airtable when the ID is no record ID', async () => {
+    const { connection, fetch } = connectionAnswering();
+    expect(await getImageUrl(connection, 'x/y', 'attOne', 'full')).toBeUndefined();
+    expect(fetch).not.toHaveBeenCalled();
   });
 });

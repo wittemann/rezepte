@@ -12,6 +12,7 @@ import {
   type AirtableRecord,
 } from '../airtable/client.ts';
 import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
+import { findImageUrl, type ImageSize } from './image-source.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import type { Recipe, RecipeId } from './recipe.ts';
 import { readRecord } from './record.ts';
@@ -72,6 +73,20 @@ export async function setFavorite(
   const fields = { [RECIPE_FIELDS.favoritedAt]: favorite ? now.toISOString() : null };
   const record = await updateRecord(connection, RECIPES_TABLE_ID, id, fields);
   return readSavedRecord(record);
+}
+
+/**
+ * A fresh Airtable URL for one image of a recipe, or undefined if the recipe or the image doesn't
+ * exist. The URL expires after a few hours: use it right away, never store it.
+ */
+export async function getImageUrl(
+  connection: AirtableConnection,
+  recipeId: RecipeId,
+  attachmentId: string,
+  size: ImageSize,
+) {
+  const record = await findRecord(connection, recipeId);
+  return record ? findImageUrl(record.fields, attachmentId, size) : undefined;
 }
 
 /** The record with this ID in the recipe table, or undefined. */

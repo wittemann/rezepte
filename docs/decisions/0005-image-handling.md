@@ -12,7 +12,7 @@ Recipe images are Airtable attachments today, and Airtable stays the source of t
 
 - Route `/img/[recordId]/[attachmentId]` (optionally `?size=small|large|full`)
 - Fetches the record, finds the attachment, streams either the image or one of Airtable's thumbnails (`small`/`large`) for lists
-- Response header: `Cache-Control: public, max-age=31536000, immutable`. This is safe because an attachment id never changes content: replacing an image creates a new attachment id
+- Response headers: `Cache-Control: public, max-age=31536000, immutable` for the browser and the same value in `Vercel-CDN-Cache-Control` for the Vercel CDN (verified against the Vercel docs 2026-10-01; a function response is cached by the CDN only with a CDN header such as this or `s-maxage`). This is safe because an attachment id never changes content: replacing an image creates a new attachment id
 - The domain type `RecipeImage.url` always points to this route, never to Airtable
 
 **Upload: in the app, into Airtable**
