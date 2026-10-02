@@ -1,8 +1,8 @@
 /* Values from design/README.md, "0. Login" (px in the design, rem here) */
 
 .form {
-  /* body adds --safe-top above, so the form still ends at the bottom of the screen */
-  min-height: calc(100dvh - var(--safe-top));
+  /* body adds --content-top above, so the form still ends at the bottom of the screen */
+  min-height: calc(100dvh - var(--content-top));
   margin: 0;
   display: flex;
   flex-direction: column;

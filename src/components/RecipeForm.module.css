@@ -7,14 +7,17 @@
   margin: 0;
 }
 
-/* Stays at the top while the fields scroll; reaches under the status bar like the body's padding */
+/*
+ * Stays at the top while the fields scroll; reaches under the status bar and the timer pills
+ * like the body's padding
+ */
 .header {
   position: sticky;
   top: 0;
   z-index: 1;
-  margin-top: calc(-1 * var(--safe-top));
-  padding: var(--safe-top) var(--space-xs) 0;
-  min-height: calc(var(--safe-top) + 3.25rem); /* 52px */
+  margin-top: calc(-1 * var(--content-top));
+  padding: var(--content-top) var(--space-xs) 0;
+  min-height: calc(var(--content-top) + 3.25rem); /* 52px */
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;

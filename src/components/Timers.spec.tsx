@@ -11,12 +11,26 @@ vi.mock('./timer-sound.ts', () => sound);
 
 const START = new Date('2026-10-02T12:00:00Z').getTime();
 let container: HTMLElement;
+const reservedSpace = () => document.documentElement.style.getPropertyValue('--timer-space');
 
 beforeEach(() => {
   vi.useFakeTimers({ now: START });
   localStorage.clear();
   sound.unlockSound.mockClear();
   sound.playBeeps.mockClear();
+  // happy-dom has no layout: every pill is 40px high
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      observe() {}
+      disconnect() {}
+    },
+  );
+  vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (
+    this: HTMLElement,
+  ) {
+    return this.querySelectorAll('li').length * 40;
+  });
   // happy-dom has no <dialog> modal support to rely on
   HTMLDialogElement.prototype.showModal = function showModal() {
     this.setAttribute('open', '');
@@ -30,6 +44,8 @@ afterEach(() => {
   act(() => render(null, container));
   container.remove();
   vi.useRealTimers();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 const start = (minutes: number, stepNumber = 3) =>
@@ -68,6 +84,25 @@ describe('Timers', () => {
     });
     expect(pills()).toHaveLength(1);
     expect(pills()[0]).toContain('Schritt 5');
+  });
+
+  it('reserves the height of the pills at the top of the page while they run', () => {
+    expect(reservedSpace()).toBe('');
+    start(25);
+    expect(reservedSpace()).toBe('40px');
+  });
+
+  it('gives the space back when the last pill is gone', () => {
+    start(1);
+    advance(60_500);
+    expect(pills()).toEqual([]);
+    expect(reservedSpace()).toBe('');
+  });
+
+  it('gives the space back when the timers leave the page', () => {
+    start(5);
+    act(() => render(null, container));
+    expect(reservedSpace()).toBe('');
   });
 
   it('shows timers stored before, like after a page change', () => {

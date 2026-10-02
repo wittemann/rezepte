@@ -6,8 +6,8 @@
 .page {
   display: flex;
   flex-direction: column;
-  /* body adds --safe-top above, so the page still ends at the bottom of the screen */
-  min-height: calc(100dvh - var(--safe-top));
+  /* body adds --content-top above, so the page still ends at the bottom of the screen */
+  min-height: calc(100dvh - var(--content-top));
   /* Vertical scrolling stays, sideways drags are swipes */
   touch-action: pan-y;
   /* Safari still needs the prefix; a text selection would end the drag */

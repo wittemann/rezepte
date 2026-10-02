@@ -1,11 +1,12 @@
 /*
  * Timer pills at the top and the alarm overlay (design/README.md, "Timer"). The pills float over
- * every page, centered within the app column.
+ * every page, centered within the app column. Timers.tsx reserves their height at the top of the
+ * page.
  */
 
 .pills {
   position: fixed;
-  top: calc(var(--safe-top) + var(--space-xs));
+  top: var(--safe-top);
   left: 0;
   right: 0;
   z-index: 5;
@@ -15,7 +16,8 @@
   gap: var(--space-xxs);
   margin: 0 auto;
   max-width: var(--app-max-width);
-  padding: 0;
+  /* The gaps count as part of the height the page reserves (--timer-space) */
+  padding: var(--space-xs) 0;
   list-style: none;
   /* Only the pills catch taps, not the empty strip between them */
   pointer-events: none;

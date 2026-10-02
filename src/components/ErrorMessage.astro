@@ -24,8 +24,8 @@ const { title, message, linkText, href = '/' } = Astro.props;
     align-items: center;
     justify-content: center;
     gap: var(--space-l);
-    /* Fills the body exactly (body has min-height 100dvh and the safe-top padding), so no scrolling */
-    min-height: calc(100dvh - var(--safe-top));
+    /* Fills the body exactly (body has min-height 100dvh and the content-top padding), so no scrolling */
+    min-height: calc(100dvh - var(--content-top));
     padding: var(--space-page);
     text-align: center;
   }

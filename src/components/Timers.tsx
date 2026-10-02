@@ -12,11 +12,13 @@ import { TEXT } from './Timers.texts.ts';
 const TICK_MILLISECONDS = 500;
 const ALARM_REPEAT_MILLISECONDS = 2500;
 const VIBRATION_PATTERN = [300, 150, 300];
+const TIMER_SPACE_PROPERTY = '--timer-space';
 
 export default function Timers() {
   const timers = useTimers();
   const [now, setNow] = useState(Date.now());
   const hasTimers = timers.length > 0;
+  const pillsRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     if (!hasTimers) return;
@@ -32,11 +34,27 @@ export default function Timers() {
 
   const running = timers.filter((timer) => !isExpired(timer, now));
   const ringing = timers.find((timer) => isExpired(timer, now));
+  const hasRunning = running.length > 0;
+
+  // The pills float, so tell the page how much room to keep free at the top (global.css)
+  useEffect(() => {
+    const pills = pillsRef.current;
+    if (!hasRunning || !pills) return;
+    const reserveSpace = () =>
+      document.documentElement.style.setProperty(TIMER_SPACE_PROPERTY, `${pills.offsetHeight}px`);
+    const observer = new ResizeObserver(reserveSpace);
+    observer.observe(pills);
+    reserveSpace();
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty(TIMER_SPACE_PROPERTY);
+    };
+  }, [hasRunning]);
 
   return (
     <>
-      {running.length > 0 && (
-        <ul class={styles.pills}>
+      {hasRunning && (
+        <ul ref={pillsRef} class={styles.pills}>
           {running.map((timer) => (
             <li key={timer.id} class={styles.pill}>
               <span class={styles.remaining}>{formatRemaining(remainingSeconds(timer, now))}</span>
