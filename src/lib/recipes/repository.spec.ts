@@ -2,7 +2,15 @@ import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } fr
 import { ZodError } from 'zod';
 import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
-import { create, getAll, getById, getImageUrl, setFavorite, update } from './repository.ts';
+import {
+  addPhoto,
+  create,
+  getAll,
+  getById,
+  getImageUrl,
+  setFavorite,
+  update,
+} from './repository.ts';
 
 const TABLE_URL = `https://api.airtable.com/v0/appTestBase/${RECIPES_TABLE_ID}`;
 
@@ -377,5 +385,34 @@ describe('getImageUrl', () => {
     const { connection, fetch } = connectionAnswering();
     expect(await getImageUrl(connection, 'x/y', 'attOne', 'full')).toBeUndefined();
     expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe('addPhoto', () => {
+  it('checks the record exists, then uploads a JPEG to the photo field only', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse(titled('recA', 'Testsuppe')),
+    );
+
+    expect(await addPhoto(connection, 'recA', '/9j/AAAA')).toBe(true);
+
+    const upload = requestAt(fetch, 1);
+    expect(upload.method).toBe('POST');
+    expect(upload.url.href).toBe(
+      `https://content.airtable.com/v0/appTestBase/recA/${RECIPE_FIELDS.images}/uploadAttachment`,
+    );
+    expect(upload.body).toEqual({
+      contentType: 'image/jpeg',
+      filename: 'foto.jpg',
+      file: '/9j/AAAA',
+    });
+  });
+
+  it('returns false without uploading for an unknown record or a bad ID', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse({ records: [] }));
+    expect(await addPhoto(connection, 'recUnknown', '/9j/AAAA')).toBe(false);
+    expect(await addPhoto(connection, 'not-an-id', '/9j/AAAA')).toBe(false);
+    expect(fetch).toHaveBeenCalledOnce(); // only the lookup
   });
 });

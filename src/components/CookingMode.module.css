@@ -140,7 +140,8 @@
   background: var(--surface);
 }
 
-.previous:disabled {
+.previous:disabled,
+.next:disabled {
   opacity: 0.35;
   cursor: default;
 }

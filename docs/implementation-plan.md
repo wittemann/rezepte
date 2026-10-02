@@ -117,7 +117,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] Swipe (50 px threshold) and buttons ← / Weiter / Fertig · `sonnet`
 - [x] Screen Wake Lock while cooking · `haiku`
 - [x] Timers: several in parallel, persisted across pages, pill at the top, alarm overlay (Maulti `alarm`) with sound and vibration — [ADR 0012](decisions/0012-pwa-and-timers.md) · `opus`
-- [ ] Photo step for recipes without a photo: camera input, resize to max. 1200 px, upload action to Airtable's upload-attachment endpoint (verify current API) · `opus`
+- [x] Photo step for recipes without a photo: camera input, resize to max. 1200 px, upload action to Airtable's upload-attachment endpoint (verify current API) · `opus`
 
 **Edit and new**
 

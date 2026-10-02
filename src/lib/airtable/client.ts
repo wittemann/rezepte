@@ -3,6 +3,8 @@
 // Token and base ID are passed in (no astro:env import), so it also works in tests and scripts.
 
 const API_URL = 'https://api.airtable.com/v0';
+/** File uploads go to a host of their own. */
+const CONTENT_API_URL = 'https://content.airtable.com/v0';
 
 /** After too many requests (5 per second per base), Airtable answers 429 for 30 seconds. */
 export const RATE_LIMIT_WAIT_MS = 30_000;
@@ -178,4 +180,29 @@ export async function updateRecord(
   const url = new URL(`${API_URL}/${connection.baseId}/${tableId}/${recordId}`);
   const body = { fields, typecast: true, returnFieldsByFieldId: true };
   return (await requestJson(connection, 'PATCH', url, body)) as AirtableRecord;
+}
+
+// Airtable field IDs: "fld" followed by letters and digits.
+const FIELD_ID = /^fld[A-Za-z0-9]+$/;
+
+/**
+ * Adds a file to an attachment field of one record (content API, up to 5 MB, needs
+ * `data.records:write`). The file comes as base64 text. Existing attachments stay; the new one is
+ * added after them. Returns the record, but only with the attachment field.
+ *
+ * Throws before sending anything if `recordId` or `fieldId` aren't Airtable IDs.
+ */
+export async function uploadAttachment(
+  connection: AirtableConnection,
+  recordId: string,
+  fieldId: string,
+  file: { contentType: string; filename: string; base64: string },
+) {
+  if (!isRecordId(recordId)) throw new Error(`Not an Airtable record ID: ${recordId}`);
+  if (!FIELD_ID.test(fieldId)) throw new Error(`Not an Airtable field ID: ${fieldId}`);
+  const url = new URL(
+    `${CONTENT_API_URL}/${connection.baseId}/${recordId}/${fieldId}/uploadAttachment`,
+  );
+  const body = { contentType: file.contentType, filename: file.filename, file: file.base64 };
+  return (await requestJson(connection, 'POST', url, body)) as AirtableRecord;
 }

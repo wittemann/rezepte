@@ -1,0 +1,56 @@
+/* Photo step content inside the cooking mode card (design/README.md, "Kochmodus") */
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.explanation {
+  color: var(--muted);
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.5;
+}
+
+.preview {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: var(--border);
+  border-radius: var(--radius-m);
+}
+
+.status {
+  font-weight: 700;
+}
+
+.failed {
+  color: var(--accent);
+}
+
+/* The file input covers the label, so it can be focused with the keyboard and tapped directly */
+.pick {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--button-height-medium);
+  background: var(--sunk);
+  border: 2px dashed var(--outline);
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+}
+
+.pick:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}

@@ -7,6 +7,11 @@ import CookingMode from './CookingMode.tsx';
 
 vi.mock('./timer-sound.ts', () => ({ unlockSound: vi.fn(), playBeeps: vi.fn() }));
 
+const addPhoto = vi.hoisted(() => vi.fn());
+vi.mock('astro:actions', () => ({ actions: { addPhoto } }));
+const resizePhoto = vi.hoisted(() => vi.fn());
+vi.mock('./resize-photo.ts', () => ({ resizePhoto }));
+
 const steps = [
   { text: 'Zwiebeln würfeln.' },
   { text: 'Teig 10 Minuten ruhen lassen.', section: 'Teig', timerMinutes: 10 },
@@ -18,6 +23,10 @@ let container: HTMLElement;
 
 beforeEach(() => {
   localStorage.clear();
+  addPhoto.mockReset();
+  resizePhoto.mockReset();
+  URL.createObjectURL = vi.fn(() => 'blob:preview');
+  URL.revokeObjectURL = vi.fn();
   container = document.createElement('div');
   document.body.append(container);
 });
@@ -27,11 +36,13 @@ afterEach(() => {
   container.remove();
 });
 
-function renderCooking(servings?: number) {
+function renderCooking(servings?: number, hasPhoto = true) {
   act(() => {
     render(
       <CookingMode
+        recipeId="recX1"
         recipeTitle="Beispielsuppe"
+        hasPhoto={hasPhoto}
         recipeHref="/rezepte/recX1"
         steps={steps}
         ingredients={ingredients}
@@ -169,6 +180,96 @@ describe('CookingMode', () => {
         label: '10 Minuten',
       });
       expect(stored.endsAt - Date.now()).toBeGreaterThan(9 * 60_000);
+    });
+  });
+
+  describe('photo step', () => {
+    const toPhotoStep = () => {
+      for (let step = 0; step < steps.length; step++) {
+        act(() => {
+          [...container.querySelectorAll('button')]
+            .find((button) => button.textContent === 'Weiter')!
+            .click();
+        });
+      }
+    };
+    const pickPhoto = async () => {
+      const input = container.querySelector<HTMLInputElement>('input[type="file"]')!;
+      Object.defineProperty(input, 'files', {
+        value: [new File(['x'], 'IMG_1.jpg', { type: 'image/jpeg' })],
+      });
+      await act(async () => {
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    };
+    const footerAction = () => container.querySelector('footer a, footer button:last-child');
+
+    it('is not there when the recipe has a photo', () => {
+      renderCooking(undefined, true);
+      expect(container.querySelectorAll('ol li')).toHaveLength(3);
+    });
+
+    it('follows the last step of a recipe without photo, with a dot of its own', () => {
+      renderCooking(undefined, false);
+      expect(container.querySelectorAll('ol li')).toHaveLength(4);
+      toPhotoStep();
+      expect(container.textContent).toContain('Letzter Schritt');
+      expect(container.textContent).toContain('Machst du ein Foto für mich?');
+      const input = container.querySelector('input[type="file"]')!;
+      expect(input.getAttribute('accept')).toBe('image/*');
+      expect(input.getAttribute('capture')).toBe('environment');
+      expect(footerAction()?.textContent).toBe('Überspringen');
+      expect(footerAction()?.getAttribute('href')).toBe('/rezepte/recX1');
+    });
+
+    it('uploads the shrunk photo for this recipe, shows it, and ends with "Fertig"', async () => {
+      resizePhoto.mockResolvedValue({ blob: new Blob(['x']), base64: '/9j/AAAA' });
+      addPhoto.mockResolvedValue({ error: undefined });
+      renderCooking(undefined, false);
+      toPhotoStep();
+      await pickPhoto();
+
+      expect(addPhoto).toHaveBeenCalledWith({ id: 'recX1', file: '/9j/AAAA' });
+      expect(container.querySelector('img')?.getAttribute('src')).toBe('blob:preview');
+      expect(container.textContent).toContain('Danke, das Foto ist gespeichert!');
+      expect(container.querySelector('input[type="file"]')).toBeNull();
+      expect(footerAction()?.textContent).toBe('Fertig');
+    });
+
+    it('cannot be left while the upload runs', async () => {
+      resizePhoto.mockResolvedValue({ blob: new Blob(['x']), base64: '/9j/AAAA' });
+      addPhoto.mockReturnValue(new Promise(() => {}));
+      renderCooking(undefined, false);
+      toPhotoStep();
+      await pickPhoto();
+
+      expect(container.textContent).toContain('Foto wird gespeichert');
+      expect(container.querySelector('footer a')).toBeNull();
+      expect(container.querySelector<HTMLButtonElement>('footer button:last-child')?.disabled).toBe(
+        true,
+      );
+    });
+
+    it('says so and offers another try when the upload fails', async () => {
+      resizePhoto.mockResolvedValue({ blob: new Blob(['x']), base64: '/9j/AAAA' });
+      addPhoto.mockResolvedValue({ error: new Error('boom') });
+      renderCooking(undefined, false);
+      toPhotoStep();
+      await pickPhoto();
+
+      expect(container.textContent).toContain('konnte nicht gespeichert werden');
+      expect(container.textContent).toContain('Nochmal versuchen');
+      expect(footerAction()?.textContent).toBe('Überspringen');
+    });
+
+    it('also fails gracefully when the photo cannot be read', async () => {
+      resizePhoto.mockRejectedValue(new Error('not an image'));
+      renderCooking(undefined, false);
+      toPhotoStep();
+      await pickPhoto();
+
+      expect(addPhoto).not.toHaveBeenCalled();
+      expect(container.textContent).toContain('konnte nicht gespeichert werden');
     });
   });
 });

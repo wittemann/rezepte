@@ -8,6 +8,7 @@ export const TEXT = {
   previous: 'Voriger Schritt',
   next: 'Weiter',
   done: 'Fertig',
+  skip: 'Überspringen',
   swipeHint: 'Wischen für den nächsten Schritt',
   /** "25 Minuten · Timer starten" */
   startTimer: (label: string) => `${label} · Timer starten`,

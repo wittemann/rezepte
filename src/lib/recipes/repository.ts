@@ -8,6 +8,7 @@ import {
   isRecordId,
   listRecords,
   updateRecord,
+  uploadAttachment,
   type AirtableConnection,
   type AirtableRecord,
 } from '../airtable/client.ts';
@@ -73,6 +74,17 @@ export async function setFavorite(
   const fields = { [RECIPE_FIELDS.favoritedAt]: favorite ? now.toISOString() : null };
   const record = await updateRecord(connection, RECIPES_TABLE_ID, id, fields);
   return readSavedRecord(record);
+}
+
+/**
+ * Adds a JPEG (base64 text) to the photos of a recipe. Returns false if there is no recipe with
+ * this ID. Writes only the photo field, and keeps the photos that are already there.
+ */
+export async function addPhoto(connection: AirtableConnection, id: RecipeId, base64: string) {
+  if (!(await findRecord(connection, id))) return false; // same reason as in update()
+  const file = { contentType: 'image/jpeg', filename: 'foto.jpg', base64 };
+  await uploadAttachment(connection, id, RECIPE_FIELDS.images, file);
+  return true;
 }
 
 /**

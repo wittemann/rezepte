@@ -10,19 +10,26 @@ import Icon from './Icon.tsx';
 import { addTimer } from './timer-store.ts';
 import { unlockSound } from './timer-sound.ts';
 import BottomSheet from './BottomSheet.tsx';
+import PhotoStep from './PhotoStep.tsx';
 import styles from './CookingMode.module.css';
 import { TEXT } from './CookingMode.texts.ts';
+import { TEXT as PHOTO_TEXT } from './PhotoStep.texts.ts';
 import Maulti from './Maulti.tsx';
+import { usePhotoUpload } from './use-photo-upload.ts';
 import { useWakeLock } from './use-wake-lock.ts';
 
 /** How far a finger has to move sideways to count as a swipe (design/README.md, "Kochmodus") */
 const SWIPE_THRESHOLD = 50;
 
 type Props = {
+  /** For the photo upload */
+  recipeId: string;
   /** Named on the timers started here */
   recipeTitle: string;
   /** The recipe page, where the close button leads */
   recipeHref: string;
+  /** Whether the recipe has a photo; without one, a photo step follows the last step */
+  hasPhoto: boolean;
   steps: CookingStep[];
   ingredients: IngredientLine[];
   /** What the ingredient amounts are written for; shown in the title of the ingredients sheet */
@@ -30,8 +37,10 @@ type Props = {
 };
 
 export default function CookingMode({
+  recipeId,
   recipeTitle,
   recipeHref,
+  hasPhoto,
   steps,
   ingredients,
   servings,
@@ -40,12 +49,15 @@ export default function CookingMode({
   const [stepIndex, setStepIndex] = useState(0);
   const [ingredientsOpen, setIngredientsOpen] = useState(false);
   const swipeStartRef = useRef<number>();
+  const photo = usePhotoUpload(recipeId);
+  const stepCount = hasPhoto ? steps.length : steps.length + 1;
   const isFirst = stepIndex === 0;
-  const isLast = stepIndex === steps.length - 1;
-  const step = steps[stepIndex];
-  const label = [TEXT.stepLabel(stepIndex + 1, steps.length), step.section]
-    .filter(Boolean)
-    .join(' · ');
+  const isLast = stepIndex === stepCount - 1;
+  const onPhotoStep = stepIndex === steps.length;
+  const step = onPhotoStep ? undefined : steps[stepIndex];
+  const label = step
+    ? [TEXT.stepLabel(stepIndex + 1, steps.length), step.section].filter(Boolean).join(' · ')
+    : PHOTO_TEXT.label;
 
   function startTimer(minutes: number) {
     // Starting is a tap, the one moment iOS lets the alarm sound be prepared
@@ -68,7 +80,7 @@ export default function CookingMode({
   }
 
   function goToNext() {
-    setStepIndex((index) => Math.min(steps.length - 1, index + 1));
+    setStepIndex((index) => Math.min(stepCount - 1, index + 1));
   }
 
   function handlePointerDown(event: PointerEvent) {
@@ -90,7 +102,7 @@ export default function CookingMode({
           <span aria-hidden="true">{TEXT.closeSymbol}</span>
         </a>
         <ol class={styles.progress} aria-label={TEXT.progress}>
-          {steps.map((_, index) => (
+          {Array.from({ length: stepCount }, (_, index) => (
             <li
               class={`${styles.dot} ${index <= stepIndex ? styles.reached : ''}`}
               aria-current={index === stepIndex ? 'step' : undefined}
@@ -107,23 +119,29 @@ export default function CookingMode({
       </header>
 
       <main class={styles.main}>
-        <Maulti pose="cook" size={150} />
+        <Maulti pose={onPhotoStep ? 'cheer' : 'cook'} size={150} />
         <section
           class={styles.card}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
         >
           <p class={styles.label}>{label}</p>
-          <p class={styles.text}>{step.text}</p>
-          {step.timerMinutes !== undefined && (
-            <button
-              type="button"
-              class={styles.timerButton}
-              onClick={() => startTimer(step.timerMinutes!)}
-            >
-              <Icon name="timer" size={18} strokeWidth={2.2} />
-              {TEXT.startTimer(formatTimerLabel(step.timerMinutes))}
-            </button>
+          {step ? (
+            <>
+              <p class={styles.text}>{step.text}</p>
+              {step.timerMinutes !== undefined && (
+                <button
+                  type="button"
+                  class={styles.timerButton}
+                  onClick={() => startTimer(step.timerMinutes!)}
+                >
+                  <Icon name="timer" size={18} strokeWidth={2.2} />
+                  {TEXT.startTimer(formatTimerLabel(step.timerMinutes))}
+                </button>
+              )}
+            </>
+          ) : (
+            <PhotoStep status={photo.status} previewUrl={photo.previewUrl} onPick={photo.upload} />
           )}
           {!isLast && <p class={styles.swipeHint}>{TEXT.swipeHint}</p>}
         </section>
@@ -139,9 +157,14 @@ export default function CookingMode({
         >
           <Icon name="back" size={22} strokeWidth={2.4} />
         </button>
-        {isLast ? (
-          <a href={recipeHref} class={styles.next}>
+        {isLast && photo.status === 'uploading' ? (
+          // Leaving now would cut the upload off
+          <button type="button" class={styles.next} disabled>
             {TEXT.done}
+          </button>
+        ) : isLast ? (
+          <a href={recipeHref} class={styles.next}>
+            {onPhotoStep && photo.status !== 'saved' ? TEXT.skip : TEXT.done}
           </a>
         ) : (
           <button type="button" class={styles.next} onClick={goToNext}>

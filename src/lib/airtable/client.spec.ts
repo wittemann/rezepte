@@ -6,6 +6,7 @@ import {
   listTables,
   RATE_LIMIT_WAIT_MS,
   updateRecord,
+  uploadAttachment,
 } from './client.ts';
 
 const TOKEN = 'patTestToken.notARealOne';
@@ -254,5 +255,48 @@ describe('listTables', () => {
     expect(String(fetch.mock.calls[0][0])).toBe(
       'https://api.airtable.com/v0/meta/bases/appTestBase/tables',
     );
+  });
+});
+
+describe('uploadAttachment', () => {
+  const file = { contentType: 'image/jpeg', filename: 'foto.jpg', base64: '/9j/AAAA' };
+
+  it('POSTs the base64 file to the content host, addressed by record and field', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse(testRecord('recA')));
+    await uploadAttachment(connection, 'recA', 'fldPhoto', file);
+
+    expect(fetch).toHaveBeenCalledOnce();
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(
+      'https://content.airtable.com/v0/appTestBase/recA/fldPhoto/uploadAttachment',
+    );
+    expect(init).toEqual({
+      method: 'POST',
+      headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contentType: 'image/jpeg',
+        filename: 'foto.jpg',
+        file: '/9j/AAAA',
+      }),
+    });
+  });
+
+  it('returns the record', async () => {
+    const { connection } = connectionAnswering(jsonResponse(testRecord('recA')));
+    expect(await uploadAttachment(connection, 'recA', 'fldPhoto', file)).toEqual(
+      testRecord('recA'),
+    );
+  });
+
+  it.each([
+    ['recA/../tblOther', 'fldPhoto'],
+    ['recA', 'Foto'],
+    ['recA', 'fldPhoto/x'],
+  ])('refuses record "%s" with field "%s" without sending anything', async (recordId, fieldId) => {
+    const { connection, fetch } = connectionAnswering();
+    await expect(uploadAttachment(connection, recordId, fieldId, file)).rejects.toThrow(
+      'Not an Airtable',
+    );
+    expect(fetch).not.toHaveBeenCalled();
   });
 });
