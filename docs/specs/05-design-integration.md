@@ -46,3 +46,4 @@ The visual design is created in **Claude Design**. This spec describes how it be
 | Filter sheet: one category at a time (prototype)          | Several categories can be selected                 | Project owner's decision (2026-09-30); the button count still counts categories as one        |
 | Stored in `localStorage` in the prototype (edits, photos) | Written to Airtable                                | As the design README asks                                                                     |
 | Favorites per device (`localStorage`)                     | Favorites shared by everyone, field `Favorit seit` | Project owner's decision (2026-10-01): one shared password, rarely changed, no personal state |
+| Edit form: „Quelle“ as a text field                       | A list of the known sources                        | Quelle only takes known values ([03-data-model](03-data-model.md), Data conventions)          |

@@ -1,0 +1,51 @@
+---
+// "Bearbeiten" of a recipe (design/README.md, "7. Rezept bearbeiten / neu"). GET shows the form
+// filled from Airtable; the form posts to this page and goes back to the recipe after saving.
+// Airtable errors while loading are not caught: Astro shows the 500 page.
+import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import ErrorMessage from '../../../components/ErrorMessage.astro';
+import RecipeForm from '../../../components/RecipeForm.tsx';
+import { TEXT as FORM_TEXT } from '../../../components/RecipeForm.texts.ts';
+import Base from '../../../layouts/Base.astro';
+import { recipeToFormValues } from '../../../lib/recipes/form.ts';
+import { getById } from '../../../lib/recipes/repository.ts';
+import { TEXT } from '../_[id].texts.ts';
+import { saveSubmittedForm } from '../_save-form.ts';
+
+const id = Astro.params.id ?? '';
+let values;
+let invalidFields;
+let saveFailed;
+
+if (Astro.request.method === 'POST') {
+  const form = await saveSubmittedForm(Astro, id);
+  if (form.redirect) return form.redirect;
+  ({ values, invalidFields, saveFailed } = form);
+} else {
+  const recipe = await getById({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID }, id);
+  values = recipe && recipeToFormValues(recipe);
+}
+if (!values) Astro.response.status = 404;
+---
+
+{values ? (
+  <Base title={FORM_TEXT.editTitle}>
+    <RecipeForm
+      client:load
+      isNew={false}
+      {values}
+      {invalidFields}
+      {saveFailed}
+      cancelHref={`/rezepte/${id}`}
+    />
+  </Base>
+) : (
+  <Base title={TEXT.notFoundTitle}>
+    <ErrorMessage
+      title={TEXT.notFoundTitle}
+      message={TEXT.notFoundMessage}
+      linkText={TEXT.notFoundLink}
+      href="/rezepte"
+    />
+  </Base>
+)}

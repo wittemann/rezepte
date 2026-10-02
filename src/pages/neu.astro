@@ -1,0 +1,26 @@
+---
+// "Neues Rezept" (design/README.md, "7. Rezept bearbeiten / neu"), opened by the "Neu" tab.
+// The form posts to this page; after saving it goes to the new recipe.
+import RecipeForm from '../components/RecipeForm.tsx';
+import { TEXT } from '../components/RecipeForm.texts.ts';
+import Base from '../layouts/Base.astro';
+import { emptyFormValues } from '../lib/recipes/form.ts';
+import { saveSubmittedForm } from './rezepte/_save-form.ts';
+
+let form: Awaited<ReturnType<typeof saveSubmittedForm>> | undefined;
+if (Astro.request.method === 'POST') {
+  form = await saveSubmittedForm(Astro);
+  if (form.redirect) return form.redirect;
+}
+---
+
+<Base title={TEXT.newTitle}>
+  <RecipeForm
+    client:load
+    isNew
+    values={form?.values ?? emptyFormValues()}
+    invalidFields={form?.invalidFields}
+    saveFailed={form?.saveFailed}
+    cancelHref="/rezepte"
+  />
+</Base>

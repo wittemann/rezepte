@@ -1,0 +1,46 @@
+// UI texts of the edit / new recipe form (design/README.md, "7. Rezept bearbeiten / neu";
+// labels, placeholders and help texts from the prototype's form)
+export const TEXT = {
+  editTitle: 'Bearbeiten',
+  newTitle: 'Neues Rezept',
+  cancel: 'Abbrechen',
+  save: 'Sichern',
+  title: 'Name',
+  titlePlaceholder: 'z. B. Omas Apfelkuchen',
+  category: 'Kategorie',
+  meals: 'Passt zu (mehrere möglich)',
+  mealLabels: {
+    breakfast: 'Frühstück',
+    'lunch-dinner': 'Abend',
+    baking: 'Backen',
+  },
+  servings: 'Portionen',
+  workTime: 'Arbeitszeit',
+  totalTime: 'Gesamtzeit',
+  ingredients: 'Zutaten',
+  ingredientsPlaceholder: 'Eine Zutat pro Zeile, z. B. 250 g Mehl',
+  ingredientsHelp:
+    'Eine Zutat pro Zeile. Zeilen mit Doppelpunkt am Ende werden Zwischenüberschriften.',
+  steps: 'Zubereitung',
+  stepsPlaceholder: '1. Ofen vorheizen …',
+  stepsHelp: 'Schritte mit 1., 2., 3. … beginnen. Sie werden im Kochmodus einzeln angezeigt.',
+  source: 'Quelle',
+  noSource: 'Keine',
+  sourceUrl: 'Link',
+  notes: 'Notizen',
+  notesPlaceholder: 'Tipps, Varianten, wer es mag …',
+  hint: 'Änderungen sind für alle in der Familie sichtbar.',
+  // Not in the design: shown when a field can't be saved like this
+  errors: {
+    title: 'Bitte gib einen Namen ein.',
+    category: 'Bitte wähle eine Kategorie aus der Liste.',
+    meals: 'Bitte wähle aus der Liste.',
+    servings: 'Bitte eine ganze Zahl, z. B. 4.',
+    workTime: 'Bitte als Stunden:Minuten, z. B. 0:30.',
+    totalTime: 'Bitte als Stunden:Minuten, z. B. 1:00.',
+    source: 'Bitte wähle eine Quelle aus der Liste.',
+    sourceUrl: 'Bitte einen Link mit https:// eingeben.',
+  },
+  invalid: 'Da stimmt noch was nicht. Schau mal bei den markierten Feldern.',
+  saveFailed: 'Speichern hat nicht geklappt. Probier’s nochmal.',
+};

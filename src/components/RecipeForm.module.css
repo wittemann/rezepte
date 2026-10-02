@@ -1,0 +1,179 @@
+/*
+ * Values from the prototype's edit form (design/Kochbuch App.dc.html, "EDIT") and
+ * design/screenshots/11-bearbeiten.png; px in the design, rem here.
+ */
+
+.form {
+  margin: 0;
+}
+
+/* Stays at the top while the fields scroll; reaches under the status bar like the body's padding */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin-top: calc(-1 * var(--safe-top));
+  padding: var(--safe-top) var(--space-xs) 0;
+  min-height: calc(var(--safe-top) + 3.25rem); /* 52px */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.headerButton {
+  min-height: var(--touch-target);
+  padding: 0 var(--space-m);
+  display: flex;
+  align-items: center;
+  border: none;
+  background: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.save {
+  justify-self: end;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.save:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.heading {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-page);
+  padding: var(--space-page) var(--space-page) 3.75rem; /* 60px at the bottom */
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  min-width: 0;
+}
+
+.label {
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.8125rem; /* 13px */
+  font-weight: 600;
+}
+
+.input {
+  width: 100%;
+  padding: 0.8125rem var(--space-m); /* 13px 12px */
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  font-size: max(1rem, 16px); /* ≥ 16px keeps iOS from zooming in */
+}
+
+.input::placeholder {
+  color: var(--muted);
+}
+
+.input[aria-invalid='true'] {
+  border: 2px solid var(--accent);
+}
+
+.titleInput {
+  padding-inline: var(--space-l);
+  font-size: max(1.0625rem, 16px); /* 17px */
+}
+
+.textarea {
+  padding-inline: var(--space-l);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.help,
+.hint {
+  color: var(--muted);
+  font-size: var(--font-size-min);
+}
+
+.error {
+  color: var(--accent);
+  font-size: 0.8125rem; /* 13px */
+  font-weight: 700;
+}
+
+.alert {
+  padding: var(--space-m) var(--space-l);
+  background: var(--sunk);
+  border-radius: var(--radius-m);
+  font-weight: 700;
+}
+
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-s);
+}
+
+.sourceRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--space-s);
+}
+
+.chipGroup {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+/* A legend can't be a flex item, so the gap comes from margin */
+.chipGroup .label {
+  margin-bottom: var(--space-xs);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.chip {
+  position: relative;
+  padding: 0.5625rem var(--space-l); /* 9px 14px */
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.chip:has(:checked) {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
+.chip:has(:focus-visible) {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Covers the chip, so the whole chip is tappable and stays focusable */
+.chipInput {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
