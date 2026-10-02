@@ -34,6 +34,24 @@ html {
   box-sizing: border-box;
 }
 
+/*
+ * iOS 26+ blurs the top of a home-screen app unless a fixed box with a background covers the
+ * top edge (>10px tall, ~full width); then it uses that box's color instead (docs/bugs.md).
+ * This strip is that box: page-colored, over the status bar area, under the timer pills.
+ */
+@media (display-mode: standalone) {
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    height: max(var(--safe-top), 12px);
+    background: var(--bg);
+  }
+}
+
 body {
   min-height: 100dvh;
   /* Phone-width column, centered on wide screens; the background still fills the window */
