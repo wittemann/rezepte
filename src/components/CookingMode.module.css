@@ -89,6 +89,8 @@
   box-shadow: var(--shadow-l);
   /* Vertical scrolling stays, sideways drags are swipes */
   touch-action: pan-y;
+  /* Safari still needs the prefix; a text selection would end the drag */
+  -webkit-user-select: none;
   user-select: none;
 }
 

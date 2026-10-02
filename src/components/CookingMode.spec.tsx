@@ -99,14 +99,16 @@ describe('CookingMode', () => {
           candidate.textContent === name || candidate.getAttribute('aria-label') === name,
       )!;
     const click = (name: string) => act(() => button(name).click());
-    const swipe = (from: number, to: number) => {
+    const pointer = (type: string, clientX: number) => {
       const card = container.querySelector('section')!;
       act(() => {
-        card.dispatchEvent(new MouseEvent('pointerdown', { clientX: from, bubbles: true }));
+        card.dispatchEvent(new MouseEvent(type, { clientX, bubbles: true }));
       });
-      act(() => {
-        card.dispatchEvent(new MouseEvent('pointerup', { clientX: to, bubbles: true }));
-      });
+    };
+    const swipe = (from: number, to: number) => {
+      pointer('pointerdown', from);
+      pointer('pointermove', to);
+      pointer('pointerup', to);
     };
 
     it('goes forward and back with the buttons and moves the progress dots', () => {
@@ -141,6 +143,23 @@ describe('CookingMode', () => {
       expect(stepText()).toBe('Teig 10 Minuten ruhen lassen.');
       swipe(140, 200);
       expect(stepText()).toBe('Zwiebeln würfeln.');
+    });
+
+    it('counts a swipe that iOS ends with pointercancel instead of pointerup', () => {
+      renderCooking();
+      pointer('pointerdown', 200);
+      pointer('pointermove', 140);
+      pointer('pointercancel', 140);
+      expect(stepText()).toBe('Teig 10 Minuten ruhen lassen.');
+    });
+
+    it('moves only one step per drag, however far it goes', () => {
+      renderCooking();
+      pointer('pointerdown', 300);
+      pointer('pointermove', 240);
+      pointer('pointermove', 100);
+      pointer('pointerup', 100);
+      expect(stepText()).toBe('Teig 10 Minuten ruhen lassen.');
     });
 
     it('ignores a drag shorter than 50 px and swipes past the ends', () => {

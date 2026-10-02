@@ -87,12 +87,19 @@ export default function CookingMode({
     swipeStartRef.current = event.clientX;
   }
 
-  function handlePointerUp(event: PointerEvent) {
+  // Decided while the finger moves, not on release: iOS often ends a touch drag with
+  // pointercancel instead of pointerup, and then the release never arrives
+  function handlePointerMove(event: PointerEvent) {
     if (swipeStartRef.current === undefined) return;
     const distance = event.clientX - swipeStartRef.current;
+    if (Math.abs(distance) < SWIPE_THRESHOLD) return;
     swipeStartRef.current = undefined;
-    if (distance <= -SWIPE_THRESHOLD) goToNext();
-    else if (distance >= SWIPE_THRESHOLD) goToPrevious();
+    if (distance < 0) goToNext();
+    else goToPrevious();
+  }
+
+  function endSwipe() {
+    swipeStartRef.current = undefined;
   }
 
   return (
@@ -123,7 +130,9 @@ export default function CookingMode({
         <section
           class={styles.card}
           onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
+          onPointerMove={handlePointerMove}
+          onPointerUp={endSwipe}
+          onPointerCancel={endSwipe}
         >
           <p class={styles.label}>{label}</p>
           {step ? (
