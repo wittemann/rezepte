@@ -9,6 +9,7 @@ import Ingredients from '../../components/Ingredients.tsx';
 import Notes from '../../components/Notes.astro';
 import RecipeHeader from '../../components/RecipeHeader.astro';
 import RecipeMeta from '../../components/RecipeMeta.astro';
+import SavedToast, { SAVED_PARAM } from '../../components/SavedToast.tsx';
 import StubNotice from '../../components/StubNotice.astro';
 import Steps from '../../components/Steps.astro';
 import Base from '../../layouts/Base.astro';
@@ -21,6 +22,8 @@ const recipe = await getById(
 );
 // The generic 404 page only says "Seite nicht gefunden"
 if (!recipe) Astro.response.status = 404;
+// Set by the edit form after saving
+const justSaved = Astro.url.searchParams.has(SAVED_PARAM);
 ---
 
 {recipe ? (
@@ -36,6 +39,7 @@ if (!recipe) Astro.response.status = 404;
       {recipe.notes && <Notes notes={recipe.notes} />}
       {recipe.hasInstructions && <CookButton href={`/rezepte/${recipe.id}/cook`} />}
     </main>
+    {justSaved && <SavedToast client:load />}
   </Base>
 ) : (
   <Base title={TEXT.notFoundTitle}>

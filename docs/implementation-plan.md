@@ -122,7 +122,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 **Edit and new**
 
 - [x] One form for both: name, category chips, meals (multiple), servings, times (`h:mm`), ingredients and instructions with help text, source, link, notes; "Sichern" disabled without a name · `sonnet`
-- [ ] Astro Action with zod: create or `PATCH` only the app's fields; redirect to the detail page; toast "Gespeichert" · `sonnet`
+- [x] Astro Action with zod: create or `PATCH` only the app's fields; redirect to the detail page; toast "Gespeichert" · `sonnet`
 - [x] Hint "Änderungen sind für alle in der Familie sichtbar." · `haiku`
 
 ## 6. Installable app

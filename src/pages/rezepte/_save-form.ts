@@ -2,6 +2,7 @@
 // Action and says what the page should do next. The leading `_` keeps Astro from making it a route.
 import type { AstroGlobal } from 'astro';
 import { actions } from 'astro:actions';
+import { SAVED_PARAM } from '../../components/SavedToast.tsx';
 import { readFormData } from '../../lib/recipes/form.ts';
 import type { RecipeId } from '../../lib/recipes/recipe.ts';
 
@@ -14,7 +15,7 @@ export async function saveSubmittedForm(Astro: AstroGlobal, id?: RecipeId) {
 
   if (data?.saved) {
     // 303: the browser follows with a GET, so reloading doesn't save again
-    return { redirect: Astro.redirect(`/rezepte/${data.id}?gespeichert`, 303) };
+    return { redirect: Astro.redirect(`/rezepte/${data.id}?${SAVED_PARAM}`, 303) };
   }
   if (data) return { values, invalidFields: data.invalidFields };
   if (error.code === 'NOT_FOUND') return { notFound: true as const };
