@@ -9,6 +9,7 @@ import LoginForm from '../components/LoginForm.tsx';
 import { checkPassword, SESSION_COOKIE_OPTIONS } from '../lib/auth/login.ts';
 import { safeNextPath } from '../lib/auth/next-path.ts';
 import { createSessionToken, SESSION_COOKIE, verifySessionToken } from '../lib/auth/session.ts';
+import { logInfo, logWarning } from '../lib/monitoring.ts';
 import { TEXT } from './_login.texts.ts';
 
 const nextPath = safeNextPath(Astro.url.searchParams.get('next'));
@@ -23,9 +24,12 @@ if (Astro.request.method === 'POST') {
   const form = await Astro.request.formData().catch(() => new FormData());
   if (await checkPassword(form.get('password'), APP_PASSWORD_HASH)) {
     Astro.cookies.set(SESSION_COOKIE, createSessionToken(SESSION_SECRET), SESSION_COOKIE_OPTIONS);
+    logInfo('Login succeeded');
     // 303: the browser follows with a GET, so reloading doesn't resend the password
     return Astro.redirect(nextPath, 303);
   }
+  // Many of these in a row would mean someone is guessing (no IP: Sentry collects none)
+  logWarning('Login failed');
   wrongPassword = true;
 }
 ---

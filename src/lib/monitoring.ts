@@ -16,3 +16,13 @@ export function reportError(error: unknown, tags: ReportTags) {
 export function reportWarning(message: string, tags: ReportTags) {
   Sentry.captureMessage(message, { level: 'warning', tags });
 }
+
+/** A line in Sentry Logs, e.g. that a recipe was saved. Record IDs only, never recipe names or texts. */
+export function logInfo(message: string, attributes: ReportTags = {}) {
+  Sentry.logger.info(message, attributes);
+}
+
+/** A Sentry Logs line for something that went wrong but needs no issue, e.g. a wrong password. */
+export function logWarning(message: string, attributes: ReportTags = {}) {
+  Sentry.logger.warn(message, attributes);
+}
