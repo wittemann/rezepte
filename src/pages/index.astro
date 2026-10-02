@@ -1,8 +1,119 @@
 ---
-// Placeholder until the recipe list is built (docs/specs/02-architecture.md).
+// Start page (design/README.md, "Start"): greeting, meal and time choice. Rendered on the server;
+// meal and time live in the URL (docs/decisions/0006-forms-and-interactivity.md). Airtable errors
+// are not caught: Astro shows the 500 page.
+import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import Maulti from '../components/Maulti.tsx';
+import MealTiles from '../components/MealTiles.astro';
+import SegmentedControl from '../components/SegmentedControl.astro';
+import SpeechBubble from '../components/SpeechBubble.astro';
 import Base from '../layouts/Base.astro';
+import { MEALS } from '../lib/recipes/fields.ts';
+import { getAll } from '../lib/recipes/repository.ts';
+import { matchingRecipes } from '../lib/recipes/suggestions.ts';
+import {
+  greetingFor,
+  maxTotalMinutes,
+  parseStartQuery,
+  startHref,
+} from '../lib/start/start-query.ts';
+import { TEXT } from './_index.texts.ts';
+
+const now = new Date();
+const state = parseStartQuery(Astro.url.searchParams, now);
+const currentMeal = MEALS.find((entry) => entry.value === state.meal);
+if (!currentMeal) throw new Error(`Unknown meal ${state.meal}`);
+
+const recipes = await getAll({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID });
+const matchingCount = matchingRecipes(recipes, {
+  meal: state.meal,
+  maxTotalMinutes: maxTotalMinutes(state),
+}).length;
+
+const tiles = MEALS.map((entry) => ({
+  label: TEXT.mealLabels[entry.name],
+  mealName: entry.name,
+  active: entry.value === state.meal,
+  href: startHref({ ...state, meal: entry.value }),
+}));
+const timeOptions = [
+  {
+    label: TEXT.littleTime,
+    hint: TEXT.littleTimeHint(state.meal === 'Backen'),
+    active: state.time === 'little',
+    href: startHref({ ...state, time: 'little' }),
+  },
+  {
+    label: TEXT.muchTime,
+    hint: TEXT.muchTimeHint,
+    active: state.time === 'much',
+    href: startHref({ ...state, time: 'much' }),
+  },
+];
 ---
 
-<Base title="Rezepte" activeTab="home">
-  <h1>Rezepte</h1>
+<Base title={TEXT.title} activeTab="home">
+  <main>
+    <header class="greeting">
+      <Maulti pose="wave" size={104} />
+      <div class="bubble">
+        <SpeechBubble
+          lead={TEXT.greeting[greetingFor(now)]}
+          headline={TEXT.headline[currentMeal.name]}
+        />
+      </div>
+    </header>
+    <div class="choice">
+      <MealTiles label={TEXT.meals} {tiles} />
+      <div class="time">
+        <span class="timeLabel">{TEXT.time}</span>
+        <div class="timeControl">
+          <SegmentedControl label={TEXT.time} options={timeOptions} />
+        </div>
+      </div>
+      <p class="matching">{TEXT.matching(matchingCount)}</p>
+    </div>
+  </main>
 </Base>
+
+<style>
+  .greeting {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-xs);
+    padding: var(--space-s) var(--space-page) var(--space-xl);
+  }
+
+  .bubble {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .choice {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-l);
+    padding: 0 var(--space-page);
+  }
+
+  .time {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+  }
+
+  .timeLabel {
+    font-size: 0.875rem; /* 14px */
+    font-weight: 800;
+  }
+
+  .timeControl {
+    flex: 1;
+  }
+
+  .matching {
+    color: var(--muted);
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 700;
+  }
+</style>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Meal } from './fields.ts';
 import type { Recipe } from './recipe.ts';
-import { MAX_SUGGESTIONS, suggestRecipes } from './suggestions.ts';
+import { MAX_SUGGESTIONS, matchingRecipes, suggestRecipes } from './suggestions.ts';
 
 function recipe(title: string, meals: Meal[], totalMinutes?: number) {
   return { id: title, title, meals, totalMinutes } as Recipe;
@@ -55,5 +55,11 @@ describe('suggestRecipes', () => {
 
   it('returns nothing when no recipe matches', () => {
     expect(suggestRecipes([], request)).toEqual([]);
+  });
+});
+
+describe('matchingRecipes', () => {
+  it('counts every recipe of the meal, not only the six picks', () => {
+    expect(matchingRecipes(dinners, request)).toHaveLength(dinners.length);
   });
 });

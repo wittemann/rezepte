@@ -1,0 +1,65 @@
+---
+// Meal choice on the start page (design/README.md, "Start"): three pastel tiles, the active one
+// is outlined, raised and lifted. Links (state in the URL), like the segmented control.
+export type MealTile = {
+  label: string;
+  /** `--pastel-meal-*` name, e.g. "breakfast" */
+  mealName: string;
+  active: boolean;
+  href: string;
+};
+
+type Props = {
+  /** Names the group for screen readers */
+  label: string;
+  tiles: MealTile[];
+};
+
+const { label, tiles } = Astro.props;
+---
+
+<nav class="tiles" aria-label={label}>
+  {tiles.map((tile) => (
+    <a
+      class="tile"
+      href={tile.href}
+      style={`--tile-color: var(--pastel-meal-${tile.mealName})`}
+      aria-current={tile.active ? 'true' : undefined}
+      data-active={tile.active}
+    >
+      {tile.label}
+    </a>
+  ))}
+</nav>
+
+<style>
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-s);
+  }
+
+  .tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.5rem; /* 56px */
+    padding: 0 var(--space-xxs);
+    /* Transparent border keeps the size the same as the active one */
+    border: 2.5px solid transparent;
+    border-radius: var(--radius-m);
+    background: var(--tile-color);
+    color: var(--on-pastel);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .tile[data-active='true'] {
+    border-color: var(--outline);
+    box-shadow: var(--shadow-m);
+    transform: translateY(-3px);
+  }
+</style>

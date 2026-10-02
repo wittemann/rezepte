@@ -104,8 +104,8 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 **Start**
 
-- [ ] Greeting by time of day with Maulti `wave` and speech bubble · `haiku`
-- [ ] Meal tiles and time segmented control with defaults (before 11 → Frühstück; Mon–Fri → Wenig Zeit) · `sonnet`
+- [x] Greeting by time of day with Maulti `wave` and speech bubble · `haiku`
+- [x] Meal tiles and time segmented control with defaults (before 11 → Frühstück; Mon–Fri → Wenig Zeit) · `sonnet`
 - [ ] Suggestion carousel (scroll-snap, tilted cards, "Nochmal würfeln", empty state) · `sonnet`
 - [ ] Favorites preview (max. 4) and "Stöbern" category grid linking to the filtered list · `sonnet`
 
