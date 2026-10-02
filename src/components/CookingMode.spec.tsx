@@ -99,10 +99,10 @@ describe('CookingMode', () => {
           candidate.textContent === name || candidate.getAttribute('aria-label') === name,
       )!;
     const click = (name: string) => act(() => button(name).click());
-    const pointer = (type: string, clientX: number) => {
-      const card = container.querySelector('section')!;
+    const pointer = (type: string, clientX: number, selector = 'section') => {
+      const target = container.querySelector(selector)!;
       act(() => {
-        card.dispatchEvent(new MouseEvent(type, { clientX, bubbles: true }));
+        target.dispatchEvent(new MouseEvent(type, { clientX, bubbles: true }));
       });
     };
     const swipe = (from: number, to: number) => {
@@ -143,6 +143,17 @@ describe('CookingMode', () => {
       expect(stepText()).toBe('Teig 10 Minuten ruhen lassen.');
       swipe(140, 200);
       expect(stepText()).toBe('Zwiebeln würfeln.');
+    });
+
+    it('swipes anywhere on the page, not only on the card, but not in the ingredients sheet', () => {
+      renderCooking();
+      pointer('pointerdown', 200, 'main svg');
+      pointer('pointermove', 140, 'main svg');
+      expect(stepText()).toBe('Teig 10 Minuten ruhen lassen.');
+
+      pointer('pointerdown', 140, 'dialog');
+      pointer('pointermove', 200, 'dialog');
+      expect(stepText()).toBe('Teig 10 Minuten ruhen lassen.');
     });
 
     it('counts a swipe that iOS ends with pointercancel instead of pointerup', () => {

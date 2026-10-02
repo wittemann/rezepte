@@ -8,6 +8,11 @@
   flex-direction: column;
   /* body adds --safe-top above, so the page still ends at the bottom of the screen */
   min-height: calc(100dvh - var(--safe-top));
+  /* Vertical scrolling stays, sideways drags are swipes */
+  touch-action: pan-y;
+  /* Safari still needs the prefix; a text selection would end the drag */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .header {
@@ -87,11 +92,6 @@
   border: var(--border-thick);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-l);
-  /* Vertical scrolling stays, sideways drags are swipes */
-  touch-action: pan-y;
-  /* Safari still needs the prefix; a text selection would end the drag */
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 .timerButton {

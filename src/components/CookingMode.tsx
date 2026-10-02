@@ -91,6 +91,8 @@ export default function CookingMode({
 
   function handlePointerDown(event: PointerEvent) {
     logSwipe(`${event.type} ${event.pointerType} ${Math.round(event.clientX)}`);
+    // The ingredients sheet sits inside the page but isn't part of the swipe area
+    if ((event.target as Element).closest('dialog')) return;
     swipeStartRef.current = event.clientX;
   }
 
@@ -112,7 +114,18 @@ export default function CookingMode({
   }
 
   return (
-    <div class={styles.page}>
+    // Swipes count anywhere on the page, not only on the step card
+    <div
+      class={styles.page}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endSwipe}
+      onPointerCancel={endSwipe}
+      onTouchStart={(event) => logSwipe(`${event.type} ${event.touches.length}`)}
+      onTouchMove={(event) => logSwipe(event.type)}
+      onTouchEnd={(event) => logSwipe(event.type)}
+      onTouchCancel={(event) => logSwipe(event.type)}
+    >
       <header class={styles.header}>
         <a href={recipeHref} class={styles.close} aria-label={TEXT.close}>
           <span aria-hidden="true">{TEXT.closeSymbol}</span>
@@ -136,17 +149,7 @@ export default function CookingMode({
 
       <main class={styles.main}>
         <Maulti pose={onPhotoStep ? 'cheer' : 'cook'} size={150} />
-        <section
-          class={styles.card}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={endSwipe}
-          onPointerCancel={endSwipe}
-          onTouchStart={(event) => logSwipe(`${event.type} ${event.touches.length}`)}
-          onTouchMove={(event) => logSwipe(event.type)}
-          onTouchEnd={(event) => logSwipe(event.type)}
-          onTouchCancel={(event) => logSwipe(event.type)}
-        >
+        <section class={styles.card}>
           <p class={styles.label}>{label}</p>
           {step ? (
             <>
