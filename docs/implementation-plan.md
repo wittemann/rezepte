@@ -127,8 +127,8 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 ## 6. Installable app
 
-- [ ] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon; manifest link in `Base.astro` · `sonnet`
-- [ ] Replace `favicon.svg` / `favicon.ico` (still Astro's default logo) with Maulti · `haiku`
+- [x] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon; manifest link in `Base.astro` · `sonnet`
+- [x] Replace `favicon.svg` / `favicon.ico` (still Astro's default logo) with Maulti · `haiku`
 
 ## 7. End-to-end tests (rest)
 
