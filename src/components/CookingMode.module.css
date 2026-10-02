@@ -6,7 +6,8 @@
 .page {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  /* body adds --safe-top above, so the page still ends at the bottom of the screen */
+  min-height: calc(100dvh - var(--safe-top));
 }
 
 .header {
