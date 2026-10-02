@@ -12,6 +12,7 @@ import {
   type AirtableConnection,
   type AirtableRecord,
 } from '../airtable/client.ts';
+import { reportWarning } from '../monitoring.ts';
 import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
 import { findImageUrl, type ImageSize } from './image-source.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
@@ -126,9 +127,22 @@ function readAndReport(record: AirtableRecord) {
   return recipe;
 }
 
-// A plain log for now; Sentry (warning level, tagged with record ID and fields) replaces it
-// later, see docs/decisions/0009-error-monitoring.md.
+// Messages already reported to Sentry by this server instance. The list is read on every page
+// load, so without this one bad record would use up the monthly event quota.
+const reportedMessages = new Set<string>();
+
+// Logged every time (on the server, console.warn also goes to Sentry Logs), and reported as a
+// Sentry warning once per instance, which makes an issue (and an email) per record and problem.
+// See docs/decisions/0009-error-monitoring.md.
 function reportInvalidRecord(recordId: string, invalidFields: string[], skipped: boolean) {
   const outcome = skipped ? 'skipped' : 'fields left out';
-  console.warn(`Recipe record ${recordId}: ${outcome} (invalid: ${invalidFields.join(', ')})`);
+  const message = `Recipe record ${recordId}: ${outcome} (invalid: ${invalidFields.join(', ')})`;
+  console.warn(message);
+  if (reportedMessages.has(message)) return;
+  reportedMessages.add(message);
+  reportWarning(message, {
+    'recipe.record_id': recordId,
+    'recipe.invalid_fields': invalidFields.join(','),
+    'recipe.outcome': outcome,
+  });
 }

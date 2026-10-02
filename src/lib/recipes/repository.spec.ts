@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import { ZodError } from 'zod';
+import { reportWarning } from '../monitoring.ts';
 import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import {
@@ -11,6 +12,8 @@ import {
   setFavorite,
   update,
 } from './repository.ts';
+
+vi.mock('../monitoring.ts', () => ({ reportError: vi.fn(), reportWarning: vi.fn() }));
 
 const TABLE_URL = `https://api.airtable.com/v0/appTestBase/${RECIPES_TABLE_ID}`;
 
@@ -35,6 +38,7 @@ function connectionAnswering(...responses: Response[]) {
 let warn: MockInstance<typeof console.warn>;
 beforeEach(() => {
   warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  vi.mocked(reportWarning).mockClear();
 });
 afterEach(() => {
   warn.mockRestore();
@@ -91,6 +95,46 @@ describe('getAll', () => {
   it('passes Airtable errors on', async () => {
     const { connection } = connectionAnswering(jsonResponse({ error: 'NOT_FOUND' }, 404));
     await expect(getAll(connection)).rejects.toMatchObject({ status: 404 });
+  });
+
+  // Record IDs of their own: what was reported stays remembered for the whole test file
+  it('reports an invalid record to Sentry only once, but logs it every time', async () => {
+    const records = { records: [testRecord('recOnce', {})] };
+    const { connection } = connectionAnswering(jsonResponse(records), jsonResponse(records));
+    await getAll(connection);
+    await getAll(connection);
+
+    expect(warn).toHaveBeenCalledTimes(2);
+    expect(reportWarning).toHaveBeenCalledExactlyOnceWith(
+      'Recipe record recOnce: skipped (invalid: title)',
+      {
+        'recipe.record_id': 'recOnce',
+        'recipe.invalid_fields': 'title',
+        'recipe.outcome': 'skipped',
+      },
+    );
+  });
+
+  it('reports a record again when its problem changes', async () => {
+    const { connection } = connectionAnswering(
+      jsonResponse({ records: [testRecord('recChanging', {})] }),
+      jsonResponse({
+        records: [
+          testRecord('recChanging', {
+            [RECIPE_FIELDS.title]: 'Testsuppe',
+            [RECIPE_FIELDS.servings]: -1,
+          }),
+        ],
+      }),
+    );
+    await getAll(connection);
+    await getAll(connection);
+
+    expect(reportWarning).toHaveBeenCalledTimes(2);
+    expect(reportWarning).toHaveBeenLastCalledWith(
+      'Recipe record recChanging: fields left out (invalid: servings)',
+      expect.objectContaining({ 'recipe.outcome': 'fields left out' }),
+    );
   });
 });
 

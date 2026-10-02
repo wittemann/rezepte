@@ -63,7 +63,7 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 - [x] **(owner)** Create the Sentry account (EU region) and project; add `SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` to Vercel — [ADR 0009](decisions/0009-error-monitoring.md)
 - [x] `@sentry/astro` setup: errors, replay on error (inputs masked, loaded after the page), tracing, logs, strict `dataCollection`, source maps · `opus`
 - [x] `lib/monitoring.ts`; report Airtable errors (method, path, status) and 429s · `opus`
-- [ ] Skipped recipe records: a log line each time, an issue once per server instance · `sonnet`
+- [x] Skipped recipe records: a log line each time, an issue once per server instance · `sonnet`
 - [ ] Log app events (recipe created/updated/favorited, photo added, login succeeded/failed), record IDs only · `sonnet`
 
 ## 4. App shell and shared components
