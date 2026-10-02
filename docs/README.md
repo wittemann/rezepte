@@ -1,6 +1,6 @@
 # rezepte – Documentation
 
-**Progress:** [implementation-plan](implementation-plan.md) is the checklist for building v1.
+**Progress:** [implementation-plan](implementation-plan.md) is the checklist for building v1, [bugs](bugs.md) the list of known bugs.
 
 ## Specs
 

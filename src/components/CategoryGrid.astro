@@ -1,0 +1,80 @@
+---
+// "Stöbern" on the start page (design/README.md, "Start"): a circle per category with its icon,
+// name and recipe count. Each links to the recipe list filtered by that category.
+import type { IconName } from './Icon.tsx';
+import Icon from './Icon.tsx';
+import { TEXT } from './CategoryGrid.texts.ts';
+
+export type CategoryEntry = {
+  label: string;
+  /** Icon and `--pastel-cat-*` name, e.g. "main" */
+  name: IconName;
+  recipeCount: number;
+  href: string;
+};
+
+type Props = {
+  categories: CategoryEntry[];
+};
+
+const { categories } = Astro.props;
+---
+
+<ul class="grid">
+  {categories.map((category) => (
+    <li>
+      <a class="category" href={category.href}>
+        <span class="circle" style={`--circle-color: var(--pastel-cat-${category.name})`}>
+          <Icon name={category.name} size={36} />
+        </span>
+        <span class="name">{category.label}</span>
+        <span class="count">{TEXT.recipeCount(category.recipeCount)}</span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl) var(--space-s);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem; /* 2px */
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.25rem; /* 84px */
+    height: 5.25rem;
+    margin-bottom: var(--space-xxs);
+    border: var(--border);
+    border-radius: 50%;
+    background: var(--circle-color);
+    box-shadow: var(--shadow-s);
+    color: var(--on-pastel);
+  }
+
+  .name {
+    font-size: 0.875rem; /* 14px */
+    font-weight: 800;
+  }
+
+  .count {
+    color: var(--muted);
+    font-size: var(--font-size-min);
+    font-weight: 700;
+  }
+</style>

@@ -27,4 +27,7 @@ export const TEXT = {
   muchTimeHint: 'auch Aufwendiges',
   matching: (recipeCount: number) =>
     `${recipeCount} ${recipeCount === 1 ? 'passendes Rezept' : 'passende Rezepte'}`,
+  favorites: 'Favoriten',
+  allFavorites: (favoriteCount: number) => `Alle ${favoriteCount} anzeigen →`,
+  browse: 'Stöbern',
 };

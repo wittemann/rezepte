@@ -91,4 +91,41 @@ describe('start page', () => {
     expect(document.querySelectorAll('[data-suggestion-id]')).toHaveLength(0);
     expect(document.querySelector('main')?.textContent).toContain('dazu finde ich nichts');
   });
+
+  it('shows at most four favorites, newest first, with a link to all of them', async () => {
+    recipes.current = [1, 2, 3, 4, 5].map((day) =>
+      makeRecipe({
+        id: `rec${day}`,
+        title: `Beispiel ${day}`,
+        favoritedAt: `2026-09-0${day}T08:00:00.000Z`,
+      }),
+    );
+    const document = await renderPage();
+    const titles = [...document.querySelectorAll('.favorites .title')].map((t) => t.textContent);
+    expect(titles).toEqual(['Beispiel 5', 'Beispiel 4', 'Beispiel 3', 'Beispiel 2']);
+    const more = document.querySelector('.more');
+    expect(more?.textContent).toBe('Alle 5 anzeigen →');
+    expect(more?.getAttribute('href')).toBe('/favoriten');
+  });
+
+  it('leaves out the favorites section without favorites', async () => {
+    expect((await renderPage()).querySelector('.favorites')).toBeNull();
+  });
+
+  it('browses the categories that have recipes, linking to the filtered list', async () => {
+    recipes.current = [
+      makeRecipe({ id: 'recA', category: 'Suppe' }),
+      makeRecipe({ id: 'recB', category: 'Suppe' }),
+      makeRecipe({ id: 'recC', category: 'Salat' }),
+    ];
+    const document = await renderPage();
+    const links = [...document.querySelectorAll('.grid a')].map((link) => [
+      link.getAttribute('href'),
+      link.textContent?.replace(/\s+/g, ' ').trim(),
+    ]);
+    expect(links).toEqual([
+      ['/rezepte?category=salad', 'Salat1 Rezept'],
+      ['/rezepte?category=soup', 'Suppe2 Rezepte'],
+    ]);
+  });
 });

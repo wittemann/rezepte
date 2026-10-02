@@ -3,13 +3,17 @@
 // meal and time live in the URL (docs/decisions/0006-forms-and-interactivity.md). Airtable errors
 // are not caught: Astro shows the 500 page.
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import CategoryGrid from '../components/CategoryGrid.astro';
 import Maulti from '../components/Maulti.tsx';
 import MealTiles from '../components/MealTiles.astro';
+import RecipeRow from '../components/RecipeRow.astro';
 import SegmentedControl from '../components/SegmentedControl.astro';
 import SuggestionCarousel from '../components/SuggestionCarousel.astro';
 import SpeechBubble from '../components/SpeechBubble.astro';
 import Base from '../layouts/Base.astro';
-import { MEALS } from '../lib/recipes/fields.ts';
+import { CATEGORIES, MEALS } from '../lib/recipes/fields.ts';
+import { sortFavorites } from '../lib/recipes/favorites.ts';
+import { listHref } from '../lib/recipes/list-query.ts';
 import { getAll } from '../lib/recipes/repository.ts';
 import { matchingRecipes, suggestRecipes } from '../lib/recipes/suggestions.ts';
 import {
@@ -22,6 +26,8 @@ import {
 } from '../lib/start/start-query.ts';
 import { TEXT } from './_index.texts.ts';
 
+const MAX_FAVORITES = 4;
+
 const now = new Date();
 const state = parseStartQuery(Astro.url.searchParams, now);
 const currentMeal = MEALS.find((entry) => entry.value === state.meal);
@@ -32,6 +38,16 @@ const limit = { meal: state.meal, maxTotalMinutes: maxTotalMinutes(state) };
 const matchingCount = matchingRecipes(recipes, limit).length;
 const diceSeed = parseDiceSeed(Astro.url.searchParams);
 const suggestions = suggestRecipes(recipes, { ...limit, day: localDay(now), diceSeed });
+
+const favorites = sortFavorites(recipes);
+const shownFavorites = favorites.slice(0, MAX_FAVORITES);
+// Categories without recipes would lead to an empty list
+const categories = CATEGORIES.map((category) => ({
+  label: category.value,
+  name: category.name,
+  recipeCount: recipes.filter((recipe) => recipe.category === category.value).length,
+  href: listHref({ query: '', filters: { categories: [category.value] } }),
+})).filter((category) => category.recipeCount > 0);
 
 const tiles = MEALS.map((entry) => ({
   label: TEXT.mealLabels[entry.name],
@@ -81,6 +97,29 @@ const timeOptions = [
       mealName={currentMeal.name}
       rerollHref={startHref(state, diceSeed + 1)}
     />
+    {shownFavorites.length > 0 && (
+      <section class="section">
+        <div class="sectionHeading">
+          <h2 class="sectionTitle">{TEXT.favorites}</h2>
+          <a class="more" href="/favoriten">
+            {TEXT.allFavorites(favorites.length)}
+          </a>
+        </div>
+        <div class="favorites">
+          {shownFavorites.map((recipe) => (
+            <RecipeRow {recipe} />
+          ))}
+        </div>
+      </section>
+    )}
+    {categories.length > 0 && (
+      <section class="section">
+        <div class="sectionHeading">
+          <h2 class="sectionTitle">{TEXT.browse}</h2>
+        </div>
+        <CategoryGrid {categories} />
+      </section>
+    )}
   </main>
 </Base>
 
@@ -123,5 +162,38 @@ const timeOptions = [
     color: var(--muted);
     font-size: 0.8125rem; /* 13px */
     font-weight: 700;
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    padding: 0 var(--space-xl) var(--space-xxl);
+  }
+
+  .sectionHeading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: 0 0.25rem; /* 4px */
+  }
+
+  .sectionTitle {
+    font-size: 1.1875rem; /* 19px */
+  }
+
+  .more {
+    padding: var(--space-s) 0;
+    color: var(--accent);
+    font-size: 0.875rem; /* 14px */
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .favorites {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
   }
 </style>
