@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { reportError, reportWarning } from '../monitoring.ts';
 import {
   AirtableError,
   createRecord,
@@ -8,6 +9,13 @@ import {
   updateRecord,
   uploadAttachment,
 } from './client.ts';
+
+vi.mock('../monitoring.ts', () => ({ reportError: vi.fn(), reportWarning: vi.fn() }));
+
+beforeEach(() => {
+  vi.mocked(reportError).mockClear();
+  vi.mocked(reportWarning).mockClear();
+});
 
 const TOKEN = 'patTestToken.notARealOne';
 const TABLE_ID = 'tblTestTable';
@@ -97,6 +105,18 @@ describe('rate limit (429)', () => {
     expect(fetch).toHaveBeenCalledTimes(2);
   });
 
+  it('reports the rate limit as a warning, even when the second try works', async () => {
+    const { connection } = connectionAnswering(rateLimited(), jsonResponse({ records: [] }));
+    await listRecords(connection, TABLE_ID);
+
+    expect(reportWarning).toHaveBeenCalledExactlyOnceWith('Airtable rate limit (429)', {
+      'airtable.method': 'GET',
+      'airtable.path': TABLE_PATH,
+      'airtable.retry_status': 200,
+    });
+    expect(reportError).not.toHaveBeenCalled();
+  });
+
   it('gives up when the second try is limited too', async () => {
     const { connection, fetch, delay } = connectionAnswering(rateLimited(), rateLimited());
 
@@ -141,6 +161,34 @@ describe('errors', () => {
     });
     expect(fetch).toHaveBeenCalledOnce();
     expect(delay).not.toHaveBeenCalled();
+  });
+
+  it('reports the error it throws, with method, path and status', async () => {
+    const { connection } = connectionAnswering(jsonResponse({ error: 'NOT_FOUND' }, 404));
+    const error = await listRecords(connection, TABLE_ID).catch((thrown: unknown) => thrown);
+
+    expect(reportError).toHaveBeenCalledExactlyOnceWith(error, {
+      'airtable.method': 'GET',
+      'airtable.path': TABLE_PATH,
+      'airtable.status': 404,
+    });
+  });
+
+  it('reports only the path, not the query with the filter formula', async () => {
+    const { connection } = connectionAnswering(jsonResponse({}, 500));
+    await listRecords(connection, TABLE_ID, { filterByFormula: "RECORD_ID() = 'recA'" }).catch(
+      () => {},
+    );
+
+    expect(vi.mocked(reportError).mock.calls[0][1]['airtable.path']).toBe(TABLE_PATH);
+  });
+
+  it('reports nothing when the request works', async () => {
+    const { connection } = connectionAnswering(jsonResponse({ records: [] }));
+    await listRecords(connection, TABLE_ID);
+
+    expect(reportError).not.toHaveBeenCalled();
+    expect(reportWarning).not.toHaveBeenCalled();
   });
 });
 

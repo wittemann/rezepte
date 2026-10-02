@@ -2,6 +2,8 @@
 // Knows URLs, the auth header, paging and errors, but nothing about recipes.
 // Token and base ID are passed in (no astro:env import), so it also works in tests and scripts.
 
+import { reportError, reportWarning } from '../monitoring.ts';
+
 const API_URL = 'https://api.airtable.com/v0';
 /** File uploads go to a host of their own. */
 const CONTENT_API_URL = 'https://content.airtable.com/v0';
@@ -84,6 +86,8 @@ export function isRecordId(id: string) {
 /**
  * Sends a request to `url` and returns the JSON answer. A `body` is sent as JSON.
  * On 429 it waits once and tries again; any other error status throws.
+ * Rate limits and errors are reported to Sentry: Astro actions turn thrown errors into a 500
+ * answer, so they wouldn't show up there otherwise.
  */
 async function requestJson(
   connection: AirtableConnection,
@@ -99,12 +103,24 @@ async function requestJson(
     init.body = JSON.stringify(body);
   }
 
+  // The path only: the query can hold a filter formula
+  const tags = { 'airtable.method': method, 'airtable.path': url.pathname };
+
   let response = await fetch(url, init);
   if (response.status === 429) {
     await delay(RATE_LIMIT_WAIT_MS);
     response = await fetch(url, init);
+    // Even when the second try works: rate limits are the trigger to revisit caching (ADR 0003)
+    reportWarning('Airtable rate limit (429)', {
+      ...tags,
+      'airtable.retry_status': response.status,
+    });
   }
-  if (!response.ok) throw await toAirtableError(response, method, url);
+  if (!response.ok) {
+    const error = await toAirtableError(response, method, url);
+    reportError(error, { ...tags, 'airtable.status': response.status });
+    throw error;
+  }
   return response.json();
 }
 
