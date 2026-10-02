@@ -1,0 +1,41 @@
+---
+// Cooking mode of a recipe (design/README.md, "Kochmodus"). Rendered live from Airtable like the
+// recipe page. A recipe without instructions has nothing to cook: back to the recipe page.
+import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import CookingMode from '../../../components/CookingMode.tsx';
+import ErrorMessage from '../../../components/ErrorMessage.astro';
+import Base from '../../../layouts/Base.astro';
+import { cookingSteps } from '../../../lib/recipes/cooking-steps.ts';
+import { getById } from '../../../lib/recipes/repository.ts';
+import { TEXT } from '../_[id].texts.ts';
+
+const recipe = await getById(
+  { token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID },
+  Astro.params.id ?? '',
+);
+const steps = recipe ? cookingSteps(recipe.method) : [];
+
+if (recipe && steps.length === 0) return Astro.redirect(`/rezepte/${recipe.id}`);
+if (!recipe) Astro.response.status = 404;
+---
+
+{recipe ? (
+  <Base title={recipe.title}>
+    <CookingMode
+      client:load
+      recipeHref={`/rezepte/${recipe.id}`}
+      steps={steps}
+      ingredients={recipe.ingredients}
+      servings={recipe.servings}
+    />
+  </Base>
+) : (
+  <Base title={TEXT.notFoundTitle}>
+    <ErrorMessage
+      title={TEXT.notFoundTitle}
+      message={TEXT.notFoundMessage}
+      linkText={TEXT.notFoundLink}
+      href="/rezepte"
+    />
+  </Base>
+)}
