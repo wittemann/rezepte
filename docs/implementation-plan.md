@@ -2,6 +2,8 @@
 
 Steps to build v1 as defined in [01-requirements](specs/01-requirements.md), following the design in `design/` ([05-design-integration](specs/05-design-integration.md)). An item is ticked off in the commit that completes it.
 
+Bugs are not tracked here but in [bugs](bugs.md).
+
 Legend: **(owner)** = needs the project owner (accounts, secrets, decisions, testing on the phone). `haiku` / `sonnet` / `opus` = the model to use for the sub-agent that builds the item (see "Sub-agents and models").
 
 ## How we work: every item goes through a manual review
@@ -127,7 +129,6 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 - [ ] `manifest.webmanifest` (name „Kochbuch“, `standalone`, theme `#fff6e8`) and icons 192/512 px generated from the Maulti SVG, plus the existing 180 px icon; manifest link in `Base.astro` · `sonnet`
 - [ ] Replace `favicon.svg` / `favicon.ico` (still Astro's default logo) with Maulti · `haiku`
-- [ ] Home-screen app on iPhone: page headline sits under the iOS status bar blur (seen on Rezepte list); fix top clearance, check on device · `sonnet`
 
 ## 7. End-to-end tests (rest)
 
@@ -141,8 +142,6 @@ Setup and smoke test are in section 5, right after the recipe detail. Playwright
 - [ ] Accessibility pass: keyboard, contrast, 44 px targets, large system text size · `sonnet`
 - [ ] Performance check on a phone over mobile data (target ≈ 1 s per page) · `sonnet`
 - [ ] Dark mode pass on every screen · `sonnet`
-- [ ] No double-tap zoom on the servings stepper: tapping − or + quickly zooms the page on iOS. Add `touch-action: manipulation` to the stepper buttons (or globally to buttons and links); check other quickly tapped controls · `haiku`
-- [ ] No sideways scrolling on the recipe page: the page must never be wider than the screen. Not reproducible in the browser at 375 px with normal text; with a very large system text size the servings stepper pushes past the right edge. Find the cause on a real iPhone, then check all screens with large text · `sonnet`
 
 ## 9. Project-wide reviews
 
