@@ -5,6 +5,10 @@ export const TEXT = {
   ingredients: 'Zutaten',
   singleServing: 'Portion',
   servings: 'Portionen',
+  previous: 'Voriger Schritt',
+  next: 'Weiter',
+  done: 'Fertig',
+  swipeHint: 'Wischen für den nächsten Schritt',
   progress: 'Fortschritt',
   /** "Schritt 2 von 11" */
   stepLabel: (number: number, total: number) => `Schritt ${number} von ${total}`,

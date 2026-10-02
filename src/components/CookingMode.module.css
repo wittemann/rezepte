@@ -86,6 +86,56 @@
   border: var(--border-thick);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-l);
+  /* Vertical scrolling stays, sideways drags are swipes */
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.swipeHint {
+  color: var(--muted);
+  font-size: var(--font-size-min);
+  font-weight: 700;
+}
+
+.footer {
+  flex: none;
+  display: flex;
+  gap: var(--space-s);
+  padding: var(--space-s) var(--space-xl) max(var(--safe-bottom), var(--space-xl));
+}
+
+.previous,
+.next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--button-height-large);
+  border: var(--border-thick);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-m);
+  cursor: pointer;
+}
+
+.previous {
+  flex: none;
+  width: var(--button-height-large);
+  padding: 0;
+  background: var(--surface);
+}
+
+.previous:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.next {
+  flex: 1;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-display);
+  font-size: 1.1875rem; /* 19px */
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .label {

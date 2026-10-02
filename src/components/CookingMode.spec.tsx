@@ -75,4 +75,65 @@ describe('CookingMode', () => {
     renderCooking();
     expect(container.querySelector('dialog h2')?.textContent).toBe('Zutaten');
   });
+
+  describe('moving between steps', () => {
+    const stepText = () => container.querySelector('section p:nth-child(2)')?.textContent;
+    const button = (name: string) =>
+      [...container.querySelectorAll('button')].find(
+        (candidate) =>
+          candidate.textContent === name || candidate.getAttribute('aria-label') === name,
+      )!;
+    const click = (name: string) => act(() => button(name).click());
+    const swipe = (from: number, to: number) => {
+      const card = container.querySelector('section')!;
+      act(() => {
+        card.dispatchEvent(new MouseEvent('pointerdown', { clientX: from, bubbles: true }));
+      });
+      act(() => {
+        card.dispatchEvent(new MouseEvent('pointerup', { clientX: to, bubbles: true }));
+      });
+    };
+
+    it('goes forward and back with the buttons and moves the progress dots', () => {
+      renderCooking();
+      expect(button('Voriger Schritt').disabled).toBe(true);
+
+      click('Weiter');
+      expect(stepText()).toBe('Teig 10 Minuten ruhen lassen.');
+      expect(container.textContent).toContain('Schritt 2 von 3 · Teig');
+      const dots = [...container.querySelectorAll('ol li')];
+      expect(dots.map((dot) => dot.getAttribute('aria-current'))).toEqual([null, 'step', null]);
+
+      click('Voriger Schritt');
+      expect(stepText()).toBe('Zwiebeln würfeln.');
+    });
+
+    it('ends with a "Fertig" link back to the recipe instead of "Weiter"', () => {
+      renderCooking();
+      click('Weiter');
+      click('Weiter');
+      expect(stepText()).toBe('Backen.');
+      expect(button('Weiter')).toBeUndefined();
+      const done = [...container.querySelectorAll('a')].find(
+        (link) => link.textContent === 'Fertig',
+      );
+      expect(done?.getAttribute('href')).toBe('/rezepte/recX1');
+    });
+
+    it('swipes left for the next step and right for the previous one', () => {
+      renderCooking();
+      swipe(200, 140);
+      expect(stepText()).toBe('Teig 10 Minuten ruhen lassen.');
+      swipe(140, 200);
+      expect(stepText()).toBe('Zwiebeln würfeln.');
+    });
+
+    it('ignores a drag shorter than 50 px and swipes past the ends', () => {
+      renderCooking();
+      swipe(200, 160);
+      expect(stepText()).toBe('Zwiebeln würfeln.');
+      swipe(100, 200);
+      expect(stepText()).toBe('Zwiebeln würfeln.');
+    });
+  });
 });

@@ -1,13 +1,17 @@
 // Cooking mode (design/README.md, "Kochmodus"): one step at a time with Maulti, progress dots
 // and the ingredients in a sheet. A page of its own, without tab bar.
-import { useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 import type { CookingStep } from '../lib/recipes/cooking-steps.ts';
 import type { IngredientLine } from '../lib/recipes/ingredients.ts';
 import { formatAmount, formatQuantity, scaleQuantity } from '../lib/recipes/servings.ts';
+import Icon from './Icon.tsx';
 import BottomSheet from './BottomSheet.tsx';
 import styles from './CookingMode.module.css';
 import { TEXT } from './CookingMode.texts.ts';
 import Maulti from './Maulti.tsx';
+
+/** How far a finger has to move sideways to count as a swipe (design/README.md, "Kochmodus") */
+const SWIPE_THRESHOLD = 50;
 
 type Props = {
   /** The recipe page, where the close button leads */
@@ -19,12 +23,35 @@ type Props = {
 };
 
 export default function CookingMode({ recipeHref, steps, ingredients, servings }: Props) {
-  const [stepIndex] = useState(0);
+  const [stepIndex, setStepIndex] = useState(0);
   const [ingredientsOpen, setIngredientsOpen] = useState(false);
+  const swipeStartRef = useRef<number>();
+  const isFirst = stepIndex === 0;
+  const isLast = stepIndex === steps.length - 1;
   const step = steps[stepIndex];
   const label = [TEXT.stepLabel(stepIndex + 1, steps.length), step.section]
     .filter(Boolean)
     .join(' · ');
+
+  function goToPrevious() {
+    setStepIndex((index) => Math.max(0, index - 1));
+  }
+
+  function goToNext() {
+    setStepIndex((index) => Math.min(steps.length - 1, index + 1));
+  }
+
+  function handlePointerDown(event: PointerEvent) {
+    swipeStartRef.current = event.clientX;
+  }
+
+  function handlePointerUp(event: PointerEvent) {
+    if (swipeStartRef.current === undefined) return;
+    const distance = event.clientX - swipeStartRef.current;
+    swipeStartRef.current = undefined;
+    if (distance <= -SWIPE_THRESHOLD) goToNext();
+    else if (distance >= SWIPE_THRESHOLD) goToPrevious();
+  }
 
   return (
     <div class={styles.page}>
@@ -51,11 +78,37 @@ export default function CookingMode({ recipeHref, steps, ingredients, servings }
 
       <main class={styles.main}>
         <Maulti pose="cook" size={150} />
-        <section class={styles.card}>
+        <section
+          class={styles.card}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+        >
           <p class={styles.label}>{label}</p>
           <p class={styles.text}>{step.text}</p>
+          {!isLast && <p class={styles.swipeHint}>{TEXT.swipeHint}</p>}
         </section>
       </main>
+
+      <footer class={styles.footer}>
+        <button
+          type="button"
+          class={styles.previous}
+          aria-label={TEXT.previous}
+          disabled={isFirst}
+          onClick={goToPrevious}
+        >
+          <Icon name="back" size={22} strokeWidth={2.4} />
+        </button>
+        {isLast ? (
+          <a href={recipeHref} class={styles.next}>
+            {TEXT.done}
+          </a>
+        ) : (
+          <button type="button" class={styles.next} onClick={goToNext}>
+            {TEXT.next}
+          </button>
+        )}
+      </footer>
 
       <BottomSheet
         open={ingredientsOpen}
