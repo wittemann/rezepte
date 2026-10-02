@@ -9,6 +9,7 @@ import BottomSheet from './BottomSheet.tsx';
 import styles from './CookingMode.module.css';
 import { TEXT } from './CookingMode.texts.ts';
 import Maulti from './Maulti.tsx';
+import { useWakeLock } from './use-wake-lock.ts';
 
 /** How far a finger has to move sideways to count as a swipe (design/README.md, "Kochmodus") */
 const SWIPE_THRESHOLD = 50;
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export default function CookingMode({ recipeHref, steps, ingredients, servings }: Props) {
+  useWakeLock();
   const [stepIndex, setStepIndex] = useState(0);
   const [ingredientsOpen, setIngredientsOpen] = useState(false);
   const swipeStartRef = useRef<number>();

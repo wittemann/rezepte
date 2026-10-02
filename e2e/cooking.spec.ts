@@ -10,7 +10,7 @@ test('cooking mode steps forward and back and ends at the recipe', async ({ page
   await page.goto('/rezepte');
   const ids = await page
     .locator('a[data-recipe-id]')
-    .evaluateAll((rows) => rows.map((row) => row.getAttribute('data-recipe-id')));
+    .evaluateAll((rows) => rows.map((row) => row.getAttribute('data-recipe-id') ?? ''));
 
   let cookable: string | undefined;
   for (const id of ids) {
