@@ -134,8 +134,8 @@ Open items are built by a sub-agent, not in the main session, to keep the main c
 
 Setup and smoke test are in section 5, right after the recipe detail. Playwright against a local dev server with the real Airtable base, read-only ([ADR 0010](decisions/0010-e2e-tests-deferred.md)). Tests never write and never contain recipe names or texts (the repo is public): they pick whatever the first recipe is.
 
-- [ ] Added with their screens, from now on as a rule: search and filter, favorites, start suggestions, cooking mode with timers · `sonnet`
-- [ ] Edit and new recipe: needs a test base or a cleanup step, since it writes; decide when we get there · `opus`
+- [x] Added with their screens, from now on as a rule: search and filter, favorites, start suggestions, cooking mode with timers · `sonnet`
+- [x] Edit and new recipe: the form is tested without saving (the e2e token can only read); a saving test would need a test base or a cleanup step, not planned · `opus`
 
 ## 8. Quality passes
 
