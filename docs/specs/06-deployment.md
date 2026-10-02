@@ -17,16 +17,16 @@
 
 ## Environment variables
 
-| Name                           | Content                                                                                                         | Where                                       |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `APP_PASSWORD_HASH`            | scrypt hash of the shared password (`npm run hash-password`)                                                    | Vercel (prod + preview), `.env`             |
-| `SESSION_SECRET`               | random, 32+ bytes (`openssl rand -base64 32`)                                                                   | Vercel (prod + preview), `.env`             |
-| `AIRTABLE_TOKEN`               | Personal Access Token, scoped to this base only: `data.records:read`, `data.records:write`, `schema.bases:read` | Vercel (prod + preview), `.env`             |
-| `AIRTABLE_BASE_ID`             | `app…`                                                                                                          | Vercel (prod + preview), `.env`             |
-| `AIRTABLE_E2E_TOKEN`           | read-only token for the e2e tests: `data.records:read` only, this base only                                     | `.env`, GitHub Actions secret               |
-| `SENTRY_DSN`                   | Sentry project key (public by design); if unset, Sentry is off                                                  | Vercel (prod + preview), optional in `.env` |
-| `SENTRY_AUTH_TOKEN`            | **secret**, for the source-map upload at build time                                                             | Vercel only                                 |
-| `SENTRY_ORG`, `SENTRY_PROJECT` | for the source-map upload                                                                                       | Vercel only                                 |
+| Name                           | Content                                                                                                         | Where                           |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `APP_PASSWORD_HASH`            | scrypt hash of the shared password (`npm run hash-password`)                                                    | Vercel (prod + preview), `.env` |
+| `SESSION_SECRET`               | random, 32+ bytes (`openssl rand -base64 32`)                                                                   | Vercel (prod + preview), `.env` |
+| `AIRTABLE_TOKEN`               | Personal Access Token, scoped to this base only: `data.records:read`, `data.records:write`, `schema.bases:read` | Vercel (prod + preview), `.env` |
+| `AIRTABLE_BASE_ID`             | `app…`                                                                                                          | Vercel (prod + preview), `.env` |
+| `AIRTABLE_E2E_TOKEN`           | read-only token for the e2e tests: `data.records:read` only, this base only                                     | `.env`, GitHub Actions secret   |
+| `SENTRY_DSN`                   | Sentry project key (public by design), read at build time; if unset, Sentry is off and not bundled              | Vercel (prod + preview)         |
+| `SENTRY_AUTH_TOKEN`            | **secret**, for the source-map upload at build time                                                             | Vercel only                     |
+| `SENTRY_ORG`, `SENTRY_PROJECT` | for the source-map upload                                                                                       | Vercel only                     |
 
 ## Secret rules
 
@@ -39,4 +39,4 @@
 
 - **Airtable:** 5 requests/s per base; check whether the current free plan has a monthly API-call cap. 429 errors (reported to Sentry) are the trigger to revisit [ADR 0003](../decisions/0003-rendering-and-caching.md).
 - **Vercel Hobby:** function invocations, execution time and bandwidth limits. Not expected to matter for two users. Runtime logs are kept for only **1 hour**, which is why errors go to Sentry.
-- **Sentry Developer plan:** 5,000 errors/month, 50 session replays/month, 30 days retention ([ADR 0009](../decisions/0009-error-monitoring.md)).
+- **Sentry Developer plan:** 5,000 errors/month, 50 session replays/month, 5M spans/month, 5 GB logs/month, 30 days retention ([ADR 0009](../decisions/0009-error-monitoring.md)).
