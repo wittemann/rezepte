@@ -38,6 +38,7 @@ export default defineConfig({
       APP_PASSWORD_HASH: await hashPassword(TEST_PASSWORD),
       SESSION_SECRET: TEST_SESSION_SECRET,
       AIRTABLE_TOKEN: airtableToken,
+      E2E: '1',
     },
   },
 });

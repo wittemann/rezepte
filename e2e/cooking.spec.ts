@@ -45,7 +45,11 @@ test('cooking mode steps forward and back and ends at the recipe', async ({ page
   while (await page.getByRole('button', { name: TEXT.next }).isVisible()) {
     await page.getByRole('button', { name: TEXT.next }).click();
   }
-  await page.getByRole('link', { name: TEXT.done }).click();
+  // Recipes without a photo end with the photo step, which can be skipped
+  const end = page
+    .getByRole('link', { name: TEXT.done })
+    .or(page.getByRole('link', { name: TEXT.skip }));
+  await end.click();
   await expect(page).toHaveURL(new RegExp(`/rezepte/${cookable}$`));
 });
 

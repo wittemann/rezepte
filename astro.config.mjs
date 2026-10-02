@@ -9,6 +9,8 @@ export default defineConfig({
   adapter: vercel(),
   // Islands only (docs/decisions/0006-forms-and-interactivity.md)
   integrations: [preact()],
+  // Off in e2e runs (playwright.config.ts): it sits over the bottom controls and takes their clicks
+  devToolbar: { enabled: !process.env.E2E },
   // Downloaded from Fontsource at build time and served from our own domain, so visitors'
   // browsers never contact a font CDN (docs/decisions/0007-styling-approach.md).
   // Both are variable fonts: a weight range gives one file per font.
