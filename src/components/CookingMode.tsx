@@ -49,6 +49,12 @@ export default function CookingMode({
   const [stepIndex, setStepIndex] = useState(0);
   const [ingredientsOpen, setIngredientsOpen] = useState(false);
   const swipeStartRef = useRef<number>();
+  // TEMPORARY: shows which touch/pointer events arrive on the phone (docs/bugs.md, swipe)
+  const swipeLogRef = useRef<HTMLPreElement>(null);
+  function logSwipe(entry: string) {
+    const log = swipeLogRef.current;
+    if (log) log.textContent = `${entry}\n${log.textContent ?? ''}`.slice(0, 400);
+  }
   const photo = usePhotoUpload(recipeId);
   const stepCount = hasPhoto ? steps.length : steps.length + 1;
   const isFirst = stepIndex === 0;
@@ -84,6 +90,7 @@ export default function CookingMode({
   }
 
   function handlePointerDown(event: PointerEvent) {
+    logSwipe(`${event.type} ${event.pointerType} ${Math.round(event.clientX)}`);
     swipeStartRef.current = event.clientX;
   }
 
@@ -92,13 +99,15 @@ export default function CookingMode({
   function handlePointerMove(event: PointerEvent) {
     if (swipeStartRef.current === undefined) return;
     const distance = event.clientX - swipeStartRef.current;
+    logSwipe(`${event.type} ${Math.round(distance)}`);
     if (Math.abs(distance) < SWIPE_THRESHOLD) return;
     swipeStartRef.current = undefined;
     if (distance < 0) goToNext();
     else goToPrevious();
   }
 
-  function endSwipe() {
+  function endSwipe(event: Event) {
+    logSwipe(event.type);
     swipeStartRef.current = undefined;
   }
 
@@ -133,6 +142,10 @@ export default function CookingMode({
           onPointerMove={handlePointerMove}
           onPointerUp={endSwipe}
           onPointerCancel={endSwipe}
+          onTouchStart={(event) => logSwipe(`${event.type} ${event.touches.length}`)}
+          onTouchMove={(event) => logSwipe(event.type)}
+          onTouchEnd={(event) => logSwipe(event.type)}
+          onTouchCancel={(event) => logSwipe(event.type)}
         >
           <p class={styles.label}>{label}</p>
           {step ? (
@@ -202,6 +215,21 @@ export default function CookingMode({
           )}
         </ul>
       </BottomSheet>
+      <pre
+        ref={swipeLogRef}
+        style={{
+          position: 'fixed',
+          left: 8,
+          top: 120,
+          zIndex: 9,
+          margin: 0,
+          padding: 4,
+          fontSize: 11,
+          background: '#ff0',
+          pointerEvents: 'none',
+          whiteSpace: 'pre',
+        }}
+      />
     </div>
   );
 }
