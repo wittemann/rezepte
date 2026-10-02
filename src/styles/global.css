@@ -101,6 +101,18 @@ a {
   color: inherit;
 }
 
+/* No double-tap zoom when a control is tapped quickly (iOS); pan and pinch zoom still work */
+a,
+button,
+input,
+label,
+select,
+summary,
+textarea,
+[role='button'] {
+  touch-action: manipulation;
+}
+
 /* Keyboard focus only, not on tap */
 :focus-visible {
   outline: 3px solid var(--accent);
