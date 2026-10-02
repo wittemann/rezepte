@@ -1,26 +1,28 @@
 // Cooking mode: from the recipe page through the steps. Reads the live base, writes nothing, and
 // asserts no recipe data (the repo is public): it uses the first recipe that has instructions.
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { TEXT } from '../src/components/CookingMode.texts.ts';
 import { TEXT as COOK_BUTTON_TEXT } from '../src/components/CookButton.texts.ts';
+import { TEXT as TIMERS_TEXT } from '../src/components/Timers.texts.ts';
 import { login } from './login.ts';
 
-test('cooking mode steps forward and back and ends at the recipe', async ({ page }) => {
-  await login(page);
+/** The first recipe whose page contains `marker`: with instructions (`/cook`), or a timer. */
+async function findRecipe(page: Page, marker: string) {
   await page.goto('/rezepte');
   const ids = await page
     .locator('a[data-recipe-id]')
     .evaluateAll((rows) => rows.map((row) => row.getAttribute('data-recipe-id') ?? ''));
-
-  let cookable: string | undefined;
   for (const id of ids) {
     const response = await page.request.get(`/rezepte/${id}`);
-    if ((await response.text()).includes(`/rezepte/${id}/cook`)) {
-      cookable = id;
-      break;
-    }
+    const html = await response.text();
+    if (html.includes(marker === '/cook' ? `/rezepte/${id}/cook` : marker)) return id;
   }
-  expect(cookable, 'a recipe with instructions').toBeDefined();
+  throw new Error(`No recipe with ${marker}`);
+}
+
+test('cooking mode steps forward and back and ends at the recipe', async ({ page }) => {
+  await login(page);
+  const cookable = await findRecipe(page, `/cook`);
 
   await page.goto(`/rezepte/${cookable}`);
   await page.getByRole('link', { name: COOK_BUTTON_TEXT.label }).click();
@@ -45,4 +47,26 @@ test('cooking mode steps forward and back and ends at the recipe', async ({ page
   }
   await page.getByRole('link', { name: TEXT.done }).click();
   await expect(page).toHaveURL(new RegExp(`/rezepte/${cookable}$`));
+});
+
+test('a timer started while cooking keeps running on other pages', async ({ page }) => {
+  await login(page);
+  const id = await findRecipe(page, 'data-timer-minutes');
+
+  await page.goto(`/rezepte/${id}/cook`);
+  await page.waitForLoadState('networkidle');
+  const startTimer = page.getByRole('button', { name: /Timer starten$/ });
+  while (!(await startTimer.isVisible())) {
+    await page.getByRole('button', { name: TEXT.next }).click();
+  }
+  await startTimer.click();
+
+  const cancel = page.getByRole('button', { name: TIMERS_TEXT.cancel });
+  await expect(cancel).toBeVisible();
+
+  await page.goto('/rezepte');
+  await expect(cancel).toBeVisible();
+
+  await cancel.click();
+  await expect(cancel).toBeHidden();
 });

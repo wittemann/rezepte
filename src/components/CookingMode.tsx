@@ -1,10 +1,14 @@
 // Cooking mode (design/README.md, "Kochmodus"): one step at a time with Maulti, progress dots
 // and the ingredients in a sheet. A page of its own, without tab bar.
 import { useRef, useState } from 'preact/hooks';
+import { formatTimerLabel } from '../lib/recipes/time.ts';
+import { createTimer } from '../lib/timers/timers.ts';
 import type { CookingStep } from '../lib/recipes/cooking-steps.ts';
 import type { IngredientLine } from '../lib/recipes/ingredients.ts';
 import { formatAmount, formatQuantity, scaleQuantity } from '../lib/recipes/servings.ts';
 import Icon from './Icon.tsx';
+import { addTimer } from './timer-store.ts';
+import { unlockSound } from './timer-sound.ts';
 import BottomSheet from './BottomSheet.tsx';
 import styles from './CookingMode.module.css';
 import { TEXT } from './CookingMode.texts.ts';
@@ -15,6 +19,8 @@ import { useWakeLock } from './use-wake-lock.ts';
 const SWIPE_THRESHOLD = 50;
 
 type Props = {
+  /** Named on the timers started here */
+  recipeTitle: string;
   /** The recipe page, where the close button leads */
   recipeHref: string;
   steps: CookingStep[];
@@ -23,7 +29,13 @@ type Props = {
   servings?: number;
 };
 
-export default function CookingMode({ recipeHref, steps, ingredients, servings }: Props) {
+export default function CookingMode({
+  recipeTitle,
+  recipeHref,
+  steps,
+  ingredients,
+  servings,
+}: Props) {
   useWakeLock();
   const [stepIndex, setStepIndex] = useState(0);
   const [ingredientsOpen, setIngredientsOpen] = useState(false);
@@ -34,6 +46,22 @@ export default function CookingMode({ recipeHref, steps, ingredients, servings }
   const label = [TEXT.stepLabel(stepIndex + 1, steps.length), step.section]
     .filter(Boolean)
     .join(' · ');
+
+  function startTimer(minutes: number) {
+    // Starting is a tap, the one moment iOS lets the alarm sound be prepared
+    unlockSound();
+    addTimer(
+      createTimer(
+        {
+          recipeTitle,
+          stepNumber: stepIndex + 1,
+          label: formatTimerLabel(minutes),
+          minutes,
+        },
+        Date.now(),
+      ),
+    );
+  }
 
   function goToPrevious() {
     setStepIndex((index) => Math.max(0, index - 1));
@@ -87,6 +115,16 @@ export default function CookingMode({ recipeHref, steps, ingredients, servings }
         >
           <p class={styles.label}>{label}</p>
           <p class={styles.text}>{step.text}</p>
+          {step.timerMinutes !== undefined && (
+            <button
+              type="button"
+              class={styles.timerButton}
+              onClick={() => startTimer(step.timerMinutes!)}
+            >
+              <Icon name="timer" size={18} strokeWidth={2.2} />
+              {TEXT.startTimer(formatTimerLabel(step.timerMinutes))}
+            </button>
+          )}
           {!isLast && <p class={styles.swipeHint}>{TEXT.swipeHint}</p>}
         </section>
       </main>

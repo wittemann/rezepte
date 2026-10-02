@@ -1,3 +1,4 @@
+import preactRenderer from '@astrojs/preact/server.js';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import ErrorPage from './500.astro';
@@ -5,6 +6,8 @@ import { TEXT } from './_500.texts.ts';
 
 async function render(props: Record<string, unknown> = {}) {
   const container = await AstroContainer.create();
+  container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
+  container.addClientRenderer({ name: '@astrojs/preact', entrypoint: '@astrojs/preact/client.js' });
   return container.renderToString(ErrorPage, { props });
 }
 

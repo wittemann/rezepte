@@ -30,6 +30,6 @@ if (Astro.request.method === 'POST') {
 }
 ---
 
-<Base title={TEXT.title}>
+<Base title={TEXT.title} withTimers={false}>
   <LoginForm client:load error={wrongPassword} />
 </Base>

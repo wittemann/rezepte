@@ -9,6 +9,8 @@ export const TEXT = {
   next: 'Weiter',
   done: 'Fertig',
   swipeHint: 'Wischen für den nächsten Schritt',
+  /** "25 Minuten · Timer starten" */
+  startTimer: (label: string) => `${label} · Timer starten`,
   progress: 'Fortschritt',
   /** "Schritt 2 von 11" */
   stepLabel: (number: number, total: number) => `Schritt ${number} von ${total}`,

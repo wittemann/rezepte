@@ -23,6 +23,7 @@ if (!recipe) Astro.response.status = 404;
   <Base title={recipe.title}>
     <CookingMode
       client:load
+      recipeTitle={recipe.title}
       recipeHref={`/rezepte/${recipe.id}`}
       steps={steps}
       ingredients={recipe.ingredients}
