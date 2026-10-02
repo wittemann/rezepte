@@ -1,17 +1,20 @@
 // Start page: choosing a meal and the time. Reads the live base but writes nothing, and asserts
 // no recipe data (the repo is public).
 import { test, expect } from '@playwright/test';
+import { TEXT as CAROUSEL_TEXT } from '../src/components/SuggestionCarousel.texts.ts';
 import { TEXT } from '../src/pages/_index.texts.ts';
 import { login } from './login.ts';
 
 test('choosing meal and time changes the question and the choice', async ({ page }) => {
   await login(page);
   await page.goto('/');
+  // Scoped: cards can have a category pill with the same word
+  const mealTiles = page.getByRole('navigation', { name: TEXT.meals });
 
-  await page.getByRole('link', { name: TEXT.mealLabels.baking }).click();
+  await mealTiles.getByRole('link', { name: TEXT.mealLabels.baking }).click();
   await expect(page).toHaveURL(/meal=baking/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(TEXT.headline.baking);
-  await expect(page.getByRole('link', { name: TEXT.mealLabels.baking })).toHaveAttribute(
+  await expect(mealTiles.getByRole('link', { name: TEXT.mealLabels.baking })).toHaveAttribute(
     'aria-current',
     'true',
   );
@@ -23,4 +26,19 @@ test('choosing meal and time changes the question and the choice', async ({ page
     'aria-current',
     'true',
   );
+});
+
+test('a suggestion opens its recipe and the dice card shuffles anew', async ({ page }) => {
+  await login(page);
+  // Much time and Abend: the biggest pool, so there are cards on any base with recipes
+  await page.goto('/?meal=lunch-dinner&time=much');
+
+  await page.getByRole('link', { name: CAROUSEL_TEXT.reroll }).click();
+  await expect(page).toHaveURL(/dice=1/);
+  await expect(page).toHaveURL(/meal=lunch-dinner/);
+
+  const card = page.locator('[data-suggestion-id]').first();
+  await expect(card).toBeVisible();
+  await card.click();
+  await expect(page).toHaveURL(/\/rezepte\/rec\w+$/);
 });

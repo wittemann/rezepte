@@ -6,14 +6,17 @@ import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
 import Maulti from '../components/Maulti.tsx';
 import MealTiles from '../components/MealTiles.astro';
 import SegmentedControl from '../components/SegmentedControl.astro';
+import SuggestionCarousel from '../components/SuggestionCarousel.astro';
 import SpeechBubble from '../components/SpeechBubble.astro';
 import Base from '../layouts/Base.astro';
 import { MEALS } from '../lib/recipes/fields.ts';
 import { getAll } from '../lib/recipes/repository.ts';
-import { matchingRecipes } from '../lib/recipes/suggestions.ts';
+import { matchingRecipes, suggestRecipes } from '../lib/recipes/suggestions.ts';
 import {
   greetingFor,
+  localDay,
   maxTotalMinutes,
+  parseDiceSeed,
   parseStartQuery,
   startHref,
 } from '../lib/start/start-query.ts';
@@ -25,10 +28,10 @@ const currentMeal = MEALS.find((entry) => entry.value === state.meal);
 if (!currentMeal) throw new Error(`Unknown meal ${state.meal}`);
 
 const recipes = await getAll({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID });
-const matchingCount = matchingRecipes(recipes, {
-  meal: state.meal,
-  maxTotalMinutes: maxTotalMinutes(state),
-}).length;
+const limit = { meal: state.meal, maxTotalMinutes: maxTotalMinutes(state) };
+const matchingCount = matchingRecipes(recipes, limit).length;
+const diceSeed = parseDiceSeed(Astro.url.searchParams);
+const suggestions = suggestRecipes(recipes, { ...limit, day: localDay(now), diceSeed });
 
 const tiles = MEALS.map((entry) => ({
   label: TEXT.mealLabels[entry.name],
@@ -73,6 +76,11 @@ const timeOptions = [
       </div>
       <p class="matching">{TEXT.matching(matchingCount)}</p>
     </div>
+    <SuggestionCarousel
+      recipes={suggestions}
+      mealName={currentMeal.name}
+      rerollHref={startHref(state, diceSeed + 1)}
+    />
   </main>
 </Base>
 

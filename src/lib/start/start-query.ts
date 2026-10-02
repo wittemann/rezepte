@@ -12,6 +12,8 @@ export const START_PATH = '/';
 export const LITTLE_TIME_MINUTES = 30;
 export const LITTLE_TIME_BAKING_MINUTES = 90;
 
+const MAX_DICE_SEED = 1000; // keeps a hand-made URL sane
+
 const TIMES = ['little', 'much'] as const;
 export type StartTime = (typeof TIMES)[number];
 
@@ -22,6 +24,12 @@ export type StartState = {
 
 /** The app is for a family in Germany; the server runs in UTC, so the clock has to be converted. */
 const TIME_ZONE = 'Europe/Berlin';
+
+/** The date in Germany, e.g. "2026-10-02"; the daily picks change with it. */
+export function localDay(now: Date) {
+  // The Swedish locale writes dates as year-month-day
+  return new Intl.DateTimeFormat('sv-SE', { timeZone: TIME_ZONE }).format(now);
+}
 
 /** Hour and weekend flag on the wall clock in Germany. */
 export function localTime(now: Date) {
@@ -45,12 +53,22 @@ export function parseStartQuery(params: URLSearchParams, now: Date) {
   };
 }
 
-/** Link to the start page with this state. Always explicit, so a click keeps working after midnight. */
-export function startHref({ meal, time }: StartState) {
+/** "Nochmal würfeln" counter from the URL: a whole number from 0 up, otherwise 0. */
+export function parseDiceSeed(params: URLSearchParams) {
+  const seed = Number(params.get('dice'));
+  return Number.isInteger(seed) && seed > 0 && seed <= MAX_DICE_SEED ? seed : 0;
+}
+
+/**
+ * Link to the start page with this state. Always explicit, so a click keeps working after midnight.
+ * Changing meal or time starts over with the first picks, so the dice seed is only set on request.
+ */
+export function startHref({ meal, time }: StartState, diceSeed = 0) {
   const mealName = MEALS.find((entry) => entry.value === meal)?.name;
   const params = new URLSearchParams();
   if (mealName) params.set('meal', mealName);
   params.set('time', time);
+  if (diceSeed > 0) params.set('dice', String(diceSeed));
   return `${START_PATH}?${params}`;
 }
 

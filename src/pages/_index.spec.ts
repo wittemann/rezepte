@@ -68,4 +68,27 @@ describe('start page', () => {
   it('shows the shorter baking limit as hint', async () => {
     expect(text(await renderPage('?meal=baking'), '.hint')).toBe('bis 90 Min.');
   });
+
+  it('suggests recipes of the meal within the time limit, each linking to its recipe', async () => {
+    const document = await renderPage();
+    const cards = [...document.querySelectorAll('[data-suggestion-id]')];
+    expect(cards.map((card) => card.getAttribute('href'))).toEqual(['/rezepte/recA']);
+  });
+
+  it('rolls the dice by counting up in the URL', async () => {
+    const first = await renderPage('?meal=breakfast&time=much');
+    expect(first.querySelector('.reroll')?.getAttribute('href')).toBe(
+      '/?meal=breakfast&time=much&dice=1',
+    );
+    const second = await renderPage('?meal=breakfast&time=much&dice=4');
+    expect(second.querySelector('.reroll')?.getAttribute('href')).toBe(
+      '/?meal=breakfast&time=much&dice=5',
+    );
+  });
+
+  it('tells Maulti found nothing instead of showing cards', async () => {
+    const document = await renderPage('?meal=baking');
+    expect(document.querySelectorAll('[data-suggestion-id]')).toHaveLength(0);
+    expect(document.querySelector('main')?.textContent).toContain('dazu finde ich nichts');
+  });
 });

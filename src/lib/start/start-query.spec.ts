@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   greetingFor,
   localTime,
+  localDay,
   maxTotalMinutes,
+  parseDiceSeed,
   parseStartQuery,
   startHref,
 } from './start-query.ts';
@@ -57,6 +59,34 @@ describe('startHref', () => {
     expect(startHref({ meal: 'Mittag & Abend', time: 'little' })).toBe(
       '/?meal=lunch-dinner&time=little',
     );
+  });
+});
+
+describe('startHref with dice', () => {
+  it('adds the dice seed only when it is above 0', () => {
+    const state = { meal: 'Backen', time: 'much' } as const;
+    expect(startHref(state, 2)).toBe('/?meal=baking&time=much&dice=2');
+    expect(startHref(state, 0)).toBe('/?meal=baking&time=much');
+  });
+});
+
+describe('parseDiceSeed', () => {
+  it.each([
+    ['', 0],
+    ['dice=3', 3],
+    ['dice=-1', 0],
+    ['dice=1.5', 0],
+    ['dice=abc', 0],
+    ['dice=99999', 0],
+  ])('reads "%s" as %i', (query, expected) => {
+    expect(parseDiceSeed(new URLSearchParams(query))).toBe(expected);
+  });
+});
+
+describe('localDay', () => {
+  it('is the date in Germany, also shortly after midnight there', () => {
+    expect(localDay(new Date('2026-10-02T22:30:00Z'))).toBe('2026-10-03');
+    expect(localDay(fridayMorning)).toBe('2026-10-02');
   });
 });
 

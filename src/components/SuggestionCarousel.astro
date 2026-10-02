@@ -1,0 +1,147 @@
+---
+// Suggestions on the start page (design/README.md, "Vorschläge"): cards in a sideways scrolling
+// row, alternately tilted, in the pastel of the meal. The last card shuffles anew. Without
+// suggestions Maulti says there is nothing.
+import type { Recipe } from '../lib/recipes/recipe.ts';
+import { formatDurationShort } from '../lib/recipes/time.ts';
+import Maulti from './Maulti.tsx';
+import Pill from './Pill.astro';
+import { TEXT } from './SuggestionCarousel.texts.ts';
+
+type Props = {
+  recipes: Recipe[];
+  /** `--pastel-meal-*` name of the chosen meal, e.g. "breakfast" */
+  mealName: string;
+  /** Link that shows other suggestions */
+  rerollHref: string;
+};
+
+const { recipes, mealName, rerollHref } = Astro.props;
+---
+
+{recipes.length === 0 ? (
+  <div class="empty">
+    <Maulti pose="think" size={64} />
+    <p class="emptyText">{TEXT.empty}</p>
+  </div>
+) : (
+  <div class="carousel" style={`--card-color: var(--pastel-meal-${mealName})`}>
+    {recipes.map((recipe) => (
+      <a class="card" href={`/rezepte/${recipe.id}`} data-suggestion-id={recipe.id}>
+        <span class="pills">
+          {recipe.category ? <Pill>{recipe.category}</Pill> : <span />}
+          {recipe.totalMinutes !== undefined && (
+            <Pill variant="time">{formatDurationShort(recipe.totalMinutes)}</Pill>
+          )}
+        </span>
+        <span class="title">{recipe.title}</span>
+        <span class="go">{TEXT.go}</span>
+      </a>
+    ))}
+    <a class="reroll" href={rerollHref}>
+      <span class="rerollIcon" aria-hidden="true">
+        ↻
+      </span>
+      {TEXT.reroll}
+    </a>
+  </div>
+)}
+
+<style>
+  .carousel {
+    display: flex;
+    gap: var(--space-l);
+    overflow-x: auto;
+    /* Room for the shadow and the tilt at the bottom */
+    padding: var(--space-s) var(--space-page) 1.625rem; /* 10px 20px 26px */
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--space-page);
+  }
+
+  .card {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-l);
+    width: 16.375rem; /* 262px */
+    min-height: 13.125rem; /* 210px */
+    padding: 1.125rem; /* 18px */
+    border: var(--border-thick);
+    border-radius: var(--radius-xl);
+    background: var(--card-color);
+    box-shadow: var(--shadow-l);
+    color: var(--on-pastel);
+    text-decoration: none;
+    scroll-snap-align: start;
+    transform: rotate(-1.4deg);
+  }
+
+  .card:nth-child(even) {
+    transform: rotate(1.4deg);
+  }
+
+  .pills {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-size: 1.5rem; /* 24px */
+    font-weight: 600;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+
+  .go {
+    align-self: flex-start;
+    padding: 0.5625rem 1rem; /* 9px 16px */
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--white);
+    font-size: 0.875rem; /* 14px */
+    font-weight: 800;
+  }
+
+  .reroll {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xxs);
+    width: 8rem; /* 128px */
+    border: 2.5px dashed var(--muted);
+    border-radius: var(--radius-xl);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 0.9375rem; /* 15px */
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    scroll-snap-align: start;
+  }
+
+  .rerollIcon {
+    color: var(--accent);
+    font-size: 1.75rem; /* 28px */
+  }
+
+  .empty {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    margin: var(--space-m) var(--space-xl) var(--space-xxl);
+    padding: 1.125rem; /* 18px */
+    border: 2px dashed var(--muted);
+    border-radius: var(--radius-l);
+  }
+
+  .emptyText {
+    flex: 1;
+    color: var(--muted);
+    font-size: 0.875rem; /* 14px */
+  }
+</style>
