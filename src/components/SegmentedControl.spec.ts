@@ -30,10 +30,10 @@ describe('SegmentedControl', () => {
   it('renders links when options have an href, only the active one is current', async () => {
     const html = await renderControl([
       { label: 'Alle', active: true, href: '/rezepte' },
-      { label: 'Backen', active: false, href: '/rezepte?mahlzeit=backen' },
+      { label: 'Backen', active: false, href: '/rezepte?meal=baking' },
     ]);
     expect(html).not.toContain('<button');
-    expect(html).toContain('href="/rezepte?mahlzeit=backen"');
+    expect(html).toContain('href="/rezepte?meal=baking"');
     expect(html.match(/aria-current="true"/g)).toHaveLength(1);
   });
 

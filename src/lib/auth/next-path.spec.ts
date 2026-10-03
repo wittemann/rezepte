@@ -6,7 +6,7 @@ describe('safeNextPath', () => {
     ['/', '/'],
     ['/rezepte', '/rezepte'],
     ['/rezepte?q=Kn%C3%B6del', '/rezepte?q=Kn%C3%B6del'],
-    ['/rezept/rec123#schritte', '/rezept/rec123#schritte'],
+    ['/rezepte/rec123#steps', '/rezepte/rec123#steps'],
   ])('keeps the local path %j', (next, expected) => {
     expect(safeNextPath(next)).toBe(expected);
   });
