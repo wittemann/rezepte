@@ -144,7 +144,7 @@ Setup and smoke test are in section 5, right after the recipe detail. Playwright
 
 - [x] Accessibility pass: keyboard, contrast, 44 px targets, large system text size · `sonnet`
 - [ ] Performance check on a phone over mobile data (target ≈ 1 s per page) · `sonnet`
-- [ ] Dark mode pass on every screen · `sonnet`
+- [x] Dark mode pass on every screen · `sonnet`
 
 ## 9. Project-wide reviews
 

@@ -53,6 +53,10 @@
   font-weight: 700;
 }
 
+.input::placeholder {
+  color: var(--muted);
+}
+
 .input:focus-visible {
   /* The whole field shows focus instead (below) */
   outline: none;

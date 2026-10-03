@@ -42,6 +42,7 @@ const { title, message, linkText, href = '/' } = Astro.props;
     padding: 0 var(--space-xl);
     color: var(--ink);
     text-decoration: none;
-    border-bottom: var(--border);
+    /* Text color, not --outline: the outline color is almost invisible on the dark background */
+    border-bottom: 2px solid currentColor;
   }
 </style>
