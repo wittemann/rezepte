@@ -177,4 +177,4 @@ Done 2026-10-02 (one after another, not in parallel, to stay within the usage li
 
 ## Later (not v1)
 
-See "Later" in [01-requirements](specs/01-requirements.md): timer push notifications, shopping list, deleting recipes in the app, logout button, offline use, a lighter outline for Maulti in dark mode.
+See "Later" in [01-requirements](specs/01-requirements.md): timer push notifications, shopping list, deleting recipes in the app, logout button, offline use, a refresh endpoint for the recipe cache, a lighter outline for Maulti in dark mode.

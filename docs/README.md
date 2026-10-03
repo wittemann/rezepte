@@ -22,7 +22,7 @@ Status: **Accepted** = settled · **Proposed** = recommended, awaiting OK · **O
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------- | -------- | ------------------- |
 | [0001](decisions/0001-astro-on-vercel.md)             | Astro (latest) SSR on Vercel                                                           | Accepted | –                   |
 | [0002](decisions/0002-airtable-as-source-of-truth.md) | Airtable via own fetch client, field IDs, typecast, tolerant reads                     | Accepted | –                   |
-| [0003](decisions/0003-rendering-and-caching.md)       | Plain SSR, no caching for now                                                          | Accepted | –                   |
+| [0003](decisions/0003-rendering-and-caching.md)       | Plain SSR, recipe table cached in memory for 15 min, cleared on writes                 | Accepted | –                   |
 | [0004](decisions/0004-shared-password-auth.md)        | Shared password, hash in env, signed cookie                                            | Accepted | –                   |
 | [0005](decisions/0005-image-handling.md)              | Images: Airtable attachments behind a proxy, upload in the app                         | Accepted | –                   |
 | [0006](decisions/0006-forms-and-interactivity.md)     | Astro Actions + small islands (Preact)                                                 | Accepted | –                   |

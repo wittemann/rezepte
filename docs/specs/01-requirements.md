@@ -53,6 +53,7 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 - Deleting recipes in the app
 - Logout button (not needed in v1: sessions last about a year; to log everyone out, rotate `SESSION_SECRET`)
 - Offline use
+- Refresh endpoint for the recipe cache: a `POST` route protected by its own secret (env var) that clears the in-memory copy, called after writing recipes directly to Airtable (add it to the "Data conventions" in [03-data-model](03-data-model.md)), so they show up at once instead of after up to 15 minutes ([ADR 0003](../decisions/0003-rendering-and-caching.md)). Clears only the instance that receives the call
 - Maulti in dark mode: his dark brown outline and arms are hard to see on the dark background (same in the design). Ask Claude Design for a lighter outline in dark mode
 
 ## Non-functional

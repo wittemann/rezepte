@@ -5,6 +5,8 @@ import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import {
   addPhoto,
+  CACHE_TTL_MS,
+  clearRecipeCache,
   create,
   getAll,
   getById,
@@ -39,9 +41,11 @@ let warn: MockInstance<typeof console.warn>;
 beforeEach(() => {
   warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.mocked(reportWarning).mockClear();
+  clearRecipeCache();
 });
 afterEach(() => {
   warn.mockRestore();
+  vi.useRealTimers();
 });
 
 describe('getAll', () => {
@@ -128,6 +132,7 @@ describe('getAll', () => {
       }),
     );
     await getAll(connection);
+    clearRecipeCache();
     await getAll(connection);
 
     expect(reportWarning).toHaveBeenCalledTimes(2);
@@ -139,15 +144,13 @@ describe('getAll', () => {
 });
 
 describe('getById', () => {
-  it('reads one record through a filtered list', async () => {
+  it('finds the record in the recipe table', async () => {
     const { connection, fetch } = connectionAnswering(
-      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse({ records: [titled('recB', 'Testbrot'), titled('recA', 'Testsuppe')] }),
     );
 
     expect(await getById(connection, 'recA')).toMatchObject({ id: 'recA', title: 'Testsuppe' });
-    const url = new URL(String(fetch.mock.calls[0][0]));
-    expect(url.origin + url.pathname).toBe(TABLE_URL);
-    expect(url.searchParams.get('filterByFormula')).toBe("RECORD_ID() = 'recA'");
+    expect(String(fetch.mock.calls[0][0])).toBe(`${TABLE_URL}?returnFieldsByFieldId=true`);
   });
 
   it('returns undefined for a missing record', async () => {
@@ -209,6 +212,7 @@ const savedRecord = (id: string) =>
   });
 
 type FetchMock = ReturnType<typeof connectionAnswering>['fetch'];
+type Connection = ReturnType<typeof connectionAnswering>['connection'];
 
 function requestAt(fetch: FetchMock, index: number) {
   const [url, init] = fetch.mock.calls[index];
@@ -274,10 +278,8 @@ describe('update', () => {
 
     expect(fetch).toHaveBeenCalledTimes(2);
     const [lookupUrl, lookupInit] = fetch.mock.calls[0];
-    const lookup = new URL(String(lookupUrl));
     expect(lookupInit?.method).toBe('GET');
-    expect(lookup.origin + lookup.pathname).toBe(TABLE_URL);
-    expect(lookup.searchParams.get('filterByFormula')).toBe("RECORD_ID() = 'recA'");
+    expect(String(lookupUrl)).toBe(`${TABLE_URL}?returnFieldsByFieldId=true`);
 
     const patch = requestAt(fetch, 1);
     expect(patch.method).toBe('PATCH');
@@ -417,11 +419,8 @@ describe('getImageUrl', () => {
   });
 
   it('returns undefined for an unknown recipe or attachment', async () => {
-    const { connection } = connectionAnswering(
-      jsonResponse({ records: [] }),
-      jsonResponse({ records: [withImage] }),
-    );
-    expect(await getImageUrl(connection, 'recA1', 'attOne', 'full')).toBeUndefined();
+    const { connection } = connectionAnswering(jsonResponse({ records: [withImage] }));
+    expect(await getImageUrl(connection, 'recOther', 'attOne', 'full')).toBeUndefined();
     expect(await getImageUrl(connection, 'recA1', 'attOther', 'full')).toBeUndefined();
   });
 
@@ -458,5 +457,93 @@ describe('addPhoto', () => {
     expect(await addPhoto(connection, 'recUnknown', '/9j/AAAA')).toBe(false);
     expect(await addPhoto(connection, 'not-an-id', '/9j/AAAA')).toBe(false);
     expect(fetch).toHaveBeenCalledOnce(); // only the lookup
+  });
+});
+
+describe('cache', () => {
+  const table = () => jsonResponse({ records: [titled('recA', 'Testsuppe')] });
+
+  it('loads the table once for all reads within the TTL', async () => {
+    const { connection, fetch } = connectionAnswering(table());
+
+    await getAll(connection);
+    await getById(connection, 'recA');
+    await getImageUrl(connection, 'recA', 'attOne', 'full');
+
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('shares one load between reads that arrive at the same time', async () => {
+    const { connection, fetch } = connectionAnswering(table());
+    await Promise.all([getAll(connection), getById(connection, 'recA')]);
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('loads the table again once the TTL has passed', async () => {
+    vi.useFakeTimers();
+    const { connection, fetch } = connectionAnswering(table(), table());
+
+    await getAll(connection);
+    vi.advanceTimersByTime(CACHE_TTL_MS - 1);
+    await getAll(connection);
+    expect(fetch).toHaveBeenCalledOnce();
+
+    vi.advanceTimersByTime(1);
+    await getAll(connection);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('loads the table again after a failed load', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ error: 'ERROR' }, 500),
+      table(),
+    );
+
+    await expect(getAll(connection)).rejects.toMatchObject({ status: 500 });
+    expect(await getAll(connection)).toHaveLength(1);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps the tables of different bases apart', async () => {
+    const { connection, fetch } = connectionAnswering(table(), table());
+
+    await getAll(connection);
+    await getAll({ ...connection, baseId: 'appOtherBase' });
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    ['create', (connection: Connection) => create(connection, testInput)],
+    ['update', (connection: Connection) => update(connection, 'recA', testInput)],
+    ['setFavorite', (connection: Connection) => setFavorite(connection, 'recA', true)],
+    ['addPhoto', (connection: Connection) => addPhoto(connection, 'recA', '/9j/AAAA')],
+  ])('loads the table again after %s', async (_name, write) => {
+    const { connection, fetch } = connectionAnswering(
+      table(),
+      jsonResponse(savedRecord('recA')),
+      table(),
+    );
+
+    await getAll(connection);
+    await write(connection);
+    const callsBefore = fetch.mock.calls.length;
+    await getAll(connection);
+
+    expect(fetch).toHaveBeenCalledTimes(callsBefore + 1);
+  });
+
+  it('loads the table again after a failed write', async () => {
+    const { connection, fetch } = connectionAnswering(
+      table(),
+      jsonResponse({ error: 'ERROR' }, 500),
+      table(),
+    );
+
+    await getAll(connection);
+    await expect(setFavorite(connection, 'recA', true)).rejects.toMatchObject({ status: 500 });
+    await getAll(connection);
+
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 });

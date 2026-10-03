@@ -123,7 +123,7 @@ async function requestJson(
   if (response.status === 429 && !quotaExceeded) {
     await delay(RATE_LIMIT_WAIT_MS);
     response = await fetch(url, init);
-    // Even when the second try works: rate limits are the trigger to revisit caching (ADR 0003)
+    // Even when the second try works: rate limits are a trigger to revisit the cache (ADR 0003)
     reportWarning('Airtable rate limit (429)', {
       ...tags,
       'airtable.retry_status': response.status,

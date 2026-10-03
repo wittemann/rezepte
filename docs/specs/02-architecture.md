@@ -18,7 +18,7 @@ Vercel ── Astro SSR (Node serverless functions)
 
 Errors from browser, SSR and middleware go to Sentry ([0009](../decisions/0009-error-monitoring.md)).
 
-Decisions: [0001](../decisions/0001-astro-on-vercel.md) (Astro/Vercel), [0002](../decisions/0002-airtable-as-source-of-truth.md) (Airtable), [0003](../decisions/0003-rendering-and-caching.md) (no caching).
+Decisions: [0001](../decisions/0001-astro-on-vercel.md) (Astro/Vercel), [0002](../decisions/0002-airtable-as-source-of-truth.md) (Airtable), [0003](../decisions/0003-rendering-and-caching.md) (caching).
 
 ## Layers (planned structure)
 
@@ -44,14 +44,14 @@ Rule: only `lib/recipes` knows Airtable field names. Pages and components work w
 
 1. Middleware checks the session cookie → redirect to `/login` if it's missing or invalid
 2. The page calls `recipes.getAll()` / `recipes.getById(id)`
-3. The repository fetches from Airtable (the list is one paginated call, not one call per recipe) and validates with zod
-4. The page renders HTML. No caching (ADR 0003)
+3. The repository reads its in-memory copy of the recipe table, loading it from Airtable when it is older than 15 minutes (one paginated call, not one call per recipe), and validates with zod
+4. The page renders HTML (ADR 0003)
 
 **Write (create/edit/delete)**
 
 1. A form posts to an Astro Action (works without JS; enhanced with JS)
 2. The action validates the input with zod and calls the repository → Airtable `POST`/`PATCH`/`DELETE`
-3. Redirect to the detail page (or the list after a delete); the next read is live anyway
+3. The write clears the in-memory copy; redirect to the detail page (or the list after a delete), which loads the table fresh
 
 **Images** ([ADR 0005](../decisions/0005-image-handling.md))
 

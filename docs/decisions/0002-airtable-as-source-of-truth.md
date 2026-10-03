@@ -40,6 +40,6 @@ The recipes already live in Airtable, and it stays the source of truth. The app 
 
 ## Consequences
 
-- Airtable stays usable as an admin UI in parallel; edits show up immediately (no cache, ADR 0003)
+- Airtable stays usable as an admin UI in parallel; edits show up within 15 minutes (in-memory cache, ADR 0003)
 - A future switch to a database or another service only touches `src/lib/`
 - Debugging raw API responses shows field IDs, not names. `fields.ts` and the schema script translate

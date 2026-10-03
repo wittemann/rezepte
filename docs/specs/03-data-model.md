@@ -98,6 +98,8 @@ Table `Rezepte` = `tblsuZ3AUOqkpY1vk`. The code uses the **field ID** (ADR 0002)
 
 The app, manual edits in Airtable and Claude sessions all write to the same base. To keep the data readable by the app, every writer follows these rules:
 
+The app keeps a copy of the recipe table in memory ([ADR 0003](../decisions/0003-rendering-and-caching.md)): records written directly to Airtable show up in the app after at most 15 minutes.
+
 **Fields**
 
 - **Name** is required; everything else is optional

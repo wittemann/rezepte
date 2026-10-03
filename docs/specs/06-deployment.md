@@ -37,6 +37,6 @@
 
 ## Free-tier limits to watch
 
-- **Airtable:** 5 requests/s per base; check whether the current free plan has a monthly API-call cap. 429 errors (reported to Sentry) are the trigger to revisit [ADR 0003](../decisions/0003-rendering-and-caching.md).
+- **Airtable:** 5 requests/s per base and 1,000 API calls per workspace per month on the free plan; the in-memory cache of [ADR 0003](../decisions/0003-rendering-and-caching.md) keeps the app within it. 429 errors (reported to Sentry) are the trigger to revisit it.
 - **Vercel Hobby:** function invocations, execution time and bandwidth limits. Not expected to matter for two users. Runtime logs are kept for only **1 hour**, which is why errors go to Sentry.
 - **Sentry Developer plan:** 5,000 errors/month, 50 session replays/month, 5M spans/month, 5 GB logs/month, 30 days retention ([ADR 0009](../decisions/0009-error-monitoring.md)).

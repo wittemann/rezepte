@@ -1,7 +1,7 @@
 ---
-// Recipe page (design/README.md, "Rezept-Detail"). Rendered live from Airtable, no caching
-// (docs/decisions/0003-rendering-and-caching.md). Airtable errors are not caught: Astro shows
-// the 500 page.
+// Recipe page (design/README.md, "Rezept-Detail"). Rendered on every request from the cached
+// recipe table (docs/decisions/0003-rendering-and-caching.md). Airtable errors are not caught:
+// Astro shows the 500 page.
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
 import CookButton from '../../components/CookButton.astro';
 import ErrorMessage from '../../components/ErrorMessage.astro';

@@ -18,7 +18,7 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 
 ### Blocker
 
-- [ ] **Airtable monthly API cap:** the free plan allows 1,000 API calls per workspace per month; without a cache (ADR 0003) every page view costs at least 1 call, every write 2, plus image cache misses and CI e2e runs, so the budget lasts days. Check the workspace plan first; on Free, add a short server cache of the recipe table cleared on every write (update ADR 0003) or move to a paid plan. Either way, tell a quota 429 from a rate-limit 429 and fail fast instead of waiting 30 s · `opus`
+- [x] **Airtable monthly API cap:** the free plan allows 1,000 API calls per workspace per month; without a cache (ADR 0003) every page view costs at least 1 call, every write 2, plus image cache misses and CI e2e runs, so the budget lasts days. Check the workspace plan first; on Free, add a short server cache of the recipe table cleared on every write (update ADR 0003) or move to a paid plan. Either way, tell a quota 429 from a rate-limit 429 and fail fast instead of waiting 30 s · `opus`
 
 ### Should fix
 
