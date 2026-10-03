@@ -25,14 +25,14 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 
 - Header with category color, optional photo, source link, time and calorie stickers
 - Serving scaler: amounts in the ingredient text are recalculated (rules in [03-data-model](03-data-model.md))
-- Steps with sections, hints and timer chips; notes expandable
+- Steps with sections and hints; notes expandable
 - Recipes without instructions are shown as ideas with "Rezept ergänzen"
 
 **Cooking mode**
 
 - One step at a time, swipe or buttons, progress dots, ingredients sheet
 - Screen stays on (Screen Wake Lock API)
-- Timers: several in parallel, found in the step text. When a timer ends: overlay, sound and vibration **while the app is open** ([ADR 0012](../decisions/0012-pwa-and-timers.md))
+- No timers: set them with Siri, Alexa or the Clock app ([ADR 0012](../decisions/0012-pwa-and-timers.md))
 - Photo step at the end if the recipe has no photo: take a photo, resize in the browser, upload to Airtable ([ADR 0005](../decisions/0005-image-handling.md))
 
 **Edit / new**
@@ -48,7 +48,6 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 
 ## Later (not v1)
 
-- Timer notifications when the phone is locked or the app is closed (Web Push, [ADR 0012](../decisions/0012-pwa-and-timers.md))
 - Shopping list collected from several recipes (not in the design)
 - Deleting recipes in the app
 - Logout button (not needed in v1: sessions last about a year; to log everyone out, rotate `SESSION_SECRET`)

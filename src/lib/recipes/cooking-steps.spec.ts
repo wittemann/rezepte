@@ -8,7 +8,7 @@ describe('cookingSteps', () => {
     expect(cookingSteps(method)).toEqual([
       { text: 'Vorbereiten.', section: undefined },
       { text: 'Kneten.', section: 'Teig' },
-      { text: '10 Minuten ruhen lassen.', section: 'Teig', timerMinutes: 10 },
+      { text: '10 Minuten ruhen lassen.', section: 'Teig' },
     ]);
   });
 

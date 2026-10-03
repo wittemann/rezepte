@@ -35,12 +35,6 @@ describe('Steps', () => {
     ]);
   });
 
-  it('shows a timer chip only for steps with a time', async () => {
-    const document = await renderSteps('1. Rühren.\n2. 25 Minuten backen.\n3. 1,5 Std. ruhen.');
-    expect(texts(document, '.timer')).toEqual(['25 Minuten · Timer', '1 Std. 30 Min. · Timer']);
-    expect(document.querySelector('.timer')?.getAttribute('data-timer-minutes')).toBe('25');
-  });
-
   it('shows the hint after the steps, and no box without one', async () => {
     const withHint = await renderSteps('1. Backen.\n\nTipp: Warm essen.');
     expect(withHint.querySelector('.hint')?.textContent).toBe('Tipp: Warm essen.');

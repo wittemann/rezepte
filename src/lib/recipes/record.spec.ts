@@ -68,7 +68,7 @@ describe('readRecord', () => {
         },
         { kind: 'item', text: 'Salz' },
       ],
-      method: { sections: [{ steps: [{ text: 'Alles 10 Minuten kochen.', timerMinutes: 10 }] }] },
+      method: { sections: [{ steps: [{ text: 'Alles 10 Minuten kochen.' }] }] },
       hasInstructions: true,
       source: 'Testquelle',
       sourceUrl: 'https://example.org/testsuppe',

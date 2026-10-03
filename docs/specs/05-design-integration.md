@@ -19,7 +19,7 @@ The visual design is created in **Claude Design**. This spec describes how it be
    - [03-data-model](03-data-model.md): ingredient and step format, Airtable mapping
    - [ADR 0006](../decisions/0006-forms-and-interactivity.md): Preact for islands
    - [ADR 0007](../decisions/0007-styling-approach.md): CSS custom properties, dark mode, self-hosted fonts
-   - [ADR 0012](../decisions/0012-pwa-and-timers.md): installable, timers without push
+   - [ADR 0012](../decisions/0012-pwa-and-timers.md): installable, no timers
 3. Turn the tokens into CSS custom properties in `src/styles/tokens.css`
 4. Build components in `src/components/`, one per design component, using tokens only (no hard-coded colors or sizes)
 5. Build the screens as pages, using real data from Airtable
@@ -37,7 +37,7 @@ The visual design is created in **Claude Design**. This spec describes how it be
 | Next.js recommended ("if there's no project yet")         | Astro                                              | Project already set up ([ADR 0001](../decisions/0001-astro-on-vercel.md))                     |
 | Fonts from Google Fonts                                   | Self-hosted, same fonts                            | GDPR ([ADR 0007](../decisions/0007-styling-approach.md))                                      |
 | Sizes in `px`                                             | `rem`                                              | System text size; the design README asks for it too                                           |
-| Timers ring on a locked iPhone (Web Push)                 | Sound, vibration and overlay while the app is open | [ADR 0012](../decisions/0012-pwa-and-timers.md); push later if needed                         |
+| Timers in cooking mode, ringing on a locked iPhone        | No timers (Siri, Alexa or the Clock app)           | [ADR 0012](../decisions/0012-pwa-and-timers.md); removed 2026-10-03                           |
 | Login: env var "e.g. `FAMILY_PASSWORD`"                   | `APP_PASSWORD_HASH` (scrypt hash)                  | Naming example only; ours is set up ([04-auth](04-auth.md))                                   |
 | Login: optional rate limit, 5 attempts/min per IP         | ~500 ms delay per failed attempt                   | Per-IP counting on serverless needs a shared store; revisit on abuse ([04-auth](04-auth.md))  |
 | All routes behind login, incl. images                     | Image proxy cached by the CDN without login check  | Deliberate ([ADR 0005](../decisions/0005-image-handling.md))                                  |

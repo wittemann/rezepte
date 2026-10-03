@@ -5,7 +5,6 @@ import type { Method } from './method.ts';
 export type CookingStep = {
   text: string;
   section?: string; // shown next to the step number: "Schritt 2 von 11 · Teig"
-  timerMinutes?: number;
 };
 
 export function cookingSteps(method: Method) {

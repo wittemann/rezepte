@@ -1,11 +1,8 @@
 ---
 // "So geht's" (design/README.md, "Rezept-Detail"): a card per step with a number circle in the
-// category color, section headings in the accent color, a timer chip where the text names a time,
-// and the hint box after the last step. Numbers continue across sections.
+// category color, section headings in the accent color, and the hint box after the last step. Numbers continue across sections.
 import type { Method } from '../lib/recipes/method.ts';
 import { categoryName } from '../lib/recipes/fields.ts';
-import { formatTimerLabel } from '../lib/recipes/time.ts';
-import Icon from './Icon.tsx';
 import { TEXT } from './Steps.texts.ts';
 
 type Props = {
@@ -39,12 +36,6 @@ const sections = method.sections.map((section) => {
             </span>
             <div class="body">
               <p class="text">{step.text}</p>
-              {step.timerMinutes !== undefined && (
-                <span class="timer" data-timer-minutes={step.timerMinutes}>
-                  <Icon name="timer" size={16} strokeWidth={2.2} />
-                  {formatTimerLabel(step.timerMinutes)} · {TEXT.timerSuffix}
-                </span>
-              )}
             </div>
           </li>
         ))}
@@ -119,20 +110,6 @@ const sections = method.sections.map((section) => {
   .text {
     line-height: 1.5;
     text-wrap: pretty;
-  }
-
-  .timer {
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xxs);
-    min-height: var(--timer-chip-height);
-    padding: 0 var(--space-l);
-    background: var(--sunk);
-    border: var(--border);
-    border-radius: var(--radius-pill);
-    font-size: 0.875rem; /* 14px */
-    font-weight: 800;
   }
 
   .hint {

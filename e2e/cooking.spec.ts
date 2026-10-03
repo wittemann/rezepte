@@ -3,11 +3,10 @@
 import { test, expect, type Page } from '@playwright/test';
 import { TEXT } from '../src/components/CookingMode.texts.ts';
 import { TEXT as COOK_BUTTON_TEXT } from '../src/components/CookButton.texts.ts';
-import { TEXT as TIMERS_TEXT } from '../src/components/Timers.texts.ts';
 import { login } from './login.ts';
 
-/** The first recipe whose page contains `marker`: with instructions (`/cook`), or a timer. */
-async function findRecipe(page: Page, marker: string) {
+/** The first recipe with instructions, so its page links to cooking mode. */
+async function findCookableRecipe(page: Page) {
   await page.goto('/rezepte');
   const ids = await page
     .locator('a[data-recipe-id]')
@@ -15,14 +14,14 @@ async function findRecipe(page: Page, marker: string) {
   for (const id of ids) {
     const response = await page.request.get(`/rezepte/${id}`);
     const html = await response.text();
-    if (html.includes(marker === '/cook' ? `/rezepte/${id}/cook` : marker)) return id;
+    if (html.includes(`/rezepte/${id}/cook`)) return id;
   }
-  throw new Error(`No recipe with ${marker}`);
+  throw new Error('No recipe with instructions');
 }
 
 test('cooking mode steps forward and back and ends at the recipe', async ({ page }) => {
   await login(page);
-  const cookable = await findRecipe(page, `/cook`);
+  const cookable = await findCookableRecipe(page);
 
   await page.goto(`/rezepte/${cookable}`);
   await page.getByRole('link', { name: COOK_BUTTON_TEXT.label }).click();
@@ -51,26 +50,4 @@ test('cooking mode steps forward and back and ends at the recipe', async ({ page
     .or(page.getByRole('link', { name: TEXT.skip }));
   await end.click();
   await expect(page).toHaveURL(new RegExp(`/rezepte/${cookable}$`));
-});
-
-test('a timer started while cooking keeps running on other pages', async ({ page }) => {
-  await login(page);
-  const id = await findRecipe(page, 'data-timer-minutes');
-
-  await page.goto(`/rezepte/${id}/cook`);
-  await page.waitForLoadState('networkidle');
-  const startTimer = page.getByRole('button', { name: /Timer starten$/ });
-  while (!(await startTimer.isVisible())) {
-    await page.getByRole('button', { name: TEXT.next }).click();
-  }
-  await startTimer.click();
-
-  const cancel = page.getByRole('button', { name: TIMERS_TEXT.cancel });
-  await expect(cancel).toBeVisible();
-
-  await page.goto('/rezepte');
-  await expect(cancel).toBeVisible();
-
-  await cancel.click();
-  await expect(cancel).toBeHidden();
 });

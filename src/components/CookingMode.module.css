@@ -94,23 +94,6 @@
   box-shadow: var(--shadow-l);
 }
 
-.timerButton {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  min-height: 3rem; /* 48px */
-  padding: 0 1.125rem; /* 18px */
-  background: var(--accent);
-  color: var(--on-accent);
-  border: var(--border);
-  border-radius: var(--radius-pill);
-  box-shadow: var(--shadow-s);
-  font-size: 0.9375rem; /* 15px */
-  font-weight: 800;
-  cursor: pointer;
-}
-
 .swipeHint {
   color: var(--muted);
   font-size: var(--font-size-min);

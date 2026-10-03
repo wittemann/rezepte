@@ -5,8 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { parseIngredients } from '../lib/recipes/ingredients.ts';
 import CookingMode from './CookingMode.tsx';
 
-vi.mock('./timer-sound.ts', () => ({ unlockSound: vi.fn(), playBeeps: vi.fn() }));
-
 const addPhoto = vi.hoisted(() => vi.fn());
 vi.mock('astro:actions', () => ({ actions: { addPhoto } }));
 const resizePhoto = vi.hoisted(() => vi.fn());
@@ -14,7 +12,7 @@ vi.mock('./resize-photo.ts', () => ({ resizePhoto }));
 
 const steps = [
   { text: 'Zwiebeln würfeln.' },
-  { text: 'Teig 10 Minuten ruhen lassen.', section: 'Teig', timerMinutes: 10 },
+  { text: 'Teig 10 Minuten ruhen lassen.', section: 'Teig' },
   { text: 'Backen.', section: 'Teig' },
 ];
 const ingredients = parseIngredients(['Für den Teig:', '200 g Mehl', 'Salz'].join('\n'));
@@ -22,7 +20,6 @@ const ingredients = parseIngredients(['Für den Teig:', '200 g Mehl', 'Salz'].jo
 let container: HTMLElement;
 
 beforeEach(() => {
-  localStorage.clear();
   addPhoto.mockReset();
   resizePhoto.mockReset();
   URL.createObjectURL = vi.fn(() => 'blob:preview');
@@ -41,7 +38,6 @@ function renderCooking(servings?: number, hasPhoto = true) {
     render(
       <CookingMode
         recipeId="recX1"
-        recipeTitle="Beispielsuppe"
         hasPhoto={hasPhoto}
         recipeHref="/rezepte/recX1"
         steps={steps}
@@ -179,37 +175,6 @@ describe('CookingMode', () => {
       expect(stepText()).toBe('Zwiebeln würfeln.');
       swipe(100, 200);
       expect(stepText()).toBe('Zwiebeln würfeln.');
-    });
-  });
-
-  describe('timer button', () => {
-    const timerButton = () =>
-      [...container.querySelectorAll('button')].find((button) =>
-        button.textContent?.includes('Timer starten'),
-      );
-
-    it('is only on a step that names a time', () => {
-      renderCooking();
-      expect(timerButton()).toBeUndefined();
-      act(() => {
-        [...container.querySelectorAll('button')].find((b) => b.textContent === 'Weiter')!.click();
-      });
-      expect(timerButton()?.textContent).toBe('10 Minuten · Timer starten');
-    });
-
-    it('starts a timer for the recipe and the step number', () => {
-      renderCooking();
-      act(() => {
-        [...container.querySelectorAll('button')].find((b) => b.textContent === 'Weiter')!.click();
-      });
-      act(() => timerButton()!.click());
-      const [stored] = JSON.parse(localStorage.getItem('timers')!);
-      expect(stored).toMatchObject({
-        recipeTitle: 'Beispielsuppe',
-        stepNumber: 2,
-        label: '10 Minuten',
-      });
-      expect(stored.endsAt - Date.now()).toBeGreaterThan(9 * 60_000);
     });
   });
 

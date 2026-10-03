@@ -9,7 +9,6 @@ const NAMES: IconName[] = [
   'plus',
   'filter',
   'back',
-  'timer',
   'grill',
   'main',
   'side',

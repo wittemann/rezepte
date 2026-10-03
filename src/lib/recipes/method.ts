@@ -1,6 +1,6 @@
 // Parses the free-text "Zubereitung" field into sections, steps and a hint.
-// Format: "Data conventions" in docs/specs/03-data-model.md; timer rule: design/README.md,
-// "Regeln & Logik". Never fails: text it doesn't understand is kept as a step or in the hint.
+// Format: "Data conventions" in docs/specs/03-data-model.md. Never fails: text it doesn't
+// understand is kept as a step or in the hint.
 
 export type Method = {
   sections: MethodSection[];
@@ -14,7 +14,6 @@ export type MethodSection = {
 
 export type Step = {
   text: string; // without the number: "1. Mehl sieben." → "Mehl sieben."
-  timerMinutes?: number; // from the first time in the text: "1,5 Std." → 90
 };
 
 /** A paragraph or heading line, before sections and hint are sorted out. */
@@ -24,18 +23,6 @@ type Block =
 // "1. Mehl sieben." → "Mehl sieben.". A digit right after the dot is a decimal ("1.5 Std. …"),
 // not a step number.
 const NUMBERED_LINE = /^\d+\.(?!\d)\s*(.*)$/;
-
-// One amount: whole number or decimal comma ("25", "1,5").
-const AMOUNT = String.raw`\d+(?:,\d+)?`;
-
-// A time like "25 Minuten", "1,5 Std." or "5–6 Minuten" (range: the first amount counts).
-// Case-insensitive like the prototype, so "10 min." counts too. Not inside a number with a
-// decimal point ("1.5 Std." gives no timer rather than 5 hours), not before further letters
-// ("Minutenweise").
-const TIME = new RegExp(
-  String.raw`(?<!\d[.,]?)(${AMOUNT})(?:\s*[–-]\s*${AMOUNT})?\s*(Minuten|Minute|Min\.|Stunden|Stunde|Std\.)(?!\p{L})`,
-  'iu',
-);
 
 export function parseMethod(text: string | undefined) {
   const blocks = splitBlocks(text ?? '');
@@ -98,27 +85,7 @@ function groupSections(blocks: Block[]) {
       current = { steps: [] };
       sections.push(current);
     }
-    current.steps.push(parseStep(block.text));
+    current.steps.push({ text: block.text });
   }
   return sections;
-}
-
-function parseStep(text: string) {
-  const timerMinutes = findTimerMinutes(text);
-  return timerMinutes ? { text, timerMinutes } : { text };
-}
-
-/**
- * Minutes of the first time in the text; a step gets at most one timer, later times are ignored.
- * Not rounded to whole minutes ("2,5 Minuten" → 2.5), only to whole seconds to drop floating
- * point noise. "0 Minuten" gives no timer.
- */
-function findTimerMinutes(text: string) {
-  const match = TIME.exec(text);
-  if (!match) return undefined;
-  const [, amountText, unit] = match;
-  const amount = Number(amountText.replace(',', '.'));
-  const minutes = unit.toLowerCase().startsWith('st') ? amount * 60 : amount;
-  const roundedToSeconds = Math.round(minutes * 60) / 60;
-  return roundedToSeconds > 0 ? roundedToSeconds : undefined;
 }

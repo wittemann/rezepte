@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseMethod } from './method.ts';
 
-/** The timer of a single step. */
-function timerOf(stepText: string) {
-  return parseMethod(`1. ${stepText}`).sections[0].steps[0].timerMinutes;
-}
-
 describe('parseMethod', () => {
   it('returns no sections for empty or missing text', () => {
     expect(parseMethod(undefined)).toEqual({ sections: [] });
@@ -112,53 +107,5 @@ describe('parseMethod', () => {
     expect(parseMethod('1.5 Liter Wasser kochen.').sections[0].steps[0].text).toBe(
       '1.5 Liter Wasser kochen.',
     );
-  });
-});
-
-describe('parseMethod timers', () => {
-  it.each([
-    ['25 Minuten backen.', 25],
-    ['1 Minute rühren.', 1],
-    ['10 Min. ruhen lassen.', 10],
-    ['1 Stunde gehen lassen.', 60],
-    ['2 Stunden kühlen.', 120],
-    ['2 Std. kühlen.', 120],
-    ['1,5 Std. schmoren.', 90],
-    ['2,5 Minuten rühren.', 2.5],
-    ['Bei 180 °C etwa 25Minuten backen.', 25],
-    ['10 min. ruhen lassen.', 10],
-  ])('reads the time in "%s"', (stepText, minutes) => {
-    expect(timerOf(stepText)).toBe(minutes);
-  });
-
-  it.each([
-    ['5–6 Minuten braten.', 5],
-    ['5-6 Minuten braten.', 5],
-    ['1 – 2 Std. ziehen lassen.', 60],
-    ['1,5–2 Std. schmoren.', 90],
-  ])('uses the lower number of the range in "%s"', (stepText, minutes) => {
-    expect(timerOf(stepText)).toBe(minutes);
-  });
-
-  it('uses only the first time in a step', () => {
-    expect(timerOf('10 Minuten anbraten, dann 1 Stunde schmoren.')).toBe(10);
-  });
-
-  it.each([
-    ['Auf 180 °C vorheizen.'],
-    ['3 Eier verquirlen.'],
-    ['10 Min ruhen lassen.'], // "Min." needs the dot
-    ['Minutenweise nachsehen, 2 Minutenweise.'],
-    ['1.5 Std. schmoren.'], // decimal point: no timer rather than 5 hours
-    ['0 Minuten warten.'],
-  ])('gives no timer for "%s"', (stepText) => {
-    expect(timerOf(stepText)).toBeUndefined();
-  });
-
-  it('reads timers in unnumbered steps too, but not in the hint', () => {
-    expect(parseMethod('5 Minuten rühren.\n\n1. Backen.\n\n20 Minuten abkühlen lassen.')).toEqual({
-      sections: [{ steps: [{ text: '5 Minuten rühren.', timerMinutes: 5 }, { text: 'Backen.' }] }],
-      hint: '20 Minuten abkühlen lassen.',
-    });
   });
 });

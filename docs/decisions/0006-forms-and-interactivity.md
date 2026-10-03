@@ -11,11 +11,10 @@ The app edits recipes, and the design has a lot of client-side interaction: serv
 - **Mutations** go through Astro Actions with zod validation on the server. Forms work without JS (progressive enhancement)
 - **Islands** only where interaction really needs it. One framework for all islands, no mixing
 - **Island framework: Preact** (with the official `@astrojs/preact` integration). React API at about 3 kB; chosen by the project owner (2026-09-26) for the familiar React style
-- No global client state and no SPA routing. State that has to survive a page change (running timers) lives in `localStorage` or the URL. Favorites are shared and live in Airtable (`Favorit seit`), toggled through an Action; the design's per-device `localStorage` favorites were dropped (2026-10-01)
+- No global client state and no SPA routing. State that has to survive a page change lives in the URL. Favorites are shared and live in Airtable (`Favorit seit`), toggled through an Action; the design's per-device `localStorage` favorites were dropped (2026-10-01)
 
 ## Consequences
 
 - Pages stay server-rendered; islands hydrate only where needed (e.g. `client:visible` for the carousel, `client:load` for cooking mode)
 - Svelte was the alternative with slightly smaller bundles; not a deciding factor at this size
-- Timers must keep running when moving between pages inside the app, so their state is persisted in `localStorage`
 - Verify the `@astrojs/preact` version and options against the current Astro docs at implementation time

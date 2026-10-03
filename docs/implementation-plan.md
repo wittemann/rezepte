@@ -171,10 +171,10 @@ Done 2026-10-02 (one after another, not in parallel, to stay within the usage li
 ## 10. Launch
 
 - [ ] **(owner)** Check the repo and Vercel settings from [ADR 0008](decisions/0008-tooling.md) and [06-deployment](specs/06-deployment.md): GitHub secret scanning and push protection on, Dependabot security updates on, Vercel fork-build protection on, all production env vars set
-- [ ] **(owner)** Test on the iPhone: add to home screen, cook one recipe end to end (timers, photo step, edit)
+- [ ] **(owner)** Test on the iPhone: add to home screen, cook one recipe end to end (photo step, edit)
 - [ ] **(owner)** Share the URL and passphrase with family and friends
 - [ ] **(owner, later)** Custom domain — [ADR 0011](decisions/0011-custom-domain.md)
 
 ## Later (not v1)
 
-See "Later" in [01-requirements](specs/01-requirements.md): timer push notifications, shopping list, deleting recipes in the app, logout button, offline use, a refresh endpoint for the recipe cache, a lighter outline for Maulti in dark mode.
+See "Later" in [01-requirements](specs/01-requirements.md): shopping list, deleting recipes in the app, logout button, offline use, a refresh endpoint for the recipe cache, a lighter outline for Maulti in dark mode.

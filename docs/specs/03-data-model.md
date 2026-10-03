@@ -54,7 +54,6 @@ interface Method {
 
 interface Step {
   text: string;
-  timerMinutes?: number; // from "25 Minuten", "1,5 Std."; ranges use the lower number
 }
 
 interface RecipeImage {
@@ -126,7 +125,6 @@ The app keeps a copy of the recipe table in memory ([ADR 0003](../decisions/0003
 - Steps numbered `1.`, `2.`, … one step per paragraph
 - A line ending in `:` starts a section: `Teig:`. Numbering may restart per section
 - Paragraphs after the last numbered step are shown as a hint
-- Times written as `25 Minuten`, `10 Min.`, `1 Stunde`, `2 Std.` (ranges `5–6 Minuten`) get a timer button in cooking mode. No seconds (`90 Sekunden` → `1,5 Minuten`). One timer per step: the first time in it
 - Empty = the recipe is an idea ("Noch ohne Anleitung") and invites completing it
 
 ## Validation

@@ -26,15 +26,6 @@ export function formatDuration(minutes: number) {
   return `${hours} Std. ${restMinutes} Min.`;
 }
 
-/**
- * Label of a timer: 25 → "25 Minuten", 1 → "1 Minute", 2.5 → "2,5 Minuten", 90 → "1 Std. 30 Min.".
- * From one hour on whole minutes read like a duration.
- */
-export function formatTimerLabel(minutes: number) {
-  if (minutes >= 60 && Number.isInteger(minutes)) return formatDuration(minutes);
-  return `${String(minutes).replace('.', ',')} ${minutes === 1 ? 'Minute' : 'Minuten'}`;
-}
-
 /** Short form for the time pill on suggestion cards: 20 → "20′", 60 → "1h", 65 → "1h05". */
 export function formatDurationShort(minutes: number) {
   const { hours, restMinutes } = splitHours(minutes);

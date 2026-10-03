@@ -3,18 +3,15 @@
 import { Font } from 'astro:assets';
 import '../styles/tokens.css';
 import '../styles/global.css';
-import Timers from '../components/Timers.tsx';
 import TabBar, { type TabId } from '../components/TabBar.astro';
 
 type Props = {
   title: string;
   /** Shows the tab bar with this tab highlighted; leave out on pages without it (login) */
   activeTab?: TabId;
-  /** Timer pills and alarm; off on the login page, where nobody can have timers yet */
-  withTimers?: boolean;
 };
 
-const { title, activeTab, withTimers = true } = Astro.props;
+const { title, activeTab } = Astro.props;
 ---
 
 <html lang="de">
@@ -42,6 +39,5 @@ const { title, activeTab, withTimers = true } = Astro.props;
   <body>
     <slot />
     {activeTab && <TabBar active={activeTab} />}
-    {withTimers && <Timers client:load />}
   </body>
 </html>
