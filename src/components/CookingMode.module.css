@@ -161,6 +161,7 @@
 
 .label {
   color: var(--accent);
+  font-family: inherit;
   font-size: 0.8125rem; /* 13px */
   font-weight: 800;
 }

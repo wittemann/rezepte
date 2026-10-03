@@ -62,6 +62,8 @@ body {
   padding: var(--content-top) var(--safe-right) 0 var(--safe-left);
   background: var(--bg);
   color: var(--ink);
+  /* A word longer than its box (large system text) breaks instead of sticking out */
+  overflow-wrap: break-word;
   /* Set again here: the iOS font shorthand above resets the family */
   font-family: var(--font-body);
   font-size: 1rem;

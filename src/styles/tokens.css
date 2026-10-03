@@ -110,7 +110,7 @@
   --button-height-medium: 3.375rem; /* 54px: call to action in a sheet */
   --button-height-small: var(--touch-target); /* 44px */
   --button-height-outline: 2.875rem; /* 46px: outline and round buttons */
-  --chip-height: 2.5rem; /* 40px: filter chips and segmented options */
+  --chip-height: var(--touch-target); /* 44px: filter chips and segmented options (design: 40px) */
   --segmented-padding: 0.1875rem; /* 3px: track to options */
   --segmented-gap: 0.125rem; /* 2px: between options */
 
@@ -118,14 +118,15 @@
   --recipe-header-margin: 0 var(--space-s); /* 0 10px */
   --recipe-photo-height: 12.5rem; /* 200px */
   --recipe-mascot-overlap: 1rem; /* 16px: Maulti reaches below the card */
-  --recipe-title-clearance: 5.5rem; /* 88px: keeps a long title clear of Maulti */
+  /* Keeps a long title clear of Maulti. In px like Maulti, so large text doesn't squeeze the title */
+  --recipe-title-clearance: 88px;
 
   /* Ingredient list (design/README.md, "Rezept-Detail") */
   --ingredient-amount-width: 5rem; /* 80px: the bold amount column */
 
   /* Steps (design/README.md, "So geht's") */
   --step-number-size: 2.125rem; /* 34px: number circle */
-  --timer-chip-height: 2.5rem; /* 40px */
+  --timer-chip-height: var(--touch-target); /* 44px (design: 40px) */
 
   /* Bottom sheet (design/README.md, "Filter-Sheet" and "Kochmodus") */
   --sheet-padding: 1.125rem; /* 18px */

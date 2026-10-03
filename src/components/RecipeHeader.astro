@@ -73,8 +73,10 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
 
   .actions {
     display: flex;
+    flex-wrap: wrap; /* with large text, "Bearbeiten" moves to a second line */
     justify-content: space-between;
     align-items: center;
+    gap: var(--space-xs);
   }
 
   .actions-end {
@@ -102,6 +104,7 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
     line-height: 1.15;
     text-wrap: balance;
     overflow-wrap: anywhere;
+    hyphens: auto; /* long words with large text */
   }
 
   .source {

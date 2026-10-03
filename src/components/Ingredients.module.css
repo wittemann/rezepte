@@ -12,6 +12,8 @@
 
 .header {
   display: flex;
+  flex-wrap: wrap; /* with large text, the stepper moves below the title */
+  gap: var(--space-xs);
   justify-content: space-between;
   align-items: center;
   padding: 0 0.25rem; /* 4px */

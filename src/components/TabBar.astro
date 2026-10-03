@@ -73,8 +73,10 @@ const { active } = Astro.props;
     color: var(--ink);
   }
 
+  /* Capped like iOS tab bars, which don't grow with the system text size either: four labels
+     have to fit next to each other */
   .label {
-    font-size: var(--font-size-min);
+    font-size: min(var(--font-size-min), 15px);
     font-weight: 800;
   }
 

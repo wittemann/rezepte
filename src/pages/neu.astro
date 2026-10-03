@@ -15,12 +15,14 @@ if (Astro.request.method === 'POST') {
 ---
 
 <Base title={TEXT.newTitle}>
-  <RecipeForm
-    client:load
-    isNew
-    values={form?.values ?? emptyFormValues()}
-    invalidFields={form?.invalidFields}
-    saveFailed={form?.saveFailed}
-    cancelHref="/rezepte"
-  />
+  <main>
+    <RecipeForm
+      client:load
+      isNew
+      values={form?.values ?? emptyFormValues()}
+      invalidFields={form?.invalidFields}
+      saveFailed={form?.saveFailed}
+      cancelHref="/rezepte"
+    />
+  </main>
 </Base>

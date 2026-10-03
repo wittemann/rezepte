@@ -30,14 +30,16 @@ if (!values) Astro.response.status = 404;
 
 {values ? (
   <Base title={FORM_TEXT.editTitle}>
-    <RecipeForm
-      client:load
-      isNew={false}
-      {values}
-      {invalidFields}
-      {saveFailed}
-      cancelHref={`/rezepte/${id}`}
-    />
+    <main>
+      <RecipeForm
+        client:load
+        isNew={false}
+        {values}
+        {invalidFields}
+        {saveFailed}
+        cancelHref={`/rezepte/${id}`}
+      />
+    </main>
   </Base>
 ) : (
   <Base title={TEXT.notFoundTitle}>

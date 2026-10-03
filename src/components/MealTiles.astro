@@ -35,7 +35,7 @@ const { label, tiles } = Astro.props;
 <style>
   .tiles {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* columns never grow past a third */
     gap: var(--space-s);
   }
 
@@ -54,6 +54,7 @@ const { label, tiles } = Astro.props;
     font-size: 1rem;
     font-weight: 600;
     text-align: center;
+    hyphens: auto; /* long names with large text */
     text-decoration: none;
   }
 

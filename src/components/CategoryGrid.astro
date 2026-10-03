@@ -37,7 +37,7 @@ const { categories } = Astro.props;
 <style>
   .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* columns never grow past a third */
     gap: var(--space-xl) var(--space-s);
     margin: 0;
     padding: 0;
@@ -50,15 +50,18 @@ const { categories } = Astro.props;
     align-items: center;
     gap: 0.125rem; /* 2px */
     color: var(--ink);
+    text-align: center;
+    hyphens: auto; /* long names with large text */
     text-decoration: none;
   }
 
+  /* Shrinks with its column when large text makes the columns narrow */
   .circle {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 5.25rem; /* 84px */
-    height: 5.25rem;
+    width: min(5.25rem, 100%); /* 84px */
+    aspect-ratio: 1;
     margin-bottom: var(--space-xxs);
     border: var(--border);
     border-radius: 50%;

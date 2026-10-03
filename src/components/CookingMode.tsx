@@ -137,7 +137,7 @@ export default function CookingMode({
       <main class={styles.main}>
         <Maulti pose={onPhotoStep ? 'cheer' : 'cook'} size={150} />
         <section class={styles.card}>
-          <p class={styles.label}>{label}</p>
+          <h1 class={styles.label}>{label}</h1>
           {step ? (
             <>
               <p class={styles.text}>{step.text}</p>

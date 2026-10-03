@@ -60,8 +60,9 @@ const { label, options } = Astro.props;
     border-radius: calc(var(--radius-card) - var(--segmented-padding));
     background: transparent;
     color: var(--muted);
+    text-align: center;
     text-decoration: none;
-    white-space: nowrap;
+    hyphens: auto; /* wraps only with large text */
     cursor: pointer;
   }
 
@@ -83,6 +84,5 @@ const { label, options } = Astro.props;
   .hint {
     font-size: var(--font-size-min);
     font-weight: 700;
-    opacity: 0.8;
   }
 </style>

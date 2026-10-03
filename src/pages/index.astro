@@ -126,13 +126,14 @@ const timeOptions = [
 <style>
   .greeting {
     display: flex;
+    flex-wrap: wrap; /* with large text, the bubble moves below Maulti */
     align-items: flex-end;
     gap: var(--space-xs);
     padding: var(--space-s) var(--space-page) var(--space-xl);
   }
 
   .bubble {
-    flex: 1;
+    flex: 1 1 12rem;
     min-width: 0;
   }
 
@@ -145,6 +146,7 @@ const timeOptions = [
 
   .time {
     display: flex;
+    flex-wrap: wrap; /* with large text, the control moves below its label */
     align-items: center;
     gap: var(--space-s);
   }
@@ -155,7 +157,7 @@ const timeOptions = [
   }
 
   .timeControl {
-    flex: 1;
+    flex: 1 1 12rem;
   }
 
   .matching {
@@ -184,7 +186,9 @@ const timeOptions = [
   }
 
   .more {
-    padding: var(--space-s) 0;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
     color: var(--accent);
     font-size: 0.875rem; /* 14px */
     font-weight: 800;
