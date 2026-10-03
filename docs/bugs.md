@@ -1,6 +1,6 @@
 # Bugs
 
-Known bugs, found while using the app. Fixed like every other change: small commit, manual review ([implementation-plan](implementation-plan.md), "How we work"). A fixed bug is ticked off in the commit that fixes it; a bug with a visible effect gets a test that would have caught it, where feasible. `sonnet` etc. = the model to use, as in the plan.
+Known bugs, found while using the app. Fixed like every other change: small commit, manual review ([implementation-plan](implementation-plan.md), "How we work"). A fixed bug is ticked off in the commit that fixes it; a bug with a visible effect gets a test that would have caught it, where feasible. `sonnet` etc. = the model to use, as in the plan. Each list is in suggested fixing order (impact vs. effort, related items next to each other); fixed bugs move to the end of their list.
 
 - [ ] Some code is in German, against the rule "code, identifiers and docs in English" (CLAUDE.md). Check all code (identifiers, file names, comments, test names, CSS classes) and move it to English; UI texts in `*.texts.ts` stay German. Decide separately about the German routes (`/rezepte`, `/favoriten`, `/neu`): they are user-visible URLs, so changing them breaks saved links and home-screen bookmarks · `sonnet`
 - [ ] Filter sheet on iPhone (seen in dark mode): „Zurücksetzen“ shows the accent focus ring right after the sheet opens. Likely `showModal()` focusing the first focusable element, which Safari then treats as `:focus-visible`. Reproduce on the iPhone, then e.g. give the dialog (or its title) `autofocus`/`tabindex=-1` so no button gets the ring on open; check the ingredients sheet in cooking mode too · `sonnet`
@@ -25,7 +25,6 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 ### Should fix
 
 - [ ] **Double tap on „Sichern“ creates two recipes:** no submit-in-progress guard in the new/edit form · `sonnet`
-- [ ] **Photos above ~750 KB fail:** Astro's action body limit (1 MiB) is below the app's 3 MB photo limit, so larger photos are rejected with `CONTENT_TOO_LARGE`. Set `security.actionBodySizeLimit` or compress harder · `sonnet`
 - [ ] **Mixed numbers scale wrongly** (`ingredients.ts`): „1 1/2 TL“ and „1 ½ EL“ scale only the 1 (doubled: „2 ½“), against the data convention; `scaleAmount(0, 2)` returns 0.1. Fix with tests · `sonnet`
 - [ ] **Chosen servings don't reach cooking mode:** cooking mode always shows the base amounts; pass the servings in the URL. The plan item „ingredients sheet (scaled)“ is ticked although it isn't · `sonnet`
 - [ ] **FavoriteButton error handling:** a rejected fetch (offline) or an expired session leaves the heart flipped with no toast; two quick taps race and the rollback uses a stale value · `sonnet`
@@ -39,7 +38,6 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 - [ ] **Missing tests:** actions (`src/actions/index.ts`), `_save-form.ts`, the login/edit/new pages, `PhotoStep`, the photo-upload hook; no test for double submit · `sonnet`
 - [ ] **E2E and CI:** tests depend on the current recipe data (helper loads every recipe page), the favorites test passes silently when the list is empty, CI retries hide flaky tests, e2e doesn't gate deploys, the e2e job likely fails on Dependabot PRs (no secrets); the edit test „Abbrechen goes back“ flaked once locally · `sonnet`
 - [ ] **Sentry Node SDK on cold start:** the static import in `lib/monitoring.ts` took 0.3–0.9 s locally, also without a DSN. Measure on Vercel; if confirmed, load it lazily or only with a DSN · `sonnet`
-- [ ] **Casts that hide types:** `as RecordReading` (3×, `record.ts`), `favoritedAt!` (`favorites.ts`), `'full' as ImageSize` (image route) · `sonnet`
 - [ ] **Repeated UI texts:** „N Rezept(e)“ plural in 4 texts files, meal short labels in 3, `✕` in 4, the login title in 2; servings formatted differently in the recipe row and on the recipe page · `haiku`
 - [ ] **Stale comments and unused branches:** `input.ts` comment about the form action, unused modes in `Chip.astro` and the button branch in `SegmentedControl.astro`, ADR file name `0010-e2e-tests-deferred` vs its status · `haiku`
 - [ ] **Outdated docs:** ADR 0002 and spec 02 list repository functions and a delete flow that don't exist and say typecast creates new options (code forbids it); the „hint“ on the detail page for unreadable fields isn't built; spec 01 says „no third-party requests from the browser“ (not true with Sentry); „for two / both of us“ in README, 06-deployment and ADRs 0001, 0003, 0011; ADR 0008's CI description; ADR 0009 promises reports for failed image uploads, only the Airtable part is reported · `sonnet`
@@ -49,24 +47,14 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 
 ### Nice to have
 
-- [ ] **Owner's name in the public repo:** account slug in `06-deployment.md`, full name in `package.json`; no `LICENSE` file although `package.json` says MIT · `haiku`
 - [ ] **Source link hidden** when „Quelle“ is empty although a URL is set · `haiku`
-- [ ] **„Kochen“ leads nowhere** for recipes whose steps are only headings (redirects back to the recipe) · `haiku`
-- [ ] **„Neues Rezept“ prefills Portionen with 4;** the design has it empty (placeholder only) · `haiku`
-- [ ] **Image cache key:** unknown query values on `/img` bypass the CDN cache; ignore everything but `size` · `haiku`
 - [ ] **Security headers:** no CSP, `frame-ancestors`, `nosniff` or referrer policy; only Vercel's HSTS is sent · `opus`
 - [ ] **Search ignores umlaut/ß variants** („ae“, „ss“) · `sonnet`
-- [ ] **Error pages:** every Airtable outage shows the generic 500 page; a separate „Airtable is unavailable“ (503) page would help · `sonnet`
 - [ ] **Cooking-mode swipe** also fires on mouse text selection · `haiku`
-- [ ] **No length limits on recipe text fields** in the form schema · `haiku`
-- [ ] **Production Airtable token scope:** `schema.bases:read` isn't used by the app, only by the schema script · `haiku`
 - [ ] **Dependencies:** GitHub Actions v7 → v8; no `dependabot.yml` (check whether Dependabot security updates are on in the repo settings); patch updates for eslint, vitest, typescript-eslint, globals, preact-render-to-string, `@types/node` · `haiku`
-- [ ] **Sessions:** a password change doesn't end existing sessions; use a `__Host-` cookie name once the custom domain exists (ADR 0011) · `sonnet`
 - [ ] **Repository API:** pages and actions build the Airtable connection in 9 places; one server-only module would be the natural home for a cache; `fields.ts` mixes Airtable field IDs with lists the browser uses · `opus`
 - [ ] **Writes make 2–3 sequential Airtable calls** (lookup before PATCH) · `sonnet`
 - [ ] **Fonts:** both fonts are preloaded on every page (107 KB) · `sonnet`
-- [ ] **Render-blocking CSS:** 1–2 external CSS files per page; small enough to inline · `sonnet`
-- [ ] **Recipe list not paginated:** renders all recipes at once · `sonnet`
 - [ ] **Design details:** alarm backdrop 40 % (design 50 %), ingredients sheet title 22 px (design 20 px), tab bar without its 6 px inner padding, source line 15 px/600 (design 13 px/700), meta stickers wrap earlier, the native „Quelle“ select looks different from the other inputs, no pressed states or tap-highlight handling, focus ring on the search and login fields on every tap · `sonnet`
 - [ ] **Tokens:** no type scale (font sizes as `rem` literals in 28 files); repeated sizes (56, 58, 18 px), the focus ring (6 copies) without tokens; disabled opacity 0.35 vs 0.4 · `sonnet`
 - [ ] **Code style details:** duplicated small logic (`AMOUNT` regex, `wait()`, page heading CSS), routes hard-coded about 20 times, undocumented `data-*` test hooks in production markup, clever `{valid, value}` helpers in `form.ts`, untyped `let`s in `edit.astro`, abbreviated names (`a`/`b` in `favorites.ts`, `err` in `password.ts`) · `sonnet`
