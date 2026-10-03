@@ -24,10 +24,12 @@ test('cooking mode steps forward and back and ends at the recipe', async ({ page
   const cookable = await findCookableRecipe(page);
 
   await page.goto(`/rezepte/${cookable}`);
+  // The launcher island only takes over the link once it is hydrated
+  await page.waitForLoadState('networkidle');
+  // Cooking mode opens on the recipe page (for the wake lock): the marker survives, no page load
+  await page.evaluate(() => Object.assign(window, { samePage: true }));
   await page.getByRole('link', { name: COOK_BUTTON_TEXT.label }).click();
   await expect(page).toHaveURL(/\/cook$/);
-  // The buttons only work once the island is hydrated
-  await page.waitForLoadState('networkidle');
 
   const previous = page.getByRole('button', { name: TEXT.previous });
   await expect(page.getByText(/^Schritt 1 von \d+/)).toBeVisible();
@@ -50,4 +52,21 @@ test('cooking mode steps forward and back and ends at the recipe', async ({ page
     .or(page.getByRole('link', { name: TEXT.skip }));
   await end.click();
   await expect(page).toHaveURL(new RegExp(`/rezepte/${cookable}$`));
+  await expect(page.getByRole('link', { name: COOK_BUTTON_TEXT.label })).toBeVisible();
+  expect(await page.evaluate(() => 'samePage' in window)).toBe(true);
+});
+
+test('the back button closes cooking mode', async ({ page }) => {
+  await login(page);
+  const cookable = await findCookableRecipe(page);
+
+  await page.goto(`/rezepte/${cookable}`);
+  await page.waitForLoadState('networkidle');
+  await page.getByRole('link', { name: COOK_BUTTON_TEXT.label }).click();
+  await expect(page.getByRole('button', { name: TEXT.previous })).toBeVisible();
+
+  await page.goBack();
+  await expect(page).toHaveURL(new RegExp(`/rezepte/${cookable}$`));
+  await expect(page.getByRole('button', { name: TEXT.previous })).toBeHidden();
+  await expect(page.getByRole('link', { name: COOK_BUTTON_TEXT.label })).toBeVisible();
 });

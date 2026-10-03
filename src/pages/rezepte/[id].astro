@@ -4,6 +4,7 @@
 // Astro shows the 500 page.
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
 import CookButton from '../../components/CookButton.astro';
+import CookingLauncher from '../../components/CookingLauncher.tsx';
 import ErrorMessage from '../../components/ErrorMessage.astro';
 import Ingredients from '../../components/Ingredients.tsx';
 import Notes from '../../components/Notes.astro';
@@ -13,6 +14,7 @@ import SavedToast, { SAVED_PARAM } from '../../components/SavedToast.tsx';
 import StubNotice from '../../components/StubNotice.astro';
 import Steps from '../../components/Steps.astro';
 import Base from '../../layouts/Base.astro';
+import { cookingSteps } from '../../lib/recipes/cooking-steps.ts';
 import { getById } from '../../lib/recipes/repository.ts';
 import { TEXT } from './_[id].texts.ts';
 
@@ -24,11 +26,13 @@ const recipe = await getById(
 if (!recipe) Astro.response.status = 404;
 // Set by the edit form after saving
 const justSaved = Astro.url.searchParams.has(SAVED_PARAM);
+const steps = recipe ? cookingSteps(recipe.method) : [];
 ---
 
 {recipe ? (
   <Base title={recipe.title}>
-    <main>
+    {/* Hidden by CookingLauncher while cooking */}
+    <main data-recipe-page>
       <RecipeHeader {recipe} />
       <RecipeMeta {recipe} />
       {!recipe.hasInstructions && <StubNotice editHref={`/rezepte/${recipe.id}/edit`} />}
@@ -39,6 +43,18 @@ const justSaved = Astro.url.searchParams.has(SAVED_PARAM);
       {recipe.notes && <Notes notes={recipe.notes} />}
       {recipe.hasInstructions && <CookButton href={`/rezepte/${recipe.id}/cook`} />}
     </main>
+    {steps.length > 0 && (
+      <CookingLauncher
+        client:idle
+        recipeId={recipe.id}
+        recipeHref={`/rezepte/${recipe.id}`}
+        cookHref={`/rezepte/${recipe.id}/cook`}
+        hasPhoto={recipe.images.length > 0}
+        {steps}
+        ingredients={recipe.ingredients}
+        servings={recipe.servings}
+      />
+    )}
     {justSaved && <SavedToast client:load />}
   </Base>
 ) : (

@@ -1,5 +1,6 @@
 // Cooking mode (design/README.md, "Kochmodus"): one step at a time with Maulti, progress dots
-// and the ingredients in a sheet. A page of its own, without tab bar.
+// and the ingredients in a sheet, without tab bar. Usually opened on the recipe page by
+// CookingLauncher; on its own page (/cook) when loaded directly.
 import { useRef, useState } from 'preact/hooks';
 import type { CookingStep } from '../lib/recipes/cooking-steps.ts';
 import type { IngredientLine } from '../lib/recipes/ingredients.ts';
@@ -28,6 +29,11 @@ type Props = {
   ingredients: IngredientLine[];
   /** What the ingredient amounts are written for; shown in the title of the ingredients sheet */
   servings?: number;
+  /**
+   * Set when opened on the recipe page: called instead of following the close and done links,
+   * with whether a photo was added (then the recipe page is out of date)
+   */
+  onClose?: (photoAdded: boolean) => void;
 };
 
 export default function CookingMode({
@@ -37,6 +43,7 @@ export default function CookingMode({
   steps,
   ingredients,
   servings,
+  onClose,
 }: Props) {
   useWakeLock();
   const [stepIndex, setStepIndex] = useState(0);
@@ -51,6 +58,12 @@ export default function CookingMode({
   const label = step
     ? [TEXT.stepLabel(stepIndex + 1, steps.length), step.section].filter(Boolean).join(' · ')
     : PHOTO_TEXT.label;
+
+  function handleClose(event: MouseEvent) {
+    if (!onClose) return; // a page of its own: the link loads the recipe page
+    event.preventDefault();
+    onClose(photo.status === 'saved');
+  }
 
   function goToPrevious() {
     setStepIndex((index) => Math.max(0, index - 1));
@@ -91,7 +104,7 @@ export default function CookingMode({
       onPointerCancel={endSwipe}
     >
       <header class={styles.header}>
-        <a href={recipeHref} class={styles.close} aria-label={TEXT.close}>
+        <a href={recipeHref} class={styles.close} aria-label={TEXT.close} onClick={handleClose}>
           <span aria-hidden="true">{TEXT.closeSymbol}</span>
         </a>
         <ol class={styles.progress} aria-label={TEXT.progress}>
@@ -140,7 +153,7 @@ export default function CookingMode({
             {TEXT.done}
           </button>
         ) : isLast ? (
-          <a href={recipeHref} class={styles.next}>
+          <a href={recipeHref} class={styles.next} onClick={handleClose}>
             {onPhotoStep && photo.status !== 'saved' ? TEXT.skip : TEXT.done}
           </a>
         ) : (

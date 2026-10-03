@@ -33,7 +33,11 @@ afterEach(() => {
   container.remove();
 });
 
-function renderCooking(servings?: number, hasPhoto = true) {
+function renderCooking(
+  servings?: number,
+  hasPhoto = true,
+  onClose?: (photoAdded: boolean) => void,
+) {
   act(() => {
     render(
       <CookingMode
@@ -43,6 +47,7 @@ function renderCooking(servings?: number, hasPhoto = true) {
         steps={steps}
         ingredients={ingredients}
         servings={servings}
+        onClose={onClose}
       />,
       container,
     );
@@ -231,6 +236,18 @@ describe('CookingMode', () => {
       expect(footerAction()?.textContent).toBe('Fertig');
     });
 
+    it('tells onClose that a photo was added', async () => {
+      resizePhoto.mockResolvedValue({ blob: new Blob(['x']), base64: '/9j/AAAA' });
+      addPhoto.mockResolvedValue({ error: undefined });
+      const onClose = vi.fn();
+      renderCooking(undefined, false, onClose);
+      toPhotoStep();
+      await pickPhoto();
+
+      act(() => (footerAction() as HTMLElement).click());
+      expect(onClose).toHaveBeenCalledExactlyOnceWith(true);
+    });
+
     it('cannot be left while the upload runs', async () => {
       resizePhoto.mockResolvedValue({ blob: new Blob(['x']), base64: '/9j/AAAA' });
       addPhoto.mockReturnValue(new Promise(() => {}));
@@ -265,6 +282,30 @@ describe('CookingMode', () => {
 
       expect(addPhoto).not.toHaveBeenCalled();
       expect(container.textContent).toContain('konnte nicht gespeichert werden');
+    });
+  });
+
+  describe('closing', () => {
+    const closeLink = () =>
+      container.querySelector<HTMLAnchorElement>('a[aria-label="Kochmodus beenden"]')!;
+    const click = (element: HTMLElement) => {
+      const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+      act(() => {
+        element.dispatchEvent(event);
+      });
+      return event;
+    };
+
+    it('follows the link to the recipe on a page of its own', () => {
+      renderCooking();
+      expect(click(closeLink()).defaultPrevented).toBe(false);
+    });
+
+    it('calls onClose instead when opened on the recipe page', () => {
+      const onClose = vi.fn();
+      renderCooking(undefined, true, onClose);
+      expect(click(closeLink()).defaultPrevented).toBe(true);
+      expect(onClose).toHaveBeenCalledExactlyOnceWith(false);
     });
   });
 });
