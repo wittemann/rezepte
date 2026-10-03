@@ -8,6 +8,7 @@ import { JPEG_BASE64_PREFIX, MAX_PHOTO_BASE64_LENGTH } from '../lib/images/photo
 import { logInfo, logWarning } from '../lib/monitoring.ts';
 import { readFormValues, recipeFormSchema } from '../lib/recipes/form.ts';
 import { addPhoto, create, setFavorite, update } from '../lib/recipes/repository.ts';
+import { withGenericErrors } from './with-generic-errors.ts';
 
 /** The answer for a recipe ID that doesn't exist (any more), logged as a warning. */
 function notFound(action: string, id: string) {
@@ -19,7 +20,7 @@ export const server = {
   /** Marks a recipe as favorite or not. Sets the state instead of toggling, so a repeated tap can't flip it back. */
   setFavorite: defineAction({
     input: z.object({ id: z.string(), favorite: z.boolean() }),
-    handler: async ({ id, favorite }) => {
+    handler: withGenericErrors('setFavorite', async ({ id, favorite }) => {
       const recipe = await setFavorite(
         { token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID },
         id,
@@ -28,7 +29,7 @@ export const server = {
       if (!recipe) throw notFound('setFavorite', id);
       logInfo(favorite ? 'Recipe favorited' : 'Recipe unfavorited', { 'recipe.record_id': id });
       return { favoritedAt: recipe.favoritedAt };
-    },
+    }),
   }),
 
   /**
@@ -44,11 +45,11 @@ export const server = {
         .startsWith(JPEG_BASE64_PREFIX)
         .regex(/^[A-Za-z0-9+/]+={0,2}$/),
     }),
-    handler: async ({ id, file }) => {
+    handler: withGenericErrors('addPhoto', async ({ id, file }) => {
       const found = await addPhoto({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID }, id, file);
       if (!found) throw notFound('addPhoto', id);
       logInfo('Photo added', { 'recipe.record_id': id });
-    },
+    }),
   }),
 
   /**
@@ -57,7 +58,7 @@ export const server = {
    */
   saveRecipe: defineAction({
     input: recipeFormSchema.extend({ id: z.string().optional() }),
-    handler: async ({ id, ...values }) => {
+    handler: withGenericErrors('saveRecipe', async ({ id, ...values }) => {
       const form = readFormValues(values);
       if (!form.valid) {
         logInfo('Recipe form invalid', { 'recipe.invalid_fields': form.invalidFields.join(',') });
@@ -71,6 +72,6 @@ export const server = {
       if (!recipe) throw notFound('saveRecipe', id ?? '');
       logInfo(id ? 'Recipe updated' : 'Recipe created', { 'recipe.record_id': recipe.id });
       return { saved: true as const, id: recipe.id };
-    },
+    }),
   }),
 };
