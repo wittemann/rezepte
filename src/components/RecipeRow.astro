@@ -5,6 +5,7 @@
 import type { Recipe } from '../lib/recipes/recipe.ts';
 import { categoryName } from '../lib/recipes/fields.ts';
 import { isFavorite } from '../lib/recipes/favorites.ts';
+import { sizedImageUrl } from '../lib/recipes/image-source.ts';
 import Icon from './Icon.tsx';
 import { recipeRowMeta } from './recipe-row-meta.ts';
 import { TEXT } from './RecipeRow.texts.ts';
@@ -14,7 +15,10 @@ type Props = {
 };
 
 const { recipe } = Astro.props;
-const photoUrl = recipe.images[0]?.url;
+// Airtable's "large" thumbnail: "small" is too blurry for the 52 px tile on a phone, the original
+// is megabytes
+const photo = recipe.images[0];
+const photoUrl = photo && sizedImageUrl(photo.url, 'large');
 // First grapheme, so emoji and letters with combining accents stay whole
 const [firstGrapheme] = new Intl.Segmenter('de').segment(recipe.title);
 const initial = firstGrapheme?.segment.toUpperCase() ?? '?';
@@ -24,7 +28,7 @@ const meta = recipeRowMeta(recipe);
 
 <a class="row" href={`/rezepte/${recipe.id}`} data-recipe-id={recipe.id}>
   {photoUrl ? (
-    <img class="thumb" src={photoUrl} alt="" loading="lazy" />
+    <img class="thumb" src={photoUrl} alt="" loading="lazy" decoding="async" />
   ) : (
     <span class="thumb tile" style={`background: ${tileColor}`} aria-hidden="true">
       {initial}

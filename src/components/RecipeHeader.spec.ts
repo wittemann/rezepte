@@ -44,7 +44,7 @@ describe('RecipeHeader', () => {
     const document = await renderHeader({
       images: [{ id: 'attA', url: '/img/recX1/attA' }],
     });
-    expect(document.querySelector('img')?.getAttribute('src')).toBe('/img/recX1/attA');
+    expect(document.querySelector('img')?.getAttribute('src')).toBe('/img/recX1/attA?size=large');
   });
 
   it('links the source when the recipe has a link, else shows it as text', async () => {

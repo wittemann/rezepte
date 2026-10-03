@@ -35,7 +35,7 @@ describe('RecipeRow', () => {
       { id: 'att2', url: '/img/second.jpg' },
     ];
     const html = await renderRow({ images });
-    expect(html).toContain('src="/img/first.jpg"');
+    expect(html).toContain('src="/img/first.jpg?size=large"');
     expect(html).not.toContain('second.jpg');
   });
 

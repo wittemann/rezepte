@@ -9,6 +9,11 @@ export const IMAGE_SIZES = ['small', 'large', 'full'] as const;
 
 export type ImageSize = (typeof IMAGE_SIZES)[number];
 
+/** An app image URL (RecipeImage.url) in another size. */
+export function sizedImageUrl(url: string, size: ImageSize) {
+  return size === 'full' ? url : `${url}?size=${size}`;
+}
+
 // Airtable attachment IDs: "att" followed by letters and digits.
 const ATTACHMENT_ID = /^att[A-Za-z0-9]+$/;
 

@@ -4,6 +4,7 @@
 import type { Recipe } from '../lib/recipes/recipe.ts';
 import { categoryName } from '../lib/recipes/fields.ts';
 import { isFavorite } from '../lib/recipes/favorites.ts';
+import { sizedImageUrl } from '../lib/recipes/image-source.ts';
 import Button from './Button.astro';
 import FavoriteButton from './FavoriteButton.tsx';
 import Icon from './Icon.tsx';
@@ -17,7 +18,10 @@ type Props = {
 
 const { recipe } = Astro.props;
 const favorite = isFavorite(recipe);
-const photoUrl = recipe.images[0]?.url;
+// Airtable's "large" thumbnail is enough for the 200 px photo; the original is megabytes.
+// The photo is the largest element of the page, so it gets fetchpriority="high".
+const photo = recipe.images[0];
+const photoUrl = photo && sizedImageUrl(photo.url, 'large');
 const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
 ---
 
@@ -33,7 +37,7 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
       </Button>
     </div>
   </div>
-  {photoUrl && <img class="photo" src={photoUrl} alt="" />}
+  {photoUrl && <img class="photo" src={photoUrl} alt="" fetchpriority="high" />}
   {recipe.category && (
     <div class="category">
       <Pill>{recipe.category}</Pill>

@@ -32,7 +32,7 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 - [ ] **Photos above ~750 KB fail:** Astro's action body limit (1 MiB) is below the app's 3 MB photo limit, so larger photos are rejected with `CONTENT_TOO_LARGE`. Set `security.actionBodySizeLimit` or compress harder · `sonnet`
 - [ ] **Airtable client robustness:** no fetch timeout, no retry of GETs on network errors or 5xx, a 30 s inline wait on 429 during a page render; network errors (fetch rejects) aren't reported to Sentry · `opus`
 - [ ] **Image proxy bursts:** every `/img` cache miss calls Airtable; a cold list can exceed 5 requests/s and push page renders into the 30 s wait · `opus`
-- [ ] **Images always full size:** list rows and the detail header never pass `?size`, so every 52 px thumbnail loads the original (`RecipeRow.astro`, `RecipeHeader.astro`) · `sonnet`
+- [x] **Images always full size:** list rows and the detail header never pass `?size`, so every 52 px thumbnail loads the original (`RecipeRow.astro`, `RecipeHeader.astro`) · `sonnet`
 - [ ] **Timer alarm silent after leaving cooking mode:** each navigation is a full page load, so the audio unlock and the screen wake lock are lost; keep the screen on while a timer runs and hint when sound is locked, or keep the timers alive across navigations · `opus`
 - [ ] **Chosen servings don't reach cooking mode:** cooking mode always shows the base amounts; pass the servings in the URL. The plan item „ingredients sheet (scaled)“ is ticked although it isn't · `sonnet`
 - [ ] **Sentry Node SDK on cold start:** the static import in `lib/monitoring.ts` took 0.3–0.9 s locally, also without a DSN. Measure on Vercel; if confirmed, load it lazily or only with a DSN · `sonnet`
@@ -69,7 +69,7 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 - [ ] **Fonts:** both fonts are preloaded on every page (107 KB) · `sonnet`
 - [ ] **Render-blocking CSS:** 1–2 external CSS files per page; small enough to inline · `sonnet`
 - [ ] **Writes make 2–3 sequential Airtable calls** (lookup before PATCH) · `sonnet`
-- [ ] **Image hints:** no `fetchpriority` on the header image, no `decoding="async"` · `haiku`
+- [x] **Image hints:** no `fetchpriority` on the header image, no `decoding="async"` · `haiku`
 - [ ] **Image cache key:** unknown query values on `/img` bypass the CDN cache; ignore everything but `size` · `haiku`
 - [ ] **Recipe list not paginated:** renders all recipes at once · `sonnet`
 - [ ] **Design details:** alarm backdrop 40 % (design 50 %), ingredients sheet title 22 px (design 20 px), tab bar without its 6 px inner padding, source line 15 px/600 (design 13 px/700), meta stickers wrap earlier, the native „Quelle“ select looks different from the other inputs, no pressed states or tap-highlight handling, focus ring on the search and login fields on every tap · `sonnet`

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { RECIPE_FIELDS } from './fields.ts';
-import { findImageUrl, isAttachmentId, isPhotoType } from './image-source.ts';
+import { findImageUrl, isAttachmentId, isPhotoType, sizedImageUrl } from './image-source.ts';
 
 const fields = {
   [RECIPE_FIELDS.images]: [
@@ -18,6 +18,13 @@ const fields = {
     { id: 'attSvg', type: 'image/svg+xml', url: 'https://cdn.example.test/drawing' },
   ],
 };
+
+describe('sizedImageUrl', () => {
+  it('adds the size, leaves the original as it is', () => {
+    expect(sizedImageUrl('/img/recA/attB', 'large')).toBe('/img/recA/attB?size=large');
+    expect(sizedImageUrl('/img/recA/attB', 'full')).toBe('/img/recA/attB');
+  });
+});
 
 describe('findImageUrl', () => {
   it('returns the original or the thumbnail for the size', () => {
