@@ -41,12 +41,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      # No artifacts: Playwright traces hold pages with real recipe data, and artifacts of a public
+      # repo can be downloaded by anyone. Failures show in the log; debug with traces locally.
       - run: npm run test:e2e
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: playwright-traces
-          path: test-results/
 
   secret-scan:
     runs-on: ubuntu-latest
