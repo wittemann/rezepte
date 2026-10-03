@@ -129,6 +129,30 @@ describe('rate limit (429)', () => {
   });
 });
 
+describe('monthly quota used up (429)', () => {
+  const quotaExceeded = () =>
+    jsonResponse({ errors: [{ error: 'PUBLIC_API_BILLING_LIMIT_EXCEEDED' }] }, 429);
+
+  it('throws right away instead of waiting', async () => {
+    const { connection, fetch, delay } = connectionAnswering(quotaExceeded());
+
+    await expect(listRecords(connection, TABLE_ID)).rejects.toMatchObject({
+      status: 429,
+      message: expect.stringContaining('monthly API-call quota used up'),
+    });
+    expect(delay).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('reports it as an error, not as a rate limit', async () => {
+    const { connection } = connectionAnswering(quotaExceeded());
+    await expect(listRecords(connection, TABLE_ID)).rejects.toThrow(AirtableError);
+
+    expect(reportError).toHaveBeenCalledOnce();
+    expect(reportWarning).not.toHaveBeenCalled();
+  });
+});
+
 describe('errors', () => {
   it.each([
     [404, { error: 'NOT_FOUND' }, '404 (NOT_FOUND)'],

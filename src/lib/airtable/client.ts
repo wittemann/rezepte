@@ -65,6 +65,17 @@ async function readErrorReason(response: Response) {
   }
 }
 
+/**
+ * Whether a 429 means the monthly API-call quota is used up (free plan: 1,000 calls), not the
+ * rate limit. Waiting doesn't help then: calls stay blocked until the 1st of the month. Airtable
+ * names it PUBLIC_API_BILLING_LIMIT_EXCEEDED; the body's exact shape isn't documented, so this
+ * looks for the name anywhere in it. Reads a clone, so the body can still be read for the error.
+ */
+async function isQuotaExceeded(response: Response) {
+  const body = await response.clone().text();
+  return body.includes('PUBLIC_API_BILLING_LIMIT_EXCEEDED');
+}
+
 /** An AirtableError that says which request failed and why. */
 async function toAirtableError(response: Response, method: string, url: URL) {
   let message = `Airtable ${method} ${url.pathname} failed with ${response.status}`;
@@ -85,7 +96,8 @@ export function isRecordId(id: string) {
 
 /**
  * Sends a request to `url` and returns the JSON answer. A `body` is sent as JSON.
- * On 429 it waits once and tries again; any other error status throws.
+ * On a rate-limit 429 it waits once and tries again; any other error status throws, also a 429
+ * for the monthly quota.
  * Rate limits and errors are reported to Sentry: Astro actions turn thrown errors into a 500
  * answer, so they wouldn't show up there otherwise.
  */
@@ -107,7 +119,8 @@ async function requestJson(
   const tags = { 'airtable.method': method, 'airtable.path': url.pathname };
 
   let response = await fetch(url, init);
-  if (response.status === 429) {
+  const quotaExceeded = response.status === 429 && (await isQuotaExceeded(response));
+  if (response.status === 429 && !quotaExceeded) {
     await delay(RATE_LIMIT_WAIT_MS);
     response = await fetch(url, init);
     // Even when the second try works: rate limits are the trigger to revisit caching (ADR 0003)
@@ -118,6 +131,7 @@ async function requestJson(
   }
   if (!response.ok) {
     const error = await toAirtableError(response, method, url);
+    if (quotaExceeded) error.message += ': monthly API-call quota used up';
     reportError(error, { ...tags, 'airtable.status': response.status });
     throw error;
   }
