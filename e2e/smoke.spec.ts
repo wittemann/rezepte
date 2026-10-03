@@ -19,6 +19,15 @@ test('pages need a login', async ({ page }) => {
   await expect(page).toHaveURL(/\/login\?next=%2Frezepte/);
 });
 
+// Astro also runs actions for `?_action=<name>` on any page, the login page included. Empty input,
+// so nothing could be written even if the action ran: it would answer 400 instead of 302.
+test('actions need a login, also when called through the login page', async ({ request }) => {
+  for (const path of ['/_actions/setFavorite', '/login?_action=setFavorite']) {
+    const response = await request.post(path, { data: {}, maxRedirects: 0 });
+    expect(response.status(), path).toBe(302);
+  }
+});
+
 test('login → recipes list → first recipe', async ({ page }) => {
   await login(page);
 

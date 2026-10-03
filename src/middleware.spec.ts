@@ -42,6 +42,17 @@ describe('middleware', () => {
     expect(response.headers.get('location')).toBe('/login?next=%2F');
   });
 
+  it.each(['/login?_action=saveRecipe', '/login/?_action=setFavorite', '/login?_action='])(
+    'does not run an action through %s without a session',
+    async (path) => {
+      expect((await run(path)).status).toBe(302);
+    },
+  );
+
+  it('lets an action call on the login page through with a valid session', async () => {
+    expect(await run('/login?_action=setFavorite', createSessionToken(SECRET))).toBe(PAGE);
+  });
+
   it('does not treat paths that only start with /login as the login page', async () => {
     expect((await run('/login-other')).status).toBe(302);
   });
