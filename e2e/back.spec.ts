@@ -17,11 +17,16 @@ test('the back arrow returns to the search, also after "Abbrechen" in the form',
   await search.press('Enter');
   await expect(page).toHaveURL(/[?&]q=/);
   const listUrl = page.url();
+  const { pathname, search: query } = new URL(listUrl);
 
   await page.locator('a[data-recipe-id]').first().click();
   await page.getByRole('link', { name: HEADER_TEXT.edit }).click();
   await page.getByRole('link', { name: FORM_TEXT.cancel }).click();
-  await page.getByRole('link', { name: HEADER_TEXT.back }).click();
+  // The page script points the arrow at the remembered list; a click before it runs would
+  // follow the server-rendered fallback (the list without its search)
+  const back = page.getByRole('link', { name: HEADER_TEXT.back });
+  await expect(back).toHaveAttribute('href', pathname + query);
+  await back.click();
 
   await expect(page).toHaveURL(listUrl);
   await expect(search).toHaveValue(title);
