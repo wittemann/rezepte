@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { RECIPE_FIELDS } from './fields.ts';
-import { findImageUrl, isAttachmentId } from './image-source.ts';
+import { findImageUrl, isAttachmentId, isPhotoType } from './image-source.ts';
 
 const fields = {
   [RECIPE_FIELDS.images]: [
@@ -15,6 +15,7 @@ const fields = {
     },
     { id: 'attTwo', type: 'image/png', url: 'https://cdn.example.test/full-two' },
     { id: 'attPdf', type: 'application/pdf', url: 'https://cdn.example.test/doc' },
+    { id: 'attSvg', type: 'image/svg+xml', url: 'https://cdn.example.test/drawing' },
   ],
 };
 
@@ -32,8 +33,23 @@ describe('findImageUrl', () => {
   it('finds nothing for an unknown ID, a non-image file or no attachments', () => {
     expect(findImageUrl(fields, 'attMissing', 'full')).toBeUndefined();
     expect(findImageUrl(fields, 'attPdf', 'full')).toBeUndefined();
+    expect(findImageUrl(fields, 'attSvg', 'full')).toBeUndefined();
     expect(findImageUrl({}, 'attOne', 'full')).toBeUndefined();
     expect(findImageUrl({ [RECIPE_FIELDS.images]: 'oops' }, 'attOne', 'full')).toBeUndefined();
+  });
+});
+
+describe('isPhotoType', () => {
+  it('accepts raster photo formats, also with parameters', () => {
+    for (const type of ['image/jpeg', 'image/png', 'image/webp', 'IMAGE/JPEG', 'image/jpeg; q=1']) {
+      expect(isPhotoType(type)).toBe(true);
+    }
+  });
+
+  it('refuses SVG, other files and no type', () => {
+    for (const type of ['image/svg+xml', 'text/html', 'application/pdf', '', null, undefined]) {
+      expect(isPhotoType(type)).toBe(false);
+    }
   });
 });
 

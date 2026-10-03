@@ -12,6 +12,22 @@ export type ImageSize = (typeof IMAGE_SIZES)[number];
 // Airtable attachment IDs: "att" followed by letters and digits.
 const ATTACHMENT_ID = /^att[A-Za-z0-9]+$/;
 
+// Raster formats only. Not SVG: opened directly from our domain, an SVG could run scripts there.
+const PHOTO_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/heic',
+  'image/heif',
+];
+
+/** Whether a MIME type (parameters like `; charset` ignored) is a photo the app may serve. */
+export function isPhotoType(type: string | null | undefined): type is string {
+  const mimeType = type?.split(';')[0].trim().toLowerCase();
+  return mimeType !== undefined && PHOTO_TYPES.includes(mimeType);
+}
+
 /** Whether `id` looks like an Airtable attachment ID. */
 export function isAttachmentId(id: string) {
   return ATTACHMENT_ID.test(id);
@@ -29,8 +45,8 @@ const attachmentsSchema = z.array(
 );
 
 /**
- * The URL to fetch the image from, or undefined if the record has no image attachment with this
- * ID. A missing thumbnail (Airtable only makes them for some file types) falls back to the original.
+ * The URL to fetch the image from, or undefined if the record has no photo attachment with this
+ * ID (see isPhotoType). A missing thumbnail (Airtable only makes them for some file types) falls back to the original.
  */
 export function findImageUrl(
   fields: Record<string, unknown>,
@@ -40,7 +56,7 @@ export function findImageUrl(
   const attachments = attachmentsSchema.safeParse(fields[RECIPE_FIELDS.images]);
   if (!attachments.success) return undefined;
   const attachment = attachments.data.find((candidate) => candidate.id === attachmentId);
-  if (!attachment?.type?.startsWith('image/')) return undefined;
+  if (!isPhotoType(attachment?.type)) return undefined;
   if (size === 'full') return attachment.url;
   return attachment.thumbnails?.[size]?.url ?? attachment.url;
 }

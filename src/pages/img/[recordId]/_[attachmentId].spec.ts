@@ -37,6 +37,7 @@ describe('image route', () => {
     const cache = 'public, max-age=31536000, immutable';
     expect(response.headers.get('Cache-Control')).toBe(cache);
     expect(response.headers.get('Vercel-CDN-Cache-Control')).toBe(cache);
+    expect(response.headers.get('Content-Security-Policy')).toBe("default-src 'none'; sandbox");
     expect(getImageUrl).toHaveBeenCalledWith(
       { token: 'token', baseId: 'appTest' },
       'recA1',
@@ -64,6 +65,18 @@ describe('image route', () => {
     expect((await request('x', 'attB2')).status).toBe(404);
     expect(getImageUrl).not.toHaveBeenCalled();
   });
+
+  it.each(['image/svg+xml', 'text/html', null])(
+    'answers 502 without cache headers when Airtable sends %s',
+    async (type) => {
+      getImageUrl.mockResolvedValue('https://cdn.example.test/image');
+      const headers: Record<string, string> = type ? { 'Content-Type': type } : {};
+      fetchMock.mockResolvedValue(new Response('<svg/>', { headers }));
+      const response = await request('recA1', 'attB2');
+      expect(response.status).toBe(502);
+      expect(response.headers.get('Cache-Control')).toBeNull();
+    },
+  );
 
   it('answers 502 without cache headers when the image can not be fetched', async () => {
     getImageUrl.mockResolvedValue('https://cdn.example.test/image');

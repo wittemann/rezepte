@@ -8,7 +8,12 @@
 import type { APIRoute } from 'astro';
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
 import { isRecordId } from '../../../lib/airtable/client.ts';
-import { IMAGE_SIZES, isAttachmentId, type ImageSize } from '../../../lib/recipes/image-source.ts';
+import {
+  IMAGE_SIZES,
+  isAttachmentId,
+  isPhotoType,
+  type ImageSize,
+} from '../../../lib/recipes/image-source.ts';
 import { getImageUrl } from '../../../lib/recipes/repository.ts';
 
 const CACHE_FOR_A_YEAR = 'public, max-age=31536000, immutable';
@@ -31,14 +36,20 @@ export const GET: APIRoute = async ({ params, url }) => {
   if (!imageUrl) return notFound();
 
   const upstream = await fetch(imageUrl);
-  if (!upstream.ok || !upstream.body) return new Response(null, { status: 502 });
+  const contentType = upstream.headers.get('Content-Type');
+  // Checked again on the answer: Airtable's type for the attachment could differ from the file's
+  if (!upstream.ok || !upstream.body || !isPhotoType(contentType)) {
+    return new Response(null, { status: 502 });
+  }
 
   return new Response(upstream.body, {
     headers: {
-      'Content-Type': upstream.headers.get('Content-Type') ?? 'application/octet-stream',
+      'Content-Type': contentType,
       'Cache-Control': CACHE_FOR_A_YEAR,
       'Vercel-CDN-Cache-Control': CACHE_FOR_A_YEAR,
       'X-Content-Type-Options': 'nosniff',
+      // Even if a file got through: opened directly, it can't load or run anything
+      'Content-Security-Policy': "default-src 'none'; sandbox",
     },
   });
 };
