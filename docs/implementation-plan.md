@@ -143,7 +143,7 @@ Setup and smoke test are in section 5, right after the recipe detail. Playwright
 ## 8. Quality passes
 
 - [x] Accessibility pass: keyboard, contrast, 44 px targets, large system text size · `sonnet`
-- [ ] Performance check on a phone over mobile data (target ≈ 1 s per page) · `sonnet`
+- [x] Performance check on a phone over mobile data (target ≈ 1 s per page): local production build, Pixel 7, 4G (9/1.5 Mbps, 150 ms RTT), 4× CPU: every page under 0.6 s to LCP without browser cache. Server time on Vercel (cold start, Airtable on a cache miss) still to check in Sentry · `sonnet`
 - [x] Dark mode pass on every screen · `sonnet`
 
 ## 9. Project-wide reviews

@@ -18,10 +18,18 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0,
 });
 
-// Replay is large, so it's loaded after the page, as a chunk from our own domain (not Sentry's CDN).
-import('@sentry/replay').then(({ replayIntegration }) => {
-  Sentry.addIntegration(
-    // Form inputs (the password above all) stay masked; recipe text and photos aren't sensitive
-    replayIntegration({ maskAllInputs: true, maskAllText: false, blockAllMedia: false }),
-  );
-});
+// Replay is large (37 KB), so it's loaded once the page and its photos are in and the browser is
+// idle, as a chunk from our own domain (not Sentry's CDN). Errors before that have no replay.
+function loadReplay() {
+  import('@sentry/replay').then(({ replayIntegration }) => {
+    Sentry.addIntegration(
+      // Form inputs (the password above all) stay masked; recipe text and photos aren't sensitive
+      replayIntegration({ maskAllInputs: true, maskAllText: false, blockAllMedia: false }),
+    );
+  });
+}
+
+// Safari has no requestIdleCallback
+const whenIdle = window.requestIdleCallback ?? ((callback: () => void) => setTimeout(callback));
+if (document.readyState === 'complete') whenIdle(loadReplay);
+else window.addEventListener('load', () => whenIdle(loadReplay), { once: true });

@@ -36,7 +36,7 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 - [ ] **Timer alarm silent after leaving cooking mode:** each navigation is a full page load, so the audio unlock and the screen wake lock are lost; keep the screen on while a timer runs and hint when sound is locked, or keep the timers alive across navigations · `opus`
 - [ ] **Chosen servings don't reach cooking mode:** cooking mode always shows the base amounts; pass the servings in the URL. The plan item „ingredients sheet (scaled)“ is ticked although it isn't · `sonnet`
 - [ ] **Sentry Node SDK on cold start:** the static import in `lib/monitoring.ts` took 0.3–0.9 s locally, also without a DSN. Measure on Vercel; if confirmed, load it lazily or only with a DSN · `sonnet`
-- [ ] **Replay loads at page start:** the 37 KB replay chunk competes with hydration; load it after `load` and idle (`sentry.client.config.ts`) · `haiku`
+- [x] **Replay loads at page start:** the 37 KB replay chunk competes with hydration; load it after `load` and idle (`sentry.client.config.ts`) · `haiku`
 - [ ] **Missing tests:** actions (`src/actions/index.ts`), `_save-form.ts`, the login/edit/new pages, `PhotoStep`, the photo-upload hook, the timer store; no test for double submit · `sonnet`
 - [ ] **E2E and CI:** tests depend on the current recipe data (helper loads every recipe page), the favorites test passes silently when the list is empty, CI retries hide flaky tests, e2e doesn't gate deploys, the e2e job likely fails on Dependabot PRs (no secrets); the edit test „Abbrechen goes back“ flaked once locally · `sonnet`
 - [ ] **Timer pill text:** the space before „·“ is lost („Titel· Schritt 5“) because `.description` is a flex container (`Timers.module.css`) · `haiku`
