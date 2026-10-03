@@ -18,7 +18,7 @@ type Props = {
   invalidFields?: RecipeFormField[];
   /** The last submit failed for another reason (Airtable) */
   saveFailed?: boolean;
-  /** Where "Abbrechen" leads */
+  /** Where "Abbrechen" leads; it goes back instead when that's the previous page (lib/navigation/back-links.ts) */
   cancelHref: string;
 };
 
@@ -47,7 +47,7 @@ export default function RecipeForm({
   return (
     <form method="post" class={styles.form}>
       <header class={styles.header}>
-        <a class={styles.headerButton} href={cancelHref}>
+        <a class={styles.headerButton} href={cancelHref} data-back>
           {TEXT.cancel}
         </a>
         <h1 class={styles.heading}>{isNew ? TEXT.newTitle : TEXT.editTitle}</h1>

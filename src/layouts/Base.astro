@@ -41,3 +41,8 @@ const { title, activeTab } = Astro.props;
     {activeTab && <TabBar active={activeTab} />}
   </body>
 </html>
+
+<script>
+  import { setUpBackLinks } from '../lib/navigation/back-links.ts';
+  setUpBackLinks();
+</script>

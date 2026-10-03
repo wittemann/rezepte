@@ -11,7 +11,7 @@ The app edits recipes, and the design has a lot of client-side interaction: serv
 - **Mutations** go through Astro Actions with zod validation on the server. Forms work without JS (progressive enhancement)
 - **Islands** only where interaction really needs it. One framework for all islands, no mixing
 - **Island framework: Preact** (with the official `@astrojs/preact` integration). React API at about 3 kB; chosen by the project owner (2026-09-26) for the familiar React style
-- No global client state and no SPA routing. State that has to survive a page change lives in the URL. One exception: cooking mode opens on the recipe page (`CookingLauncher`, URL set to `/cook` with `history.pushState`), because Safari grants the screen wake lock only right after a tap, and a page load loses it. `/cook` still works as a page of its own Favorites are shared and live in Airtable (`Favorit seit`), toggled through an Action; the design's per-device `localStorage` favorites were dropped (2026-10-01)
+- No global client state and no SPA routing. State that has to survive a page change lives in the URL. One exception: cooking mode opens on the recipe page (`CookingLauncher`, URL set to `/cook` with `history.pushState`), because Safari grants the screen wake lock only right after a tap, and a page load loses it. `/cook` still works as a page of its own. Second exception: the list page seen last (start page, recipe list with search and filters, favorites) is kept in `sessionStorage`, so the back arrow on the recipe page returns to it (`lib/navigation/back-links.ts`, 2026-10-03). Favorites are shared and live in Airtable (`Favorit seit`), toggled through an Action; the design's per-device `localStorage` favorites were dropped (2026-10-01)
 
 ## Consequences
 

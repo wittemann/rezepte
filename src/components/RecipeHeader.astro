@@ -27,7 +27,13 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
 
 <header class="card" style={`background: ${cardColor}`}>
   <div class="actions">
-    <Button variant="round" onPastel href="/rezepte" label={TEXT.back}>
+    <Button
+      variant="round"
+      onPastel
+      href="/rezepte"
+      label={TEXT.back}
+      attributes={{ 'data-back': true, 'data-back-to-list': true }}
+    >
       <Icon name="back" size={22} strokeWidth={2.4} />
     </Button>
     <div class="actions-end">
