@@ -155,16 +155,18 @@ Run after all screens and section 8 are done, before launch. Each review is a re
 - **Afterwards:** the main session merges the reports, drops duplicates and false positives, and presents them to the human developer. Accepted findings become new items in this plan and are fixed in small, separately reviewed commits (the usual steps). Nothing is fixed inside the review run
 - Model tag = the sub-agent doing the review; bump it if a report looks shallow
 
-- [ ] Security: auth and session handling, middleware coverage, open redirects, input validation and Airtable formula injection on the write path, secrets, security headers, image proxy abuse, error leaks · `opus`
-- [ ] Architecture: layering (`lib` vs components vs pages), data flow, caching and rendering per [ADR 0003](decisions/0003-rendering-and-caching.md), coupling to Airtable, resilience when Airtable is down or rate-limited · `opus`
-- [ ] File structure: folder layout, naming, co-located specs/texts/styles, dead or misplaced files · `haiku`
-- [ ] General code quality: bugs, error handling, edge cases, duplication, type safety, lint-clean but questionable patterns · `sonnet`
-- [ ] Maintainability / readability: plain names (no abbreviations), short functions, comments only where the reason isn't obvious, UI texts in `.texts.ts` files · `sonnet`
-- [ ] Spec/ADR conformance: code matches `docs/specs/` and the ADRs; statuses in `docs/README.md` are true; no `Proposed`/`Open` decision still being built on; docs match reality (env vars, commands) · `sonnet`
-- [ ] Design fidelity: every screen against `design/` (variant `playful`) and [05-design-integration](specs/05-design-integration.md); hardcoded values instead of tokens; light and dark · `sonnet`
-- [ ] Performance: bundle size, hydrated islands, image handling per [ADR 0005](decisions/0005-image-handling.md), cache headers, Airtable calls per page, Vercel free-tier limits · `sonnet`
-- [ ] Dependencies: `npm audit`, outdated and unused packages, licenses, lockfile sanity, versions against current docs · `haiku`
-- [ ] Test quality: coverage gaps, brittle or flaky tests, tests that check implementation instead of behavior, missing edge cases in parsers and scaler · `sonnet`
+- [x] Security: auth and session handling, middleware coverage, open redirects, input validation and Airtable formula injection on the write path, secrets, security headers, image proxy abuse, error leaks · `opus`
+- [x] Architecture: layering (`lib` vs components vs pages), data flow, caching and rendering per [ADR 0003](decisions/0003-rendering-and-caching.md), coupling to Airtable, resilience when Airtable is down or rate-limited · `opus`
+- [x] File structure: folder layout, naming, co-located specs/texts/styles, dead or misplaced files · `haiku`
+- [x] General code quality: bugs, error handling, edge cases, duplication, type safety, lint-clean but questionable patterns · `sonnet`
+- [x] Maintainability / readability: plain names (no abbreviations), short functions, comments only where the reason isn't obvious, UI texts in `.texts.ts` files · `sonnet`
+- [x] Spec/ADR conformance: code matches `docs/specs/` and the ADRs; statuses in `docs/README.md` are true; no `Proposed`/`Open` decision still being built on; docs match reality (env vars, commands) · `sonnet`
+- [x] Design fidelity: every screen against `design/` (variant `playful`) and [05-design-integration](specs/05-design-integration.md); hardcoded values instead of tokens; light and dark · `sonnet`
+- [x] Performance: bundle size, hydrated islands, image handling per [ADR 0005](decisions/0005-image-handling.md), cache headers, Airtable calls per page, Vercel free-tier limits · `sonnet`
+- [x] Dependencies: `npm audit`, outdated and unused packages, licenses, lockfile sanity, versions against current docs · `haiku`
+- [x] Test quality: coverage gaps, brittle or flaky tests, tests that check implementation instead of behavior, missing edge cases in parsers and scaler · `sonnet`
+
+Done 2026-10-02 (one after another, not in parallel, to stay within the usage limit). The findings are in [bugs](bugs.md), section „From the project-wide reviews“.
 
 ## 10. Launch
 
