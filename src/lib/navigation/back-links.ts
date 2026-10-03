@@ -6,7 +6,7 @@
 // page, the recipe list (with its search and filters) or the favorites. Its server-rendered href
 // is the fallback for a direct visit.
 
-const LIST_PATHS = ['/', '/rezepte', '/favoriten'];
+const LIST_PATHS = ['/', '/recipes', '/favorites'];
 const LAST_LIST_PAGE_KEY = 'lastListPage';
 
 export function isListPage(url: URL) {

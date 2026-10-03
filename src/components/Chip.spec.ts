@@ -31,10 +31,10 @@ describe('Chip', () => {
   it('is a link with href and marks the active one as current', async () => {
     const html = await renderChip({
       label: 'Suppe',
-      href: '/rezepte?category=soup',
+      href: '/recipes?category=soup',
       active: true,
     });
-    expect(html).toMatch(/<a[^>]*href="\/rezepte\?category=soup"/);
+    expect(html).toMatch(/<a[^>]*href="\/recipes\?category=soup"/);
     expect(html).toContain('aria-current="true"');
     expect(html).not.toContain('<button');
   });

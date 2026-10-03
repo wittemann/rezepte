@@ -24,7 +24,7 @@ function heartTag(html: string) {
 describe('RecipeRow', () => {
   it('links to the recipe with title and meta', async () => {
     const html = await renderRow();
-    expect(html).toContain('href="/rezepte/recExample1"');
+    expect(html).toContain('href="/recipes/recExample1"');
     expect(html).toContain('Beispielrezept A');
     expect(html).toContain('1 Std. 5 Min. · 4 Portionen');
   });

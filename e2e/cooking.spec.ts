@@ -7,14 +7,14 @@ import { login } from './login.ts';
 
 /** The first recipe with instructions, so its page links to cooking mode. */
 async function findCookableRecipe(page: Page) {
-  await page.goto('/rezepte');
+  await page.goto('/recipes');
   const ids = await page
     .locator('a[data-recipe-id]')
     .evaluateAll((rows) => rows.map((row) => row.getAttribute('data-recipe-id') ?? ''));
   for (const id of ids) {
-    const response = await page.request.get(`/rezepte/${id}`);
+    const response = await page.request.get(`/recipes/${id}`);
     const html = await response.text();
-    if (html.includes(`/rezepte/${id}/cook`)) return id;
+    if (html.includes(`/recipes/${id}/cook`)) return id;
   }
   throw new Error('No recipe with instructions');
 }
@@ -23,7 +23,7 @@ test('cooking mode steps forward and back and ends at the recipe', async ({ page
   await login(page);
   const cookable = await findCookableRecipe(page);
 
-  await page.goto(`/rezepte/${cookable}`);
+  await page.goto(`/recipes/${cookable}`);
   // The launcher island only takes over the link once it is hydrated
   await page.waitForLoadState('networkidle');
   // Cooking mode opens on the recipe page (for the wake lock): the marker survives, no page load
@@ -51,7 +51,7 @@ test('cooking mode steps forward and back and ends at the recipe', async ({ page
     .getByRole('link', { name: TEXT.done })
     .or(page.getByRole('link', { name: TEXT.skip }));
   await end.click();
-  await expect(page).toHaveURL(new RegExp(`/rezepte/${cookable}$`));
+  await expect(page).toHaveURL(new RegExp(`/recipes/${cookable}$`));
   await expect(page.getByRole('link', { name: COOK_BUTTON_TEXT.label })).toBeVisible();
   expect(await page.evaluate(() => 'samePage' in window)).toBe(true);
 });
@@ -60,13 +60,13 @@ test('the back button closes cooking mode', async ({ page }) => {
   await login(page);
   const cookable = await findCookableRecipe(page);
 
-  await page.goto(`/rezepte/${cookable}`);
+  await page.goto(`/recipes/${cookable}`);
   await page.waitForLoadState('networkidle');
   await page.getByRole('link', { name: COOK_BUTTON_TEXT.label }).click();
   await expect(page.getByRole('button', { name: TEXT.previous })).toBeVisible();
 
   await page.goBack();
-  await expect(page).toHaveURL(new RegExp(`/rezepte/${cookable}$`));
+  await expect(page).toHaveURL(new RegExp(`/recipes/${cookable}$`));
   await expect(page.getByRole('button', { name: TEXT.previous })).toBeHidden();
   await expect(page.getByRole('link', { name: COOK_BUTTON_TEXT.label })).toBeVisible();
 });

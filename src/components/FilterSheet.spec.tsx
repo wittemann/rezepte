@@ -44,7 +44,7 @@ function renderSheet() {
             <span>Filter</span>
           </button>
         }
-        reset={<a href="/rezepte">Zurücksetzen</a>}
+        reset={<a href="/recipes">Zurücksetzen</a>}
       >
         <div dangerouslySetInnerHTML={{ __html: FORM }} />
       </FilterSheet>,

@@ -4,7 +4,7 @@ import { Window } from 'happy-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Recipe } from '../lib/recipes/recipe.ts';
 import { makeRecipe } from '../lib/recipes/test-recipe.ts';
-import FavoritesPage from './favoriten.astro';
+import FavoritesPage from './favorites.astro';
 
 vi.mock('astro:env/server', () => ({ AIRTABLE_TOKEN: 'token', AIRTABLE_BASE_ID: 'appTest' }));
 
@@ -15,7 +15,7 @@ async function renderPage() {
   const container = await AstroContainer.create();
   container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
   const html = await container.renderToString(FavoritesPage, {
-    request: new Request('http://localhost/favoriten'),
+    request: new Request('http://localhost/favorites'),
   });
   return new new Window().DOMParser().parseFromString(html, 'text/html');
 }

@@ -21,7 +21,7 @@ describe('SuggestionCarousel', () => {
     const html = await render([
       { id: 'recX', title: 'Beispiel', category: 'Dessert', totalMinutes: 65 },
     ]);
-    expect(html).toContain('href="/rezepte/recX"');
+    expect(html).toContain('href="/recipes/recX"');
     expect(html).toContain('Dessert');
     expect(html).toContain('1h05');
     expect(html).toContain('Beispiel');

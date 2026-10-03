@@ -10,12 +10,12 @@ describe('CategoryGrid', () => {
     const html = await container.renderToString(CategoryGrid, {
       props: {
         categories: [
-          { label: 'Suppe', name: 'soup', recipeCount: 1, href: '/rezepte?category=soup' },
-          { label: 'Salat', name: 'salad', recipeCount: 7, href: '/rezepte?category=salad' },
+          { label: 'Suppe', name: 'soup', recipeCount: 1, href: '/recipes?category=soup' },
+          { label: 'Salat', name: 'salad', recipeCount: 7, href: '/recipes?category=salad' },
         ],
       },
     });
-    expect(html).toContain('href="/rezepte?category=soup"');
+    expect(html).toContain('href="/recipes?category=soup"');
     expect(html).toContain('1 Rezept<');
     expect(html).toContain('7 Rezepte');
     expect(html).toContain('--pastel-cat-salad');

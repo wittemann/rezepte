@@ -21,7 +21,7 @@ function run(path: string, cookie?: string) {
 
 describe('middleware', () => {
   it('lets a request with a valid session through', async () => {
-    expect(await run('/rezepte', createSessionToken(SECRET))).toBe(PAGE);
+    expect(await run('/recipes', createSessionToken(SECRET))).toBe(PAGE);
   });
 
   it.each(['/login', '/login/', '/login?next=%2F'])(
@@ -32,9 +32,9 @@ describe('middleware', () => {
   );
 
   it('redirects to the login page without a session, keeping path and query', async () => {
-    const response = await run('/rezepte?q=Kn%C3%B6del');
+    const response = await run('/recipes?q=Kn%C3%B6del');
     expect(response.status).toBe(302);
-    expect(response.headers.get('location')).toBe('/login?next=%2Frezepte%3Fq%3DKn%25C3%25B6del');
+    expect(response.headers.get('location')).toBe('/login?next=%2Frecipes%3Fq%3DKn%25C3%25B6del');
   });
 
   it('redirects with an invalid session', async () => {

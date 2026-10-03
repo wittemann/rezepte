@@ -15,7 +15,7 @@ const recipe = await getById(
 );
 const steps = recipe ? cookingSteps(recipe.method) : [];
 
-if (recipe && steps.length === 0) return Astro.redirect(`/rezepte/${recipe.id}`);
+if (recipe && steps.length === 0) return Astro.redirect(`/recipes/${recipe.id}`);
 if (!recipe) Astro.response.status = 404;
 ---
 
@@ -25,7 +25,7 @@ if (!recipe) Astro.response.status = 404;
       client:load
       recipeId={recipe.id}
       hasPhoto={recipe.images.length > 0}
-      recipeHref={`/rezepte/${recipe.id}`}
+      recipeHref={`/recipes/${recipe.id}`}
       steps={steps}
       ingredients={recipe.ingredients}
       servings={recipe.servings}
@@ -37,7 +37,7 @@ if (!recipe) Astro.response.status = 404;
       title={TEXT.notFoundTitle}
       message={TEXT.notFoundMessage}
       linkText={TEXT.notFoundLink}
-      href="/rezepte"
+      href="/recipes"
     />
   </Base>
 )}

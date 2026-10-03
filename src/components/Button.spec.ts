@@ -26,8 +26,8 @@ describe('Button', () => {
   });
 
   it('is a link with href', async () => {
-    const html = await renderButton({ href: '/rezepte/recExample1' });
-    expect(html).toMatch(/<a[^>]*href="\/rezepte\/recExample1"/);
+    const html = await renderButton({ href: '/recipes/recExample1' });
+    expect(html).toMatch(/<a[^>]*href="\/recipes\/recExample1"/);
     expect(html).not.toContain('<button');
   });
 

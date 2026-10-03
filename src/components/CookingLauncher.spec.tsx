@@ -6,8 +6,8 @@ import CookingLauncher from './CookingLauncher.tsx';
 
 vi.mock('astro:actions', () => ({ actions: { addPhoto: vi.fn() } }));
 
-const RECIPE_HREF = '/rezepte/recX1';
-const COOK_HREF = '/rezepte/recX1/cook';
+const RECIPE_HREF = '/recipes/recX1';
+const COOK_HREF = '/recipes/recX1/cook';
 
 let page: HTMLElement;
 let link: HTMLAnchorElement;

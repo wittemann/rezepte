@@ -21,13 +21,13 @@ function hrefs(html: string, linkPattern: RegExp) {
 describe('TabBar', () => {
   it('links to the four sections', async () => {
     const html = await renderBar('home');
-    expect(hrefs(html, /./)).toEqual(['/', '/rezepte', '/favoriten', '/neu']);
+    expect(hrefs(html, /./)).toEqual(['/', '/recipes', '/favorites', '/new']);
   });
 
   it.each([
     ['home', '/'],
-    ['recipes', '/rezepte'],
-    ['favorites', '/favoriten'],
+    ['recipes', '/recipes'],
+    ['favorites', '/favorites'],
   ] as const)('marks only the %s tab as current', async (active, href) => {
     const html = await renderBar(active);
     expect(hrefs(html, /aria-current="page"/)).toEqual([href]);

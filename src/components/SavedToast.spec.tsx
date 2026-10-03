@@ -9,9 +9,9 @@ const container = document.createElement('div');
 afterEach(() => render(null, container));
 
 it('shows "Gespeichert" and takes the marker out of the URL', () => {
-  history.replaceState(null, '', '/rezepte/recTest1?saved');
+  history.replaceState(null, '', '/recipes/recTest1?saved');
   act(() => render(<SavedToast />, container));
 
   expect(container.textContent).toBe('Gespeichert');
-  expect(location.pathname + location.search).toBe('/rezepte/recTest1');
+  expect(location.pathname + location.search).toBe('/recipes/recTest1');
 });

@@ -1,5 +1,5 @@
 // UI texts of the filter sheet (title, name of its button) and the "N Rezepte anzeigen" button (design/README.md, "Rezepte").
-// The texts of the sheet's content are in pages/rezepte/_index.texts.ts.
+// The texts of the sheet's content are in pages/recipes/_index.texts.ts.
 export const TEXT = {
   filter: 'Filter',
   /** Name of the button for screen readers; the visible number alone would read as "Filter2" */

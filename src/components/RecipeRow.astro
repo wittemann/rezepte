@@ -26,7 +26,7 @@ const tileColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
 const meta = recipeRowMeta(recipe);
 ---
 
-<a class="row" href={`/rezepte/${recipe.id}`} data-recipe-id={recipe.id}>
+<a class="row" href={`/recipes/${recipe.id}`} data-recipe-id={recipe.id}>
   {photoUrl ? (
     <img class="thumb" src={photoUrl} alt="" loading="lazy" decoding="async" />
   ) : (

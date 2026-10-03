@@ -27,7 +27,7 @@ async function renderPage(search = '') {
   container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
   container.addClientRenderer({ name: '@astrojs/preact', entrypoint: '@astrojs/preact/client.js' });
   return container.renderToString(RecipesPage, {
-    request: new Request(`http://localhost/rezepte${search}`),
+    request: new Request(`http://localhost/recipes${search}`),
   });
 }
 
@@ -150,25 +150,25 @@ describe('recipe list page', () => {
 
     it('meal links keep the search and the filters', async () => {
       const html = await renderPage(search);
-      expect(hrefWithText(html, 'Alle')).toBe('/rezepte?q=K%C3%A4se&category=soup&max30=1');
+      expect(hrefWithText(html, 'Alle')).toBe('/recipes?q=K%C3%A4se&category=soup&max30=1');
       expect(hrefWithText(html, 'Frühstück')).toBe(
-        '/rezepte?q=K%C3%A4se&meal=breakfast&category=soup&max30=1',
+        '/recipes?q=K%C3%A4se&meal=breakfast&category=soup&max30=1',
       );
-      expect(html).toContain('href="/rezepte?q=K%C3%A4se&amp;category=soup&amp;max30=1"');
+      expect(html).toContain('href="/recipes?q=K%C3%A4se&amp;category=soup&amp;max30=1"');
     });
 
     it('the clear link keeps the filters and the meal', async () => {
       const html = await renderPage(search);
       expect(hrefOf(html, 'a[aria-label="Suche löschen"]')).toBe(
-        '/rezepte?meal=baking&category=soup&max30=1',
+        '/recipes?meal=baking&category=soup&max30=1',
       );
-      expect(html).toContain('href="/rezepte?meal=baking&amp;category=soup&amp;max30=1"');
+      expect(html).toContain('href="/recipes?meal=baking&amp;category=soup&amp;max30=1"');
     });
 
     it('reset keeps the search and the meal', async () => {
       const html = await renderPage(search);
-      expect(hrefWithText(html, 'Zurücksetzen')).toBe('/rezepte?q=K%C3%A4se&meal=baking');
-      expect(html).toContain('href="/rezepte?q=K%C3%A4se&amp;meal=baking"');
+      expect(hrefWithText(html, 'Zurücksetzen')).toBe('/recipes?q=K%C3%A4se&meal=baking');
+      expect(html).toContain('href="/recipes?q=K%C3%A4se&amp;meal=baking"');
     });
 
     it('the forms keep what they do not send themselves', async () => {

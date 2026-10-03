@@ -37,7 +37,7 @@ if (!values) Astro.response.status = 404;
         {values}
         {invalidFields}
         {saveFailed}
-        cancelHref={`/rezepte/${id}`}
+        cancelHref={`/recipes/${id}`}
       />
     </main>
   </Base>
@@ -47,7 +47,7 @@ if (!values) Astro.response.status = 404;
       title={TEXT.notFoundTitle}
       message={TEXT.notFoundMessage}
       linkText={TEXT.notFoundLink}
-      href="/rezepte"
+      href="/recipes"
     />
   </Base>
 )}

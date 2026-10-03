@@ -5,7 +5,7 @@ import RecipeForm from '../components/RecipeForm.tsx';
 import { TEXT } from '../components/RecipeForm.texts.ts';
 import Base from '../layouts/Base.astro';
 import { emptyFormValues } from '../lib/recipes/form.ts';
-import { saveSubmittedForm } from './rezepte/_save-form.ts';
+import { saveSubmittedForm } from './recipes/_save-form.ts';
 
 let form: Awaited<ReturnType<typeof saveSubmittedForm>> | undefined;
 if (Astro.request.method === 'POST') {
@@ -22,7 +22,7 @@ if (Astro.request.method === 'POST') {
       values={form?.values ?? emptyFormValues()}
       invalidFields={form?.invalidFields}
       saveFailed={form?.saveFailed}
-      cancelHref="/rezepte"
+      cancelHref="/recipes"
     />
   </main>
 </Base>

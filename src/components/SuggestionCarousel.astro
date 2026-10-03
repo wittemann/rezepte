@@ -27,7 +27,7 @@ const { recipes, mealName, rerollHref } = Astro.props;
 ) : (
   <div class="carousel" style={`--card-color: var(--pastel-meal-${mealName})`}>
     {recipes.map((recipe) => (
-      <a class="card" href={`/rezepte/${recipe.id}`} data-suggestion-id={recipe.id}>
+      <a class="card" href={`/recipes/${recipe.id}`} data-suggestion-id={recipe.id}>
         <span class="pills">
           {recipe.category ? <Pill>{recipe.category}</Pill> : <span />}
           {recipe.totalMinutes !== undefined && (

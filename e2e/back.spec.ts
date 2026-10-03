@@ -10,7 +10,7 @@ test('the back arrow returns to the search, also after "Abbrechen" in the form',
   page,
 }) => {
   await login(page);
-  await page.goto('/rezepte');
+  await page.goto('/recipes');
   const title = await page.locator('a[data-recipe-id] .title').first().innerText();
   const search = page.getByRole('searchbox', { name: SEARCH_TEXT.placeholder });
   await search.fill(title);

@@ -8,7 +8,7 @@ import RecipeRow from '../components/RecipeRow.astro';
 import Base from '../layouts/Base.astro';
 import { sortFavorites } from '../lib/recipes/favorites.ts';
 import { getAll } from '../lib/recipes/repository.ts';
-import { TEXT } from './_favoriten.texts.ts';
+import { TEXT } from './_favorites.texts.ts';
 
 const recipes = sortFavorites(await getAll({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID }));
 ---

@@ -17,6 +17,6 @@ describe('404 page', () => {
     expect(html).toMatch(new RegExp(`<h1\\b[^>]*>${TEXT.title}</h1>`));
     expect(html).toContain(TEXT.message);
     expect(html).toContain(TEXT.linkText);
-    expect(html).not.toContain('href="/favoriten"');
+    expect(html).not.toContain('href="/favorites"');
   });
 });

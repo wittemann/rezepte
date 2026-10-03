@@ -24,11 +24,11 @@ describe('RecipeHeader', () => {
     const document = await renderHeader({ title: 'Beispiel Suppe' });
     expect(document.querySelector('h1')?.textContent).toBe('Beispiel Suppe');
     expect(document.body.textContent).toContain('Suppe');
-    expect(document.querySelector('a[aria-label="Zurück"]')?.getAttribute('href')).toBe('/rezepte');
+    expect(document.querySelector('a[aria-label="Zurück"]')?.getAttribute('href')).toBe('/recipes');
     const edit = [...document.querySelectorAll('a')].find(
       (a) => a.textContent?.trim() === 'Bearbeiten',
     );
-    expect(edit?.getAttribute('href')).toBe('/rezepte/recX1/edit');
+    expect(edit?.getAttribute('href')).toBe('/recipes/recX1/edit');
   });
 
   it('uses the category color, a neutral one for an unknown category', async () => {

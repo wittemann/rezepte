@@ -43,7 +43,7 @@ function renderCooking(
       <CookingMode
         recipeId="recX1"
         hasPhoto={hasPhoto}
-        recipeHref="/rezepte/recX1"
+        recipeHref="/recipes/recX1"
         steps={steps}
         ingredients={ingredients}
         servings={servings}
@@ -59,7 +59,7 @@ describe('CookingMode', () => {
     renderCooking();
     expect(container.textContent).toContain('Schritt 1 von 3');
     expect(container.textContent).toContain('Zwiebeln würfeln.');
-    expect(container.querySelector('a')?.getAttribute('href')).toBe('/rezepte/recX1');
+    expect(container.querySelector('a')?.getAttribute('href')).toBe('/recipes/recX1');
   });
 
   it('has a progress dot per step and marks the current one', () => {
@@ -135,7 +135,7 @@ describe('CookingMode', () => {
       const done = [...container.querySelectorAll('a')].find(
         (link) => link.textContent === 'Fertig',
       );
-      expect(done?.getAttribute('href')).toBe('/rezepte/recX1');
+      expect(done?.getAttribute('href')).toBe('/recipes/recX1');
     });
 
     it('swipes left for the next step and right for the previous one', () => {
@@ -219,7 +219,7 @@ describe('CookingMode', () => {
       expect(input.getAttribute('accept')).toBe('image/*');
       expect(input.getAttribute('capture')).toBe('environment');
       expect(footerAction()?.textContent).toBe('Überspringen');
-      expect(footerAction()?.getAttribute('href')).toBe('/rezepte/recX1');
+      expect(footerAction()?.getAttribute('href')).toBe('/recipes/recX1');
     });
 
     it('uploads the shrunk photo for this recipe, shows it, and ends with "Fertig"', async () => {

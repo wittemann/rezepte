@@ -35,20 +35,20 @@ const steps = recipe ? cookingSteps(recipe.method) : [];
     <main data-recipe-page>
       <RecipeHeader {recipe} />
       <RecipeMeta {recipe} />
-      {!recipe.hasInstructions && <StubNotice editHref={`/rezepte/${recipe.id}/edit`} />}
+      {!recipe.hasInstructions && <StubNotice editHref={`/recipes/${recipe.id}/edit`} />}
       {recipe.ingredients.length > 0 && (
         <Ingredients client:load ingredients={recipe.ingredients} servings={recipe.servings} />
       )}
       {recipe.hasInstructions && <Steps method={recipe.method} category={recipe.category} />}
       {recipe.notes && <Notes notes={recipe.notes} />}
-      {recipe.hasInstructions && <CookButton href={`/rezepte/${recipe.id}/cook`} />}
+      {recipe.hasInstructions && <CookButton href={`/recipes/${recipe.id}/cook`} />}
     </main>
     {steps.length > 0 && (
       <CookingLauncher
         client:idle
         recipeId={recipe.id}
-        recipeHref={`/rezepte/${recipe.id}`}
-        cookHref={`/rezepte/${recipe.id}/cook`}
+        recipeHref={`/recipes/${recipe.id}`}
+        cookHref={`/recipes/${recipe.id}/cook`}
         hasPhoto={recipe.images.length > 0}
         {steps}
         ingredients={recipe.ingredients}
@@ -63,7 +63,7 @@ const steps = recipe ? cookingSteps(recipe.method) : [];
       title={TEXT.notFoundTitle}
       message={TEXT.notFoundMessage}
       linkText={TEXT.notFoundLink}
-      href="/rezepte"
+      href="/recipes"
     />
   </Base>
 )}

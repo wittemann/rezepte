@@ -29,11 +29,11 @@ describe('SegmentedControl', () => {
 
   it('renders links when options have an href, only the active one is current', async () => {
     const html = await renderControl([
-      { label: 'Alle', active: true, href: '/rezepte' },
-      { label: 'Backen', active: false, href: '/rezepte?meal=baking' },
+      { label: 'Alle', active: true, href: '/recipes' },
+      { label: 'Backen', active: false, href: '/recipes?meal=baking' },
     ]);
     expect(html).not.toContain('<button');
-    expect(html).toContain('href="/rezepte?meal=baking"');
+    expect(html).toContain('href="/recipes?meal=baking"');
     expect(html.match(/aria-current="true"/g)).toHaveLength(1);
   });
 

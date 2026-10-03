@@ -2,7 +2,7 @@
 // test contains no recipe data (the repo is public).
 import { test, expect } from '@playwright/test';
 import { TEXT as LOGIN_TEXT } from '../src/components/LoginForm.texts.ts';
-import { TEXT as LIST_TEXT } from '../src/pages/rezepte/_index.texts.ts';
+import { TEXT as LIST_TEXT } from '../src/pages/recipes/_index.texts.ts';
 import { login } from './login.ts';
 
 test('a wrong password shows the error and stays on the login page', async ({ page }) => {
@@ -15,8 +15,8 @@ test('a wrong password shows the error and stays on the login page', async ({ pa
 });
 
 test('pages need a login', async ({ page }) => {
-  await page.goto('/rezepte');
-  await expect(page).toHaveURL(/\/login\?next=%2Frezepte/);
+  await page.goto('/recipes');
+  await expect(page).toHaveURL(/\/login\?next=%2Frecipes/);
 });
 
 // Astro also runs actions for `?_action=<name>` on any page, the login page included. Empty input,
@@ -31,7 +31,7 @@ test('actions need a login, also when called through the login page', async ({ r
 test('login → recipes list → first recipe', async ({ page }) => {
   await login(page);
 
-  await page.goto('/rezepte');
+  await page.goto('/recipes');
   await expect(page.getByRole('heading', { level: 1, name: LIST_TEXT.title })).toBeVisible();
 
   const firstRow = page.locator('a[data-recipe-id]').first();
@@ -39,6 +39,6 @@ test('login → recipes list → first recipe', async ({ page }) => {
   const title = await firstRow.locator('.title').innerText();
   await firstRow.click();
 
-  await expect(page).toHaveURL(/\/rezepte\/rec\w+$/);
+  await expect(page).toHaveURL(/\/recipes\/rec\w+$/);
   await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
 });

@@ -30,7 +30,7 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
     <Button
       variant="round"
       onPastel
-      href="/rezepte"
+      href="/recipes"
       label={TEXT.back}
       attributes={{ 'data-back': true, 'data-back-to-list': true }}
     >
@@ -38,7 +38,7 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
     </Button>
     <div class="actions-end">
       <FavoriteButton client:load recipeId={recipe.id} {favorite} />
-      <Button variant="outline" onPastel href={`/rezepte/${recipe.id}/edit`}>
+      <Button variant="outline" onPastel href={`/recipes/${recipe.id}/edit`}>
         {TEXT.edit}
       </Button>
     </div>

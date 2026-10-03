@@ -9,7 +9,7 @@ import { login } from './login.ts';
 
 test('"Bearbeiten" opens the filled form and "Abbrechen" goes back', async ({ page }) => {
   await login(page);
-  await page.goto('/rezepte');
+  await page.goto('/recipes');
   await page.locator('a[data-recipe-id]').first().click();
   const recipeUrl = page.url();
   const title = await page.getByRole('heading', { level: 1 }).innerText();

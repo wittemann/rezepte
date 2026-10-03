@@ -9,9 +9,9 @@ export type TabId = 'home' | 'recipes' | 'favorites';
 // "Neu" has no id: it opens the form and is never the active tab
 const TABS: { id: TabId | null; href: string; label: string; icon: IconName }[] = [
   { id: 'home', href: '/', label: TEXT.home, icon: 'home' },
-  { id: 'recipes', href: '/rezepte', label: TEXT.recipes, icon: 'search' },
-  { id: 'favorites', href: '/favoriten', label: TEXT.favorites, icon: 'heart' },
-  { id: null, href: '/neu', label: TEXT.create, icon: 'plus' },
+  { id: 'recipes', href: '/recipes', label: TEXT.recipes, icon: 'search' },
+  { id: 'favorites', href: '/favorites', label: TEXT.favorites, icon: 'heart' },
+  { id: null, href: '/new', label: TEXT.create, icon: 'plus' },
 ];
 
 type Props = {

@@ -10,13 +10,13 @@ const LARGE_TEXT = '32px';
 
 /** The paths of all screens, using the first recipe that has steps (so cooking mode shows). */
 async function screens(page: Page) {
-  await page.goto('/rezepte');
+  await page.goto('/recipes');
   const ids = await page
     .locator('a[data-recipe-id]')
     .evaluateAll((rows) => rows.map((row) => row.getAttribute('data-recipe-id') ?? ''));
   let recipeId = ids[0];
   for (const id of ids) {
-    await page.goto(`/rezepte/${id}/cook`);
+    await page.goto(`/recipes/${id}/cook`);
     // Cooking mode sends recipes without steps back to the recipe page
     if (page.url().endsWith('/cook')) {
       recipeId = id;
@@ -25,12 +25,12 @@ async function screens(page: Page) {
   }
   return [
     '/',
-    '/rezepte',
-    '/favoriten',
-    `/rezepte/${recipeId}`,
-    `/rezepte/${recipeId}/cook`,
-    `/rezepte/${recipeId}/edit`,
-    '/neu',
+    '/recipes',
+    '/favorites',
+    `/recipes/${recipeId}`,
+    `/recipes/${recipeId}/cook`,
+    `/recipes/${recipeId}/edit`,
+    '/new',
   ];
 }
 

@@ -56,9 +56,9 @@ describe('toSearchParams and listHref', () => {
   });
 
   it('leaves out what is not set', () => {
-    expect(listHref({ query: '', filters: {} })).toBe('/rezepte');
+    expect(listHref({ query: '', filters: {} })).toBe('/recipes');
     expect(listHref({ query: 'a b', filters: { meal: 'Backen' } })).toBe(
-      '/rezepte?q=a+b&meal=baking',
+      '/recipes?q=a+b&meal=baking',
     );
   });
 });

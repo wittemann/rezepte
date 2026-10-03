@@ -3,7 +3,7 @@
 import { test, expect } from '@playwright/test';
 import { TEXT as FAVORITE_TEXT } from '../src/components/FavoriteButton.texts.ts';
 import { TEXT as TAB_TEXT } from '../src/components/TabBar.texts.ts';
-import { TEXT } from '../src/pages/_favoriten.texts.ts';
+import { TEXT } from '../src/pages/_favorites.texts.ts';
 import { login } from './login.ts';
 
 test('the favorites tab lists recipes whose heart is filled', async ({ page }) => {
@@ -18,7 +18,7 @@ test('the favorites tab lists recipes whose heart is filled', async ({ page }) =
     return;
   }
   await rows.first().click();
-  await expect(page).toHaveURL(/\/rezepte\/rec\w+$/);
+  await expect(page).toHaveURL(/\/recipes\/rec\w+$/);
   await expect(page.getByRole('button', { name: FAVORITE_TEXT.remove })).toHaveAttribute(
     'aria-pressed',
     'true',

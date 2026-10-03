@@ -72,7 +72,7 @@ describe('start page', () => {
   it('suggests recipes of the meal within the time limit, each linking to its recipe', async () => {
     const document = await renderPage();
     const cards = [...document.querySelectorAll('[data-suggestion-id]')];
-    expect(cards.map((card) => card.getAttribute('href'))).toEqual(['/rezepte/recA']);
+    expect(cards.map((card) => card.getAttribute('href'))).toEqual(['/recipes/recA']);
   });
 
   it('rolls the dice by counting up in the URL', async () => {
@@ -105,7 +105,7 @@ describe('start page', () => {
     expect(titles).toEqual(['Beispiel 5', 'Beispiel 4', 'Beispiel 3', 'Beispiel 2']);
     const more = document.querySelector('.more');
     expect(more?.textContent).toBe('Alle 5 anzeigen →');
-    expect(more?.getAttribute('href')).toBe('/favoriten');
+    expect(more?.getAttribute('href')).toBe('/favorites');
   });
 
   it('leaves out the favorites section without favorites', async () => {
@@ -124,8 +124,8 @@ describe('start page', () => {
       link.textContent?.replace(/\s+/g, ' ').trim(),
     ]);
     expect(links).toEqual([
-      ['/rezepte?category=salad', 'Salat1 Rezept'],
-      ['/rezepte?category=soup', 'Suppe2 Rezepte'],
+      ['/recipes?category=salad', 'Salat1 Rezept'],
+      ['/recipes?category=soup', 'Suppe2 Rezepte'],
     ]);
   });
 });

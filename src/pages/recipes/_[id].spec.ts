@@ -20,7 +20,7 @@ async function renderPage(recipe: Recipe | undefined, id = 'recExample1') {
   container.addClientRenderer({ name: '@astrojs/preact', entrypoint: '@astrojs/preact/client.js' });
   const response = await container.renderToResponse(RecipePage, {
     params: { id },
-    request: new Request(`http://localhost/rezepte/${id}`),
+    request: new Request(`http://localhost/recipes/${id}`),
   });
   const html = await response.text();
   return { response, document: new new Window().DOMParser().parseFromString(html, 'text/html') };
@@ -37,7 +37,7 @@ describe('recipe page', () => {
     expect(getById).toHaveBeenCalledWith({ token: 'token', baseId: 'appTest' }, 'recX1');
     expect(document.title).toBe('Beispiel Suppe');
     expect(document.querySelector('h1')?.textContent).toBe('Beispiel Suppe');
-    expect(document.querySelector('a[href="/favoriten"]')).toBeNull();
+    expect(document.querySelector('a[href="/favorites"]')).toBeNull();
   });
 
   it('answers 404 with its own message for an unknown recipe', async () => {
@@ -45,7 +45,7 @@ describe('recipe page', () => {
     expect(response.status).toBe(404);
     expect(document.title).toBe('Rezept nicht gefunden');
     expect(document.querySelector('h1')?.textContent).toBe('Rezept nicht gefunden');
-    expect(document.querySelector('main a')?.getAttribute('href')).toBe('/rezepte');
+    expect(document.querySelector('main a')?.getAttribute('href')).toBe('/recipes');
   });
 
   it('shows the ingredients only when the recipe has some', async () => {
@@ -72,7 +72,7 @@ describe('recipe page', () => {
   it('shows the stub notice instead of steps for a recipe without instructions', async () => {
     const stub = (await renderPage(makeRecipe({ id: 'recX1', hasInstructions: false }))).document;
     expect(stub.body.textContent).toContain('Hier fehlt noch die Anleitung');
-    expect(stub.querySelector('a[href="/rezepte/recX1/edit"].primary')).not.toBeNull();
+    expect(stub.querySelector('a[href="/recipes/recX1/edit"].primary')).not.toBeNull();
 
     const full = (await renderPage(makeRecipe())).document;
     expect(full.body.textContent).not.toContain('Hier fehlt noch die Anleitung');
@@ -80,11 +80,11 @@ describe('recipe page', () => {
 
   it('offers cooking mode only for a recipe with instructions', async () => {
     const full = (await renderPage(makeRecipe({ id: 'recX1' }))).document;
-    expect(full.querySelector('a[href="/rezepte/recX1/cook"]')?.textContent?.trim()).toBe(
+    expect(full.querySelector('a[href="/recipes/recX1/cook"]')?.textContent?.trim()).toBe(
       'Los, wir kochen!',
     );
 
     const stub = (await renderPage(makeRecipe({ id: 'recX1', hasInstructions: false }))).document;
-    expect(stub.querySelector('a[href="/rezepte/recX1/cook"]')).toBeNull();
+    expect(stub.querySelector('a[href="/recipes/recX1/cook"]')).toBeNull();
   });
 });

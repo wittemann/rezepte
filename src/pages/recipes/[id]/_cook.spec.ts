@@ -19,7 +19,7 @@ async function renderPage(recipe: Recipe | undefined, id = 'recExample1') {
   container.addClientRenderer({ name: '@astrojs/preact', entrypoint: '@astrojs/preact/client.js' });
   const response = await container.renderToResponse(CookPage, {
     params: { id },
-    request: new Request(`http://localhost/rezepte/${id}/cook`),
+    request: new Request(`http://localhost/recipes/${id}/cook`),
   });
   const html = await response.text();
   return { response, document: new new Window().DOMParser().parseFromString(html, 'text/html') };
@@ -34,13 +34,13 @@ describe('cooking mode page', () => {
     expect(getById).toHaveBeenCalledWith({ token: 'token', baseId: 'appTest' }, 'recX1');
     expect(document.body.textContent).toContain('Schritt 1 von 2');
     expect(document.body.textContent).toContain('Erst.');
-    expect(document.querySelector('a[href="/favoriten"]')).toBeNull();
+    expect(document.querySelector('a[href="/favorites"]')).toBeNull();
   });
 
   it('sends a recipe without steps back to its page', async () => {
     const { response } = await renderPage(makeRecipe({ id: 'recX1', hasInstructions: false }));
     expect(response.status).toBe(302);
-    expect(response.headers.get('location')).toBe('/rezepte/recX1');
+    expect(response.headers.get('location')).toBe('/recipes/recX1');
   });
 
   it('answers 404 for an unknown recipe', async () => {

@@ -3,12 +3,12 @@
 import { test, expect } from '@playwright/test';
 import { TEXT as FILTER_TEXT } from '../src/components/FilterSheet.texts.ts';
 import { TEXT as SEARCH_TEXT } from '../src/components/SearchField.texts.ts';
-import { TEXT } from '../src/pages/rezepte/_index.texts.ts';
+import { TEXT } from '../src/pages/recipes/_index.texts.ts';
 import { login } from './login.ts';
 
 test('searching finds a recipe by its name and the cross clears the search', async ({ page }) => {
   await login(page);
-  await page.goto('/rezepte');
+  await page.goto('/recipes');
   const title = await page.locator('a[data-recipe-id] .title').first().innerText();
 
   const search = page.getByRole('searchbox', { name: SEARCH_TEXT.placeholder });
@@ -29,7 +29,7 @@ test('searching finds a recipe by its name and the cross clears the search', asy
 
 test('the meal control filters the list', async ({ page }) => {
   await login(page);
-  await page.goto('/rezepte');
+  await page.goto('/recipes');
   const meals = page.getByRole('group', { name: TEXT.meals });
 
   await meals.getByRole('link', { name: TEXT.mealLabels.baking }).click();
@@ -42,7 +42,7 @@ test('the meal control filters the list', async ({ page }) => {
 
 test('the filter sheet counts, applies and resets a filter', async ({ page }) => {
   await login(page);
-  await page.goto('/rezepte');
+  await page.goto('/recipes');
   // The sheet only opens once the island is hydrated
   await page.waitForLoadState('networkidle');
 

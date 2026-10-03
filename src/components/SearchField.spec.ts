@@ -7,7 +7,7 @@ async function renderField(query: string, hiddenFields: [string, string][] = [])
   const container = await AstroContainer.create();
   container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
   return container.renderToString(SearchField, {
-    props: { query, hiddenFields, clearHref: '/rezepte?meal=baking' },
+    props: { query, hiddenFields, clearHref: '/recipes?meal=baking' },
   });
 }
 
@@ -15,7 +15,7 @@ describe('SearchField', () => {
   it('is a GET form to the list that sends q', async () => {
     const html = await renderField('');
     expect(html).toContain('method="get"');
-    expect(html).toContain('action="/rezepte"');
+    expect(html).toContain('action="/recipes"');
     expect(html).toContain('name="q"');
     expect(html).toContain('placeholder="Worauf hast du Lust?"');
   });
@@ -32,7 +32,7 @@ describe('SearchField', () => {
   it('shows the query escaped, with a clear link', async () => {
     const html = await renderField('"><script>x</script>');
     expect(html).toContain('value="&quot;><script>x</script>"'); // the quote can't end the attribute
-    expect(html).toContain('href="/rezepte?meal=baking"');
+    expect(html).toContain('href="/recipes?meal=baking"');
   });
 
   it('has no clear link without a query', async () => {

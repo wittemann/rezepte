@@ -2,7 +2,7 @@
 // no recipe data (the repo is public).
 import { test, expect } from '@playwright/test';
 import { TEXT as CAROUSEL_TEXT } from '../src/components/SuggestionCarousel.texts.ts';
-import { TEXT as LIST_TEXT } from '../src/pages/rezepte/_index.texts.ts';
+import { TEXT as LIST_TEXT } from '../src/pages/recipes/_index.texts.ts';
 import { TEXT } from '../src/pages/_index.texts.ts';
 import { login } from './login.ts';
 
@@ -41,14 +41,14 @@ test('a suggestion opens its recipe and the dice card shuffles anew', async ({ p
   const card = page.locator('[data-suggestion-id]').first();
   await expect(card).toBeVisible();
   await card.click();
-  await expect(page).toHaveURL(/\/rezepte\/rec\w+$/);
+  await expect(page).toHaveURL(/\/recipes\/rec\w+$/);
 });
 
 test('a category on the start page opens the filtered recipe list', async ({ page }) => {
   await login(page);
   await page.goto('/');
 
-  await page.locator('a[href^="/rezepte?category="]').first().click();
-  await expect(page).toHaveURL(/\/rezepte\?category=/);
+  await page.locator('a[href^="/recipes?category="]').first().click();
+  await expect(page).toHaveURL(/\/recipes\?category=/);
   await expect(page.getByRole('heading', { level: 1, name: LIST_TEXT.title })).toBeVisible();
 });

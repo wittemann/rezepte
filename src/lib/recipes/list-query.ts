@@ -1,12 +1,12 @@
 // The recipe list's state lives in the URL (docs/decisions/0006-forms-and-interactivity.md):
-//   /rezepte?q=suppe&meal=breakfast&category=main&category=soup&max30=1&steps=1
+//   /recipes?q=suppe&meal=breakfast&category=main&category=soup&max30=1&steps=1
 // Parsing only accepts known values and ignores everything else, so a hand-made URL
 // can't put anything unexpected into the page.
 
 import { CATEGORIES, MEALS } from './fields.ts';
 import type { RecipeFilters } from './search.ts';
 
-export const LIST_PATH = '/rezepte';
+export const LIST_PATH = '/recipes';
 
 /** "Bis 30 Min." */
 export const QUICK_MINUTES = 30;
