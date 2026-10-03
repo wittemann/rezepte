@@ -1,10 +1,10 @@
 // The start page's state lives in the URL (docs/decisions/0006-forms-and-interactivity.md):
 //   /?meal=breakfast&time=little
-// Without parameters the defaults depend on the time: before 11 → Frühstück, otherwise Abend;
+// Without parameters the defaults depend on the time: before 11 → breakfast, otherwise lunch & dinner;
 // Monday to Friday → "Wenig Zeit", weekend → "Viel Zeit" (design/README.md, "Start").
 // Parsing only accepts known values and ignores everything else.
 
-import { MEALS, type Meal } from '../recipes/fields.ts';
+import { MEALS, mealValue, type Meal } from '../recipes/fields.ts';
 
 export const START_PATH = '/';
 
@@ -45,7 +45,7 @@ export function localTime(now: Date) {
 /** Reads the start state from URL parameters; what's missing or invalid falls back to the defaults. */
 export function parseStartQuery(params: URLSearchParams, now: Date) {
   const { hour, isWeekend } = localTime(now);
-  const defaultMeal: Meal = hour < 11 ? 'Frühstück' : 'Mittag & Abend';
+  const defaultMeal: Meal = hour < 11 ? mealValue('breakfast') : mealValue('lunch-dinner');
   const defaultTime: StartTime = isWeekend ? 'much' : 'little';
   return {
     meal: MEALS.find((entry) => entry.name === params.get('meal'))?.value ?? defaultMeal,
@@ -75,7 +75,7 @@ export function startHref({ meal, time }: StartState, diceSeed = 0) {
 /** Longest total time for the suggestions; undefined = no limit. */
 export function maxTotalMinutes({ meal, time }: StartState) {
   if (time === 'much') return undefined;
-  return meal === 'Backen' ? LITTLE_TIME_BAKING_MINUTES : LITTLE_TIME_MINUTES;
+  return meal === mealValue('baking') ? LITTLE_TIME_BAKING_MINUTES : LITTLE_TIME_MINUTES;
 }
 
 export type Greeting = 'morning' | 'day' | 'evening';

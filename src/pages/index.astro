@@ -58,7 +58,7 @@ const tiles = MEALS.map((entry) => ({
 const timeOptions = [
   {
     label: TEXT.littleTime,
-    hint: TEXT.littleTimeHint(state.meal === 'Backen'),
+    hint: TEXT.littleTimeHint(currentMeal.name === 'baking'),
     active: state.time === 'little',
     href: startHref({ ...state, time: 'little' }),
   },

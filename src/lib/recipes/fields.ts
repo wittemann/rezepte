@@ -49,6 +49,13 @@ export const MEALS = [
   { value: 'Backen', name: 'baking' },
 ] as const;
 
+/** The Airtable value of a meal, so code can pick a meal by its English name. */
+export function mealValue(name: (typeof MEALS)[number]['name']) {
+  const meal = MEALS.find((entry) => entry.name === name);
+  if (!meal) throw new Error(`Unknown meal ${name}`);
+  return meal.value;
+}
+
 /**
  * The sources ("Quelle") a recipe can come from; "Webseite" covers any other website.
  * A fixed list, because writes use typecast and would turn a typo into a new select option.

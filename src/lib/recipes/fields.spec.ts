@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { IconName } from '../../components/Icon.tsx';
-import { CATEGORIES, categoryName, MEALS, RECIPE_FIELDS } from './fields.ts';
+import { CATEGORIES, categoryName, MEALS, mealValue, RECIPE_FIELDS } from './fields.ts';
 
 const tokens = readFileSync(new URL('../../styles/tokens.css', import.meta.url), 'utf8');
 
@@ -36,5 +36,12 @@ describe('categoryName', () => {
     expect(categoryName('Suppe')).toBe('soup');
     expect(categoryName('Etwas Neues')).toBe('other');
     expect(categoryName(undefined)).toBe('other');
+  });
+});
+
+describe('mealValue', () => {
+  it('maps the English name to the Airtable value', () => {
+    expect(mealValue('breakfast')).toBe('Frühstück');
+    expect(mealValue('baking')).toBe('Backen');
   });
 });
