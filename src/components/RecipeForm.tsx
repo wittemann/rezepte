@@ -1,10 +1,11 @@
 // Edit and new recipe form (design/README.md, "7. Rezept bearbeiten / neu"). A plain
 // <form method="post"> to its own page, so it works without JS and the page can show it again
 // with the typed values when something is wrong. JS only disables "Sichern" while the name is
-// empty (without JS, `required` stops the submit instead). Only the name is controlled; the other
+// empty (without JS, `required` stops the submit instead) and while the form is being sent, so a
+// double tap can't create a recipe twice. Only the name is controlled; the other
 // fields use default values, so re-rendering on typing the name never resets them.
 import type { ComponentChildren } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { CATEGORIES, MEALS, SOURCES } from '../lib/recipes/fields.ts';
 import type { RecipeFormField, RecipeFormValues } from '../lib/recipes/form.ts';
 import styles from './RecipeForm.module.css';
@@ -34,6 +35,30 @@ export default function RecipeForm({
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
 
+  // Set once the form is sent; the page then loads the answer. Back from the next page, Safari may
+  // show this page from its cache with the state kept, so "Sichern" is enabled again then
+  const [sending, setSending] = useState(false);
+  // The state only changes the button after the next render; a second tap before that is
+  // caught by the ref
+  const sent = useRef(false);
+  useEffect(() => {
+    const enableAgain = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+      sent.current = false;
+      setSending(false);
+    };
+    window.addEventListener('pageshow', enableAgain);
+    return () => window.removeEventListener('pageshow', enableAgain);
+  }, []);
+  const send = (event: SubmitEvent) => {
+    if (sent.current) {
+      event.preventDefault();
+      return;
+    }
+    sent.current = true;
+    setSending(true);
+  };
+
   const isInvalid = (field: RecipeFormField) => invalidFields.includes(field);
   const errorProps = (field: keyof typeof TEXT.errors) =>
     isInvalid(field) ? { 'aria-invalid': true, 'aria-describedby': `${field}-error` } : {};
@@ -45,7 +70,7 @@ export default function RecipeForm({
     );
 
   return (
-    <form method="post" class={styles.form}>
+    <form method="post" class={styles.form} onSubmit={send}>
       <header class={styles.header}>
         <a class={styles.headerButton} href={cancelHref} data-back>
           {TEXT.cancel}
@@ -54,7 +79,7 @@ export default function RecipeForm({
         <button
           type="submit"
           class={`${styles.headerButton} ${styles.save}`}
-          disabled={hydrated && title.trim() === ''}
+          disabled={sending || (hydrated && title.trim() === '')}
         >
           {TEXT.save}
         </button>

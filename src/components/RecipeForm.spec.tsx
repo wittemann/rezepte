@@ -84,6 +84,41 @@ describe('RecipeForm, in the browser', () => {
     expect(save().disabled).toBe(true);
   });
 
+  it('sends the form only once on a double tap of "Sichern"', () => {
+    act(() => render(<RecipeForm isNew values={values} cancelHref="/" />, container));
+    const form = container.querySelector('form')!;
+    const submit = () => {
+      const event = new Event('submit', { bubbles: true, cancelable: true });
+      form.dispatchEvent(event);
+      return event;
+    };
+
+    // Both taps arrive before the button re-renders as disabled
+    let first!: Event;
+    let second!: Event;
+    act(() => {
+      first = submit();
+      second = submit();
+    });
+    expect(first.defaultPrevented).toBe(false);
+    expect(second.defaultPrevented).toBe(true);
+    expect(save().disabled).toBe(true);
+  });
+
+  it('enables "Sichern" again when the page comes back from the browser cache', () => {
+    act(() => render(<RecipeForm isNew values={values} cancelHref="/" />, container));
+    const form = container.querySelector('form')!;
+    act(() => {
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    });
+
+    act(() => {
+      // happy-dom has no PageTransitionEvent
+      window.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: true }));
+    });
+    expect(save().disabled).toBe(false);
+  });
+
   it('keeps what was typed in other fields when the name changes', () => {
     act(() => render(<RecipeForm isNew values={values} cancelHref="/" />, container));
     field('workTime').value = '1:30';
