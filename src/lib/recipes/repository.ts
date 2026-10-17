@@ -2,12 +2,11 @@
 // (docs/decisions/0002-airtable-as-source-of-truth.md, docs/specs/03-data-model.md).
 // The connection is passed in, like in lib/airtable/client.ts, so tests and scripts can use it.
 // Writes send only the fields from toRecordFields (input.ts), never computed ones.
-// Reads come from an in-memory copy of the recipe table (docs/decisions/0003-rendering-and-caching.md).
+// Reads come from a copy of the recipe table (table-copy.ts, docs/decisions/0003-rendering-and-caching.md).
 
 import {
   createRecord,
   isRecordId,
-  listRecords,
   updateRecord,
   uploadAttachment,
   type AirtableConnection,
@@ -19,55 +18,22 @@ import { findImageUrl, type ImageSize } from './image-source.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import type { Recipe, RecipeId } from './recipe.ts';
 import { readRecord } from './record.ts';
+import { forgetTable, readTable } from './table-copy.ts';
 
 const byTitle = new Intl.Collator('de').compare;
 
-/**
- * How long the recipe table is kept in memory before it's loaded again. Recipes added or changed
- * directly in Airtable show up after at most this long. Must stay well below the ~2 hours after
- * which Airtable's attachment URLs in the records expire.
- */
-export const CACHE_TTL_MS = 15 * 60 * 1000;
-
-type CachedTable = { baseId: string; loadedAt: number; records: Promise<AirtableRecord[]> };
-
-// One copy per server instance. Holds the promise, so requests arriving while the table loads
-// (e.g. a burst of /img requests) share one Airtable call.
-let cachedTable: CachedTable | undefined;
-
-/** All records of the recipe table, from memory if loaded less than CACHE_TTL_MS ago. */
-function loadRecords(connection: AirtableConnection) {
-  const now = Date.now();
-  const cached = cachedTable;
-  if (cached && cached.baseId === connection.baseId && now - cached.loadedAt < CACHE_TTL_MS) {
-    return cached.records;
-  }
-  const records = listRecords(connection, RECIPES_TABLE_ID);
-  cachedTable = { baseId: connection.baseId, loadedAt: now, records };
-  // A failed load isn't kept: the next request tries again
-  records.catch(() => {
-    if (cachedTable?.records === records) cachedTable = undefined;
-  });
-  return records;
-}
-
-/** Forgets the recipe table, so the next read loads it fresh. Called after every write. */
-export function clearRecipeCache() {
-  cachedTable = undefined;
-}
-
-/** Runs a write and clears the cache afterwards, also when the write fails halfway. */
-async function writing<T>(write: () => Promise<T>) {
+/** Runs a write and forgets the table copy afterwards, also when the write fails halfway. */
+async function writing<T>(connection: AirtableConnection, write: () => Promise<T>) {
   try {
     return await write();
   } finally {
-    clearRecipeCache();
+    await forgetTable(connection);
   }
 }
 
 /** All recipes that can be read, sorted by title (German order: "Äpfel" next to "Apfel"). */
 export async function getAll(connection: AirtableConnection) {
-  const records = await loadRecords(connection);
+  const records = await readTable(connection);
   const recipes: Recipe[] = [];
   for (const record of records) {
     const recipe = readAndReport(record);
@@ -85,7 +51,9 @@ export async function getById(connection: AirtableConnection, id: RecipeId) {
 /** Saves a new recipe and returns it as Airtable saved it. Throws a ZodError for invalid input. */
 export async function create(connection: AirtableConnection, input: RecipeInput) {
   const fields = toRecordFields(input);
-  const record = await writing(() => createRecord(connection, RECIPES_TABLE_ID, fields));
+  const record = await writing(connection, () =>
+    createRecord(connection, RECIPES_TABLE_ID, fields),
+  );
   return readSavedRecord(record);
 }
 
@@ -100,7 +68,9 @@ export async function update(connection: AirtableConnection, id: RecipeId, input
   // This also makes sure the record is in the recipe table (Airtable finds record IDs across all
   // tables of a base).
   if (!(await findRecord(connection, id))) return undefined;
-  const record = await writing(() => updateRecord(connection, RECIPES_TABLE_ID, id, fields));
+  const record = await writing(connection, () =>
+    updateRecord(connection, RECIPES_TABLE_ID, id, fields),
+  );
   return readSavedRecord(record);
 }
 
@@ -117,7 +87,9 @@ export async function setFavorite(
 ) {
   if (!(await findRecord(connection, id))) return undefined; // same reason as in update()
   const fields = { [RECIPE_FIELDS.favoritedAt]: favorite ? now.toISOString() : null };
-  const record = await writing(() => updateRecord(connection, RECIPES_TABLE_ID, id, fields));
+  const record = await writing(connection, () =>
+    updateRecord(connection, RECIPES_TABLE_ID, id, fields),
+  );
   return readSavedRecord(record);
 }
 
@@ -128,7 +100,7 @@ export async function setFavorite(
 export async function addPhoto(connection: AirtableConnection, id: RecipeId, base64: string) {
   if (!(await findRecord(connection, id))) return false; // same reason as in update()
   const file = { contentType: 'image/jpeg', filename: 'foto.jpg', base64 };
-  await writing(() => uploadAttachment(connection, id, RECIPE_FIELDS.images, file));
+  await writing(connection, () => uploadAttachment(connection, id, RECIPE_FIELDS.images, file));
   return true;
 }
 
@@ -153,7 +125,7 @@ export async function getImageUrl(
  */
 async function findRecord(connection: AirtableConnection, id: RecipeId) {
   if (!isRecordId(id)) return undefined; // can't be a recipe, so no need to load anything
-  const records = await loadRecords(connection);
+  const records = await readTable(connection);
   return records.find((record) => record.id === id);
 }
 

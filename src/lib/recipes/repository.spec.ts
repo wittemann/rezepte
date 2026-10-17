@@ -5,8 +5,6 @@ import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import {
   addPhoto,
-  CACHE_TTL_MS,
-  clearRecipeCache,
   create,
   getAll,
   getById,
@@ -14,7 +12,10 @@ import {
   setFavorite,
   update,
 } from './repository.ts';
+import { forgetMemoryCopy, forgetTable } from './table-copy.ts';
+import { resetRuntimeCache } from './test-runtime-cache.ts';
 
+vi.mock('@vercel/functions', () => import('./test-runtime-cache.ts'));
 vi.mock('../monitoring.ts', () => ({ reportError: vi.fn(), reportWarning: vi.fn() }));
 
 const TABLE_URL = `https://api.airtable.com/v0/appTestBase/${RECIPES_TABLE_ID}`;
@@ -41,7 +42,8 @@ let warn: MockInstance<typeof console.warn>;
 beforeEach(() => {
   warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.mocked(reportWarning).mockClear();
-  clearRecipeCache();
+  forgetMemoryCopy();
+  resetRuntimeCache();
 });
 afterEach(() => {
   warn.mockRestore();
@@ -132,7 +134,7 @@ describe('getAll', () => {
       }),
     );
     await getAll(connection);
-    clearRecipeCache();
+    await forgetTable(connection);
     await getAll(connection);
 
     expect(reportWarning).toHaveBeenCalledTimes(2);
@@ -460,10 +462,11 @@ describe('addPhoto', () => {
   });
 });
 
-describe('cache', () => {
+// How the copy itself works is tested in table-copy.spec.ts
+describe('table copy', () => {
   const table = () => jsonResponse({ records: [titled('recA', 'Testsuppe')] });
 
-  it('loads the table once for all reads within the TTL', async () => {
+  it('loads the table once for all reads', async () => {
     const { connection, fetch } = connectionAnswering(table());
 
     await getAll(connection);
@@ -471,46 +474,6 @@ describe('cache', () => {
     await getImageUrl(connection, 'recA', 'attOne', 'full');
 
     expect(fetch).toHaveBeenCalledOnce();
-  });
-
-  it('shares one load between reads that arrive at the same time', async () => {
-    const { connection, fetch } = connectionAnswering(table());
-    await Promise.all([getAll(connection), getById(connection, 'recA')]);
-    expect(fetch).toHaveBeenCalledOnce();
-  });
-
-  it('loads the table again once the TTL has passed', async () => {
-    vi.useFakeTimers();
-    const { connection, fetch } = connectionAnswering(table(), table());
-
-    await getAll(connection);
-    vi.advanceTimersByTime(CACHE_TTL_MS - 1);
-    await getAll(connection);
-    expect(fetch).toHaveBeenCalledOnce();
-
-    vi.advanceTimersByTime(1);
-    await getAll(connection);
-    expect(fetch).toHaveBeenCalledTimes(2);
-  });
-
-  it('loads the table again after a failed load', async () => {
-    const { connection, fetch } = connectionAnswering(
-      jsonResponse({ error: 'ERROR' }, 500),
-      table(),
-    );
-
-    await expect(getAll(connection)).rejects.toMatchObject({ status: 500 });
-    expect(await getAll(connection)).toHaveLength(1);
-    expect(fetch).toHaveBeenCalledTimes(2);
-  });
-
-  it('keeps the tables of different bases apart', async () => {
-    const { connection, fetch } = connectionAnswering(table(), table());
-
-    await getAll(connection);
-    await getAll({ ...connection, baseId: 'appOtherBase' });
-
-    expect(fetch).toHaveBeenCalledTimes(2);
   });
 
   it.each([

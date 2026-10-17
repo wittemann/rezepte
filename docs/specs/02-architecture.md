@@ -44,7 +44,7 @@ Rule: only `lib/recipes` knows Airtable field names. Pages and components work w
 
 1. Middleware checks the session cookie → redirect to `/login` if it's missing or invalid
 2. The page calls `recipes.getAll()` / `recipes.getById(id)`
-3. The repository reads its in-memory copy of the recipe table, loading it from Airtable when it is older than 15 minutes (one paginated call, not one call per recipe), and validates with zod
+3. The repository reads its copy of the recipe table (memory, then the Vercel Runtime Cache; Airtable only when there is none, as one paginated call) and validates with zod. A copy older than 10 minutes is reloaded after the response
 4. The page renders HTML (ADR 0003)
 
 **Write (create/edit/delete)**

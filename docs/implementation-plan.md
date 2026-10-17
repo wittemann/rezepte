@@ -179,7 +179,7 @@ Done 2026-10-02 (one after another, not in parallel, to stay within the usage li
 Cold loads took several seconds: about 2 s to start the server, then 1.5–5 s to load the recipe table from Airtable. Plan per [ADR 0003](decisions/0003-rendering-and-caching.md).
 
 - [x] Smaller server function: no Sentry build tooling or `sharp` in the bundle (68 MB → 11 MB) · `sonnet`
-- [ ] Shared copy of the recipe table in the Vercel Runtime Cache, read before Airtable; background refresh when older than 10 minutes · `opus`
+- [x] Shared copy of the recipe table in the Vercel Runtime Cache, read before Airtable; background refresh when older than 10 minutes · `opus`
 - [ ] Writes put the saved record into the copy instead of clearing it · `opus`
 - [ ] Image proxy: on an expired Airtable link, fetch that record fresh and update it in the copy · `opus`
 - [ ] Refresh button that reloads the table right away (placement and look: ask before building, the design has none) · `sonnet`
