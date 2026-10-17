@@ -3,7 +3,7 @@
 // only when SENTRY_DSN is set at build time (astro.config.mjs).
 // @sentry/node, not @sentry/astro: the latter's main entry also loads the build integration
 // (Vite plugin, Sentry CLI), which slows every cold start. Astro's init only adds SDK metadata
-// and drops spans of prerendered pages, and we have none.
+// and the `ignoreSpans` rule below.
 
 import * as Sentry from '@sentry/node';
 import { SENTRY_DSN, VERCEL_ENV } from 'astro:env/client';
@@ -23,6 +23,9 @@ Sentry.init({
   tracesSampleRate: 1.0,
   // No tracing headers on outgoing requests: they would all go to Airtable
   tracePropagationTargets: [],
+  // Keeps only requests that went through Astro (origin auto.http.astro). Drops the raw Node
+  // server spans, e.g. Vercel's /_vercel/ping health checks, which would use up the span quota.
+  ignoreSpans: [{ op: 'http.server', attributes: { 'sentry.origin': 'auto.http.http_server' } }],
   // Vercel Hobby keeps runtime logs for one hour; warnings and errors also go to Sentry Logs
   integrations: [Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] })],
 });
