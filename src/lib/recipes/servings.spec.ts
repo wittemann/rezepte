@@ -64,6 +64,10 @@ describe('scaleAmount', () => {
     expect(scaleAmount(0.3, 0.25)).toBe(0.1); // 0.075
     expect(scaleAmount(0.1, 0.5)).toBe(0.1); // 0.05, at least 0.1
   });
+
+  it('keeps 0 at 0', () => {
+    expect(scaleAmount(0, 2)).toBe(0);
+  });
 });
 
 describe('scaleQuantity', () => {

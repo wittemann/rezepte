@@ -83,6 +83,9 @@ describe('parseIngredients', () => {
     '½ TL Salz',
     '1/2 TL Salz',
     '1.5 EL Zucker',
+    '1 1/2 TL Salz',
+    '1 ½ EL Öl',
+    '2–3 ½ EL Öl',
   ])('leaves "%s" without a quantity', (line) => {
     expect(parseIngredients(line)).toEqual([{ kind: 'item', text: line }]);
   });

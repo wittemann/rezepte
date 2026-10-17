@@ -48,11 +48,13 @@ export function scaleQuantity(quantity: Quantity, factor: number) {
 /**
  * One amount times the factor, rounded for the kitchen: ≥ 20 to whole numbers, else to ¼.
  * Factor 1 keeps the amount exactly as written (no "0,3 TL" → "¼ TL" on the original recipe).
- * A small amount that would round to 0 is kept to one decimal, at least 0,1, so it doesn't vanish.
+ * A small amount that would round to 0 is kept to one decimal, at least 0,1, so it doesn't vanish;
+ * only 0 stays 0.
  */
 export function scaleAmount(amount: number, factor: number) {
   if (factor === 1) return amount;
   const scaled = amount * factor;
+  if (scaled === 0) return 0;
   if (scaled >= WHOLE_AMOUNTS_FROM) return Math.round(scaled);
   const quarters = Math.round(scaled * 4) / 4;
   if (quarters > 0) return quarters;

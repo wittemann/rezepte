@@ -49,10 +49,14 @@ const UNITS = [
 // read (docs/specs/03-data-model.md), such lines are shown as written and not scaled.
 const AMOUNT = String.raw`\d+(?:,\d+)?`;
 
+// A fraction right after the amount: "1 1/2 TL", "1 ½ EL". Such a line isn't read either, or
+// only the whole number would scale ("2 ½ EL" for twice "1 ½ EL").
+const NO_FRACTION_AFTER = String.raw`(?!\s*(?:\d+\/\d+|[¼½¾⅓⅔⅛]))`;
+
 // Optional prefix, amount, optional range ("2–3", "2-3"), then a space and the rest of the line.
 // The space is required, so "3er Pack" is not read as an amount.
 const QUANTITY_LINE = new RegExp(
-  String.raw`^(?:(ca\.|knapp|etwa)\s+)?(${AMOUNT})(?:\s*[–-]\s*(${AMOUNT}))?(?:\s+(.*))?$`,
+  String.raw`^(?:(ca\.|knapp|etwa)\s+)?(${AMOUNT})(?:\s*[–-]\s*(${AMOUNT}))?${NO_FRACTION_AFTER}(?:\s+(.*))?$`,
 );
 
 export function parseIngredients(text: string | undefined) {
