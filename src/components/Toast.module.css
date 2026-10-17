@@ -4,6 +4,12 @@
  * 30px above the tab bar. Positioned like the tab bar, within the app column.
  */
 
+/* Out of the flow, so the always-mounted live region doesn't take a place in the caller's layout
+   (e.g. a second gap in a flex row next to the favorite button) */
+.status {
+  position: absolute;
+}
+
 .toast {
   position: fixed;
   left: max(var(--safe-left), var(--space-m));

@@ -26,5 +26,9 @@ export default function Toast({ message, onDone, duration = 2500 }: Props) {
     return () => clearTimeout(id);
   }, [message, duration]);
 
-  return <div role="status">{message !== null && <div class={styles.toast}>{message}</div>}</div>;
+  return (
+    <div role="status" class={styles.status}>
+      {message !== null && <div class={styles.toast}>{message}</div>}
+    </div>
+  );
 }

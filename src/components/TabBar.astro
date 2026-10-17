@@ -25,7 +25,11 @@ const { active } = Astro.props;
 <div class="clearance"></div>
 <nav class="bar" aria-label={TEXT.navigation}>
   {TABS.map((tab) => (
-    <a class="tab" href={tab.href} aria-current={tab.id === active ? 'page' : undefined}>
+    <a
+      class:list={['tab', { 'favorites-tab': tab.id === 'favorites' }]}
+      href={tab.href}
+      aria-current={tab.id === active ? 'page' : undefined}
+    >
       <Icon
         name={tab.icon}
         strokeWidth={2.2}
@@ -71,6 +75,12 @@ const { active } = Astro.props;
 
   .tab[aria-current='page'] {
     color: var(--ink);
+  }
+
+  /* The filled heart of the active Favoriten tab is accent, its label ink (design screenshot
+     05-favoriten). The icon takes the text color */
+  .favorites-tab[aria-current='page'] :global(svg) {
+    color: var(--accent);
   }
 
   /* Capped like iOS tab bars, which don't grow with the system text size either: four labels
