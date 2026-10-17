@@ -3,10 +3,14 @@
 import { test, expect, type Page } from '@playwright/test';
 import { TEXT } from '../src/components/CookingMode.texts.ts';
 import { TEXT as COOK_BUTTON_TEXT } from '../src/components/CookButton.texts.ts';
+import { TEXT as INGREDIENTS_TEXT } from '../src/components/Ingredients.texts.ts';
 import { login } from './login.ts';
 
-/** The first recipe with instructions, so its page links to cooking mode. */
-async function findCookableRecipe(page: Page) {
+/**
+ * The first recipe with instructions, so its page links to cooking mode, and with every text in
+ * `alsoContaining` on its page.
+ */
+async function findCookableRecipe(page: Page, alsoContaining: string[] = []) {
   await page.goto('/recipes');
   const ids = await page
     .locator('a[data-recipe-id]')
@@ -14,7 +18,8 @@ async function findCookableRecipe(page: Page) {
   for (const id of ids) {
     const response = await page.request.get(`/recipes/${id}`);
     const html = await response.text();
-    if (html.includes(`/recipes/${id}/cook`)) return id;
+    const matches = [`/recipes/${id}/cook`, ...alsoContaining].every((text) => html.includes(text));
+    if (matches) return id;
   }
   throw new Error('No recipe with instructions');
 }
@@ -69,4 +74,24 @@ test('the back button closes cooking mode', async ({ page }) => {
   await expect(page).toHaveURL(new RegExp(`/recipes/${cookable}$`));
   await expect(page.getByRole('button', { name: TEXT.previous })).toBeHidden();
   await expect(page.getByRole('link', { name: COOK_BUTTON_TEXT.label })).toBeVisible();
+});
+
+test('cooking mode shows the ingredients for the servings chosen on the recipe page', async ({
+  page,
+}) => {
+  await login(page);
+  // A recipe with servings has the stepper
+  const cookable = await findCookableRecipe(page, [INGREDIENTS_TEXT.moreServings]);
+
+  await page.goto(`/recipes/${cookable}`);
+  await page.waitForLoadState('networkidle');
+  await page.getByRole('button', { name: INGREDIENTS_TEXT.moreServings }).click();
+  const chosen = await page.locator('[aria-live="polite"] span').first().textContent();
+  await page.getByRole('link', { name: COOK_BUTTON_TEXT.label }).click();
+  await expect(page).toHaveURL(/\/cook\?servings=/);
+
+  await page.getByRole('button', { name: TEXT.ingredients }).click();
+  await expect(
+    page.getByRole('heading', { name: `${TEXT.ingredients} · ${chosen} ` }),
+  ).toBeVisible();
 });

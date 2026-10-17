@@ -3,6 +3,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { Window } from 'happy-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Recipe } from '../../../lib/recipes/recipe.ts';
+import { parseIngredients } from '../../../lib/recipes/ingredients.ts';
 import { parseMethod } from '../../../lib/recipes/method.ts';
 import { makeRecipe } from '../../../lib/recipes/test-recipe.ts';
 import CookPage from './cook.astro';
@@ -12,14 +13,14 @@ vi.mock('astro:env/server', () => ({ AIRTABLE_TOKEN: 'token', AIRTABLE_BASE_ID: 
 const getById = vi.hoisted(() => vi.fn());
 vi.mock('../../../lib/recipes/repository.ts', () => ({ getById }));
 
-async function renderPage(recipe: Recipe | undefined, id = 'recExample1') {
+async function renderPage(recipe: Recipe | undefined, id = 'recExample1', search = '') {
   getById.mockResolvedValue(recipe);
   const container = await AstroContainer.create();
   container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
   container.addClientRenderer({ name: '@astrojs/preact', entrypoint: '@astrojs/preact/client.js' });
   const response = await container.renderToResponse(CookPage, {
     params: { id },
-    request: new Request(`http://localhost/recipes/${id}/cook`),
+    request: new Request(`http://localhost/recipes/${id}/cook${search}`),
   });
   const html = await response.text();
   return { response, document: new new Window().DOMParser().parseFromString(html, 'text/html') };
@@ -35,6 +36,18 @@ describe('cooking mode page', () => {
     expect(document.body.textContent).toContain('Schritt 1 von 2');
     expect(document.body.textContent).toContain('Erst.');
     expect(document.querySelector('a[href="/favorites"]')).toBeNull();
+  });
+
+  it('scales the ingredients to the servings in the URL', async () => {
+    const recipe = makeRecipe({
+      id: 'recX1',
+      method: parseMethod('1. Erst.'),
+      ingredients: parseIngredients('200 g Mehl'),
+      servings: 4,
+    });
+    const { document } = await renderPage(recipe, 'recX1', '?servings=6');
+    expect(document.querySelector('dialog h2')?.textContent).toBe('Zutaten · 6 Portionen');
+    expect(document.querySelector('dialog li')?.textContent).toBe('300 gMehl');
   });
 
   it('sends a recipe without steps back to its page', async () => {

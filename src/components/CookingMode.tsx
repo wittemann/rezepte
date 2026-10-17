@@ -4,7 +4,12 @@
 import { useRef, useState } from 'preact/hooks';
 import type { CookingStep } from '../lib/recipes/cooking-steps.ts';
 import type { IngredientLine } from '../lib/recipes/ingredients.ts';
-import { formatAmount, formatQuantity, scaleQuantity } from '../lib/recipes/servings.ts';
+import {
+  formatAmount,
+  formatQuantity,
+  scaleQuantity,
+  servingsFactor,
+} from '../lib/recipes/servings.ts';
 import Icon from './Icon.tsx';
 import BottomSheet from './BottomSheet.tsx';
 import PhotoStep from './PhotoStep.tsx';
@@ -27,8 +32,10 @@ type Props = {
   hasPhoto: boolean;
   steps: CookingStep[];
   ingredients: IngredientLine[];
-  /** What the ingredient amounts are written for; shown in the title of the ingredients sheet */
+  /** What the ingredient amounts are written for */
   servings?: number;
+  /** Servings chosen on the recipe page; the ingredients sheet is scaled to them and names them */
+  chosenServings?: number;
   /**
    * Set when opened on the recipe page: called instead of following the close and done links,
    * with whether a photo was added (then the recipe page is out of date)
@@ -43,6 +50,7 @@ export default function CookingMode({
   steps,
   ingredients,
   servings,
+  chosenServings = servings,
   onClose,
 }: Props) {
   useWakeLock();
@@ -55,6 +63,7 @@ export default function CookingMode({
   const isLast = stepIndex === stepCount - 1;
   const onPhotoStep = stepIndex === steps.length;
   const step = onPhotoStep ? undefined : steps[stepIndex];
+  const factor = servings && chosenServings ? servingsFactor(chosenServings, servings) : 1;
   const label = step
     ? [TEXT.stepLabel(stepIndex + 1, steps.length), step.section].filter(Boolean).join(' · ')
     : PHOTO_TEXT.label;
@@ -166,7 +175,7 @@ export default function CookingMode({
       <BottomSheet
         open={ingredientsOpen}
         onClose={() => setIngredientsOpen(false)}
-        title={sheetTitle(servings)}
+        title={sheetTitle(chosenServings)}
       >
         <ul class={styles.list}>
           {ingredients.map((line) =>
@@ -175,7 +184,7 @@ export default function CookingMode({
             ) : (
               <li class={styles.item}>
                 <span class={styles.amount}>
-                  {line.quantity && formatQuantity(scaleQuantity(line.quantity, 1))}
+                  {line.quantity && formatQuantity(scaleQuantity(line.quantity, factor))}
                 </span>
                 <span class={styles.rest}>{line.quantity ? line.quantity.rest : line.text}</span>
               </li>

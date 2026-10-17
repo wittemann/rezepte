@@ -1,14 +1,42 @@
 import { describe, expect, it } from 'vitest';
 import type { Quantity } from './ingredients.ts';
 import {
+  cookingHrefFor,
   formatAmount,
   formatQuantity,
   nextServings,
+  parseServings,
   previousServings,
   scaleAmount,
   scaleQuantity,
   servingsFactor,
 } from './servings.ts';
+
+describe('cookingHrefFor', () => {
+  it('adds the chosen servings to the link to cooking mode', () => {
+    expect(cookingHrefFor('/recipes/recX1/cook', 6, 4)).toBe('/recipes/recX1/cook?servings=6');
+    expect(cookingHrefFor('/recipes/recX1/cook', 1.5, 4)).toBe('/recipes/recX1/cook?servings=1.5');
+  });
+
+  it('keeps the plain link for the base servings or none', () => {
+    expect(cookingHrefFor('/recipes/recX1/cook', 4, 4)).toBe('/recipes/recX1/cook');
+    expect(cookingHrefFor('/recipes/recX1/cook')).toBe('/recipes/recX1/cook');
+  });
+});
+
+describe('parseServings', () => {
+  it.each([
+    ['6', 6],
+    ['1.5', 1.5],
+    ['0.5', 0.5],
+  ])('reads "%s"', (value, servings) => {
+    expect(parseServings(value)).toBe(servings);
+  });
+
+  it.each([null, '', '0', '-2', '0.3', '1,5', 'abc', 'Infinity'])('ignores %s', (value) => {
+    expect(parseServings(value)).toBeUndefined();
+  });
+});
 
 describe('servingsFactor', () => {
   it('divides the chosen by the base servings', () => {

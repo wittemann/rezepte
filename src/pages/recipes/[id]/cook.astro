@@ -1,12 +1,14 @@
 ---
 // Cooking mode of a recipe (design/README.md, "Kochmodus"). Rendered live from Airtable like the
 // recipe page. A recipe without instructions has nothing to cook: back to the recipe page.
+// `?servings=` carries the servings chosen on the recipe page.
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
 import CookingMode from '../../../components/CookingMode.tsx';
 import ErrorMessage from '../../../components/ErrorMessage.astro';
 import Base from '../../../layouts/Base.astro';
 import { cookingSteps } from '../../../lib/recipes/cooking-steps.ts';
 import { getById } from '../../../lib/recipes/repository.ts';
+import { SERVINGS_PARAM, parseServings } from '../../../lib/recipes/servings.ts';
 import { TEXT } from '../_[id].texts.ts';
 
 const recipe = await getById(
@@ -14,6 +16,7 @@ const recipe = await getById(
   Astro.params.id ?? '',
 );
 const steps = recipe ? cookingSteps(recipe.method) : [];
+const chosenServings = parseServings(Astro.url.searchParams.get(SERVINGS_PARAM));
 
 if (recipe && steps.length === 0) return Astro.redirect(`/recipes/${recipe.id}`);
 if (!recipe) Astro.response.status = 404;
@@ -29,6 +32,7 @@ if (!recipe) Astro.response.status = 404;
       steps={steps}
       ingredients={recipe.ingredients}
       servings={recipe.servings}
+      {chosenServings}
     />
   </Base>
 ) : (

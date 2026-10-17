@@ -2,6 +2,7 @@
 import { render } from 'preact';
 import { act } from 'preact/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { parseIngredients } from '../lib/recipes/ingredients.ts';
 import CookingLauncher from './CookingLauncher.tsx';
 
 vi.mock('astro:actions', () => ({ actions: { addPhoto: vi.fn() } }));
@@ -32,7 +33,8 @@ beforeEach(() => {
         cookHref={COOK_HREF}
         hasPhoto
         steps={[{ text: 'Zwiebeln würfeln.' }]}
-        ingredients={[]}
+        ingredients={parseIngredients('200 g Mehl')}
+        servings={4}
       />,
       container,
     );
@@ -86,6 +88,15 @@ describe('CookingLauncher', () => {
     });
     expect(back).toHaveBeenCalledOnce();
     back.mockRestore();
+  });
+
+  it('opens cooking mode with the servings chosen on the recipe page', () => {
+    link.href = `${COOK_HREF}?servings=2`;
+    clickLink();
+    expect(location.pathname + location.search).toBe(`${COOK_HREF}?servings=2`);
+    const sheet = container.querySelector('dialog')!;
+    expect(sheet.querySelector('h2')?.textContent).toBe('Zutaten · 2 Portionen');
+    expect(sheet.querySelector('li')?.textContent).toBe('100 gMehl');
   });
 
   it('leaves a click with a modifier key to the browser (new tab)', () => {

@@ -14,6 +14,23 @@ const WHOLE_AMOUNTS_FROM = 20;
 
 const QUARTER_SIGNS: Record<number, string> = { 0.25: '¼', 0.5: '½', 0.75: '¾' };
 
+/** The query parameter that takes the servings chosen on the recipe page to cooking mode. */
+export const SERVINGS_PARAM = 'servings';
+
+/** Link to cooking mode for the chosen servings; the plain link when they are the base ones. */
+export function cookingHrefFor(cookHref: string, chosenServings?: number, baseServings?: number) {
+  if (chosenServings === undefined || chosenServings === baseServings) return cookHref;
+  return `${cookHref}?${SERVINGS_PARAM}=${chosenServings}`;
+}
+
+/** Servings from the URL: a number in ½ steps, at least ½. Anything else → undefined. */
+export function parseServings(value: string | null) {
+  if (!value) return undefined;
+  const servings = Number(value);
+  const isHalfStep = Number.isInteger(servings * 2);
+  return isHalfStep && servings >= MIN_SERVINGS ? servings : undefined;
+}
+
 /** Factor for all amounts: 2 servings of a recipe written for 4 → 0.5. `baseServings` must be > 0. */
 export function servingsFactor(chosenServings: number, baseServings: number) {
   return chosenServings / baseServings;

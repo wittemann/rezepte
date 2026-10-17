@@ -37,6 +37,7 @@ function renderCooking(
   servings?: number,
   hasPhoto = true,
   onClose?: (photoAdded: boolean) => void,
+  chosenServings?: number,
 ) {
   act(() => {
     render(
@@ -47,6 +48,7 @@ function renderCooking(
         steps={steps}
         ingredients={ingredients}
         servings={servings}
+        chosenServings={chosenServings}
         onClose={onClose}
       />,
       container,
@@ -85,6 +87,13 @@ describe('CookingMode', () => {
       '200 gMehl',
       'Salz',
     ]);
+  });
+
+  it('scales the ingredients to the servings chosen on the recipe page', () => {
+    renderCooking(4, true, undefined, 2);
+    const sheet = container.querySelector('dialog')!;
+    expect(sheet.querySelector('h2')?.textContent).toBe('Zutaten · 2 Portionen');
+    expect([...sheet.querySelectorAll('li')][1].textContent).toBe('100 gMehl');
   });
 
   it('titles the ingredients without servings when the recipe has none', () => {

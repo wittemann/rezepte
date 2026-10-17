@@ -1,9 +1,11 @@
 // The ingredient list of a recipe. With a base number of servings it has a stepper that scales all
-// amounts (rules: lib/recipes/servings.ts); without, the amounts stay as written.
-import { useState } from 'preact/hooks';
+// amounts (rules: lib/recipes/servings.ts); without, the amounts stay as written. The chosen
+// servings go into the links to cooking mode, so it shows the same amounts.
+import { useEffect, useState } from 'preact/hooks';
 import type { IngredientLine } from '../lib/recipes/ingredients.ts';
 import {
   MIN_SERVINGS,
+  cookingHrefFor,
   formatAmount,
   formatQuantity,
   nextServings,
@@ -18,11 +20,21 @@ type Props = {
   ingredients: IngredientLine[];
   /** What the amounts are written for; missing → no stepper */
   servings?: number;
+  /** Cooking mode of the recipe; links to it on the page get the chosen servings */
+  cookHref?: string;
 };
 
-export default function Ingredients({ ingredients, servings: baseServings }: Props) {
+export default function Ingredients({ ingredients, servings: baseServings, cookHref }: Props) {
   const [chosenServings, setChosenServings] = useState(baseServings);
   const factor = baseServings && chosenServings ? servingsFactor(chosenServings, baseServings) : 1;
+
+  useEffect(() => {
+    if (!cookHref) return;
+    const href = cookingHrefFor(cookHref, chosenServings, baseServings);
+    for (const link of document.querySelectorAll(`a[href^="${cookHref}"]`)) {
+      link.setAttribute('href', href);
+    }
+  }, [cookHref, chosenServings, baseServings]);
 
   return (
     <section class={styles.section}>

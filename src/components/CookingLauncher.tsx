@@ -3,9 +3,11 @@
 // tap on "Los, wir kochen!" still counts when cooking mode asks for the lock (use-wake-lock.ts).
 // The link keeps working without JS and before this island has loaded: it then loads /cook.
 // While cooking, the recipe page is hidden and the URL is /cook, so the back button closes it.
+// The link carries the servings chosen on the recipe page (Ingredients.tsx), like the /cook page.
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { CookingStep } from '../lib/recipes/cooking-steps.ts';
 import type { IngredientLine } from '../lib/recipes/ingredients.ts';
+import { SERVINGS_PARAM, parseServings } from '../lib/recipes/servings.ts';
 import CookingMode from './CookingMode.tsx';
 
 type Props = {
@@ -24,6 +26,7 @@ const RECIPE_PAGE_SELECTOR = '[data-recipe-page]';
 
 export default function CookingLauncher({ cookHref, ...cookingProps }: Props) {
   const [open, setOpen] = useState(false);
+  const [chosenServings, setChosenServings] = useState<number>();
   const scrollYRef = useRef(0);
   const reloadOnCloseRef = useRef(false);
 
@@ -48,9 +51,17 @@ export default function CookingLauncher({ cookHref, ...cookingProps }: Props) {
         return;
       }
       if (!(event.target instanceof Element)) return;
-      if (!event.target.closest(`a[href="${cookHref}"]`)) return;
+      const link = event.target.closest('a[href]');
+      if (!(link instanceof HTMLAnchorElement)) return;
+      const url = new URL(link.href);
+      if (url.pathname !== cookHref) return;
       event.preventDefault();
-      history.pushState({ cooking: true }, '', cookHref);
+      history.pushState({ cooking: true }, '', url.pathname + url.search);
+      openCooking();
+    }
+
+    function openCooking() {
+      setChosenServings(parseServings(new URLSearchParams(location.search).get(SERVINGS_PARAM)));
       setOpen(true);
     }
 
@@ -61,7 +72,8 @@ export default function CookingLauncher({ cookHref, ...cookingProps }: Props) {
         window.location.reload(); // shows the photo added in cooking mode
         return;
       }
-      setOpen(cooking);
+      if (cooking) openCooking();
+      else setOpen(false);
     }
 
     document.addEventListener('click', handleClick);
@@ -77,5 +89,7 @@ export default function CookingLauncher({ cookHref, ...cookingProps }: Props) {
     history.back(); // closes it through popstate, like the browser's back button
   }
 
-  return open ? <CookingMode {...cookingProps} onClose={close} /> : null;
+  return open ? (
+    <CookingMode {...cookingProps} chosenServings={chosenServings} onClose={close} />
+  ) : null;
 }

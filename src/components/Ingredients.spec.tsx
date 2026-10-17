@@ -67,6 +67,25 @@ describe('Ingredients', () => {
     expect(amounts()[1]).toBe('150 gMehl');
   });
 
+  it('puts the chosen servings into the links to cooking mode', () => {
+    const link = document.createElement('a');
+    link.setAttribute('href', '/recipes/recX1/cook');
+    document.body.append(link);
+    act(() => {
+      render(
+        <Ingredients ingredients={ingredients} servings={4} cookHref="/recipes/recX1/cook" />,
+        container,
+      );
+    });
+    expect(link.getAttribute('href')).toBe('/recipes/recX1/cook');
+
+    click('Mehr Portionen');
+    expect(link.getAttribute('href')).toBe('/recipes/recX1/cook?servings=5');
+    click('Weniger Portionen');
+    expect(link.getAttribute('href')).toBe('/recipes/recX1/cook');
+    link.remove();
+  });
+
   it('goes in half steps below 2 servings, stops at ½, and uses the singular at 1', () => {
     renderList(2);
     click('Weniger Portionen');

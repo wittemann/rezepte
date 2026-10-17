@@ -37,7 +37,12 @@ const steps = recipe ? cookingSteps(recipe.method) : [];
       <RecipeMeta {recipe} />
       {!recipe.hasInstructions && <StubNotice editHref={`/recipes/${recipe.id}/edit`} />}
       {recipe.ingredients.length > 0 && (
-        <Ingredients client:load ingredients={recipe.ingredients} servings={recipe.servings} />
+        <Ingredients
+          client:load
+          ingredients={recipe.ingredients}
+          servings={recipe.servings}
+          cookHref={recipe.hasInstructions ? `/recipes/${recipe.id}/cook` : undefined}
+        />
       )}
       {recipe.hasInstructions && <Steps method={recipe.method} category={recipe.category} />}
       {recipe.notes && <Notes notes={recipe.notes} />}

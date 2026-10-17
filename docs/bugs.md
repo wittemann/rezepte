@@ -24,7 +24,6 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 
 ### Should fix
 
-- [ ] **Chosen servings don't reach cooking mode:** cooking mode always shows the base amounts; pass the servings in the URL. The plan item „ingredients sheet (scaled)“ is ticked although it isn't · `sonnet`
 - [ ] **FavoriteButton error handling:** a rejected fetch (offline) or an expired session leaves the heart flipped with no toast; two quick taps race and the rollback uses a stale value · `sonnet`
 - [ ] **Edit form loses data** (`form.ts`, `input.ts`, `RecipeForm.tsx`): categories and sources outside the fixed lists are saved as empty, unknown meals are dropped (ADR 0002 allows new ones); servings like 2,5 and non-whole-minute durations can't be saved. The form tests assert this behavior and need to change too · `opus`
 - [ ] **Edit overwrites all fields** (last write wins): the PATCH sends every field from the loaded values, so two people editing at once lose changes. Send only changed fields, or at least document it · `sonnet`
@@ -40,6 +39,7 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 - [ ] **Stale comments and unused branches:** `input.ts` comment about the form action, unused modes in `Chip.astro` and the button branch in `SegmentedControl.astro`, ADR file name `0010-e2e-tests-deferred` vs its status · `haiku`
 - [ ] **Outdated docs:** ADR 0002 and spec 02 list repository functions and a delete flow that don't exist and say typecast creates new options (code forbids it); the „hint“ on the detail page for unreadable fields isn't built; spec 01 says „no third-party requests from the browser“ (not true with Sentry); „for two / both of us“ in README, 06-deployment and ADRs 0001, 0003; ADR 0008's CI description; ADR 0009 promises reports for failed image uploads, only the Airtable part is reported · `sonnet`
 - [ ] **`path-to-regexp` advisory** via `@astrojs/vercel`: build time only, not reachable at runtime; recheck when `@astrojs/vercel` updates · `haiku`
+- [x] **Chosen servings don't reach cooking mode:** cooking mode always shows the base amounts; pass the servings in the URL. The plan item „ingredients sheet (scaled)“ is ticked although it isn't · `sonnet`
 - [x] **Mixed numbers scale wrongly** (`ingredients.ts`): „1 1/2 TL“ and „1 ½ EL“ scale only the 1 (doubled: „2 ½“), against the data convention; `scaleAmount(0, 2)` returns 0.1. Fix with tests · `sonnet`
 - [x] **Double tap on „Sichern“ creates two recipes:** no submit-in-progress guard in the new/edit form · `sonnet`
 - [x] **Images always full size:** list rows and the detail header never pass `?size`, so every 52 px thumbnail loads the original (`RecipeRow.astro`, `RecipeHeader.astro`) · `sonnet`
