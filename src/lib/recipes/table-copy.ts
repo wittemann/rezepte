@@ -26,11 +26,35 @@ let memoryCopy: { baseId: string; copy: Promise<TableCopy> } | undefined;
 // The background reload running in this instance, if any; there is never more than one.
 let refreshing: Promise<void> | undefined;
 
+// Counts saved records, so a reload that started before a save doesn't overwrite it
+let saveCount = 0;
+
 /** All records of the recipe table, from the copy if there is one. */
 export async function readTable(connection: AirtableConnection) {
   const copy = await currentCopy(connection);
   if (Date.now() - copy.loadedAt >= REFRESH_AFTER_MS) refreshInBackground(connection, copy);
   return copy.records;
+}
+
+/**
+ * Puts a record Airtable just saved into the copy, replacing the one with its ID, so the change
+ * shows up at once without reloading the table. Without a copy there is nothing to update: the
+ * next read loads the table, change included. The copy keeps its age, so changes made directly
+ * in Airtable still show up with the next reload.
+ */
+export async function putRecord(connection: AirtableConnection, record: AirtableRecord) {
+  saveCount++;
+  const copy = await existingCopy(connection);
+  if (!copy) return;
+
+  const isKnown = copy.records.some((existing) => existing.id === record.id);
+  const records = isKnown
+    ? copy.records.map((existing) => (existing.id === record.id ? record : existing))
+    : [...copy.records, record];
+  const updated = { loadedAt: copy.loadedAt, records };
+
+  memoryCopy = { baseId: connection.baseId, copy: Promise.resolve(updated) };
+  await storeSharedCopy(connection, updated);
 }
 
 /** Forgets the copy in memory and in the Runtime Cache, so the next read loads the table. */
@@ -47,12 +71,18 @@ export async function forgetTable(connection: AirtableConnection) {
 export function forgetMemoryCopy() {
   memoryCopy = undefined;
   refreshing = undefined;
+  saveCount = 0;
 }
 
 function currentCopy(connection: AirtableConnection) {
   if (memoryCopy?.baseId === connection.baseId) return memoryCopy.copy;
 
-  const copy = readSharedCopy(connection).then((shared) => shared ?? loadTable(connection));
+  const copy = readSharedCopy(connection).then(async (shared) => {
+    if (shared) return shared;
+    const loaded = await loadTable(connection);
+    await storeSharedCopy(connection, loaded);
+    return loaded;
+  });
   memoryCopy = { baseId: connection.baseId, copy };
   // A failed load isn't kept: the next request tries again
   copy.catch(() => {
@@ -64,16 +94,20 @@ function currentCopy(connection: AirtableConnection) {
 /**
  * Replaces an old copy without making anyone wait. Another instance may have reloaded the table
  * already: then its copy is taken from the Runtime Cache instead of asking Airtable again.
- * A failed reload keeps the old copy (the Airtable client has reported the error).
+ * A failed reload keeps the old copy (the Airtable client has reported the error), and so does a
+ * reload during which a record was saved: it may not contain that change yet.
  */
 function refreshInBackground(connection: AirtableConnection, oldCopy: TableCopy) {
   if (refreshing) return;
   const baseId = connection.baseId;
+  const savesBefore = saveCount;
   refreshing = (async () => {
     const shared = await readSharedCopy(connection);
     const isNewer = shared && shared.loadedAt > oldCopy.loadedAt;
     const fresh = isNewer && Date.now() - shared.loadedAt < REFRESH_AFTER_MS;
     const copy = fresh ? shared : await loadTable(connection);
+    if (saveCount !== savesBefore) return;
+    if (!fresh) await storeSharedCopy(connection, copy);
     if (memoryCopy?.baseId === baseId) memoryCopy = { baseId, copy: Promise.resolve(copy) };
   })()
     .catch(() => {})
@@ -84,16 +118,27 @@ function refreshInBackground(connection: AirtableConnection, oldCopy: TableCopy)
   waitUntil(refreshing);
 }
 
-/** Loads the whole table from Airtable and stores it in the Runtime Cache. */
+/** Loads the whole table from Airtable. */
 async function loadTable(connection: AirtableConnection) {
   const records = await listRecords(connection, RECIPES_TABLE_ID);
   const copy: TableCopy = { loadedAt: Date.now(), records };
+  return copy;
+}
+
+/** The copy in memory or in the Runtime Cache, or undefined. Never asks Airtable. */
+async function existingCopy(connection: AirtableConnection) {
+  if (memoryCopy?.baseId === connection.baseId) {
+    return memoryCopy.copy.catch(() => undefined);
+  }
+  return readSharedCopy(connection);
+}
+
+async function storeSharedCopy(connection: AirtableConnection, copy: TableCopy) {
   try {
     await sharedCache.set(sharedKey(connection), copy, { ttl: SHARED_COPY_TTL_SECONDS });
   } catch (error) {
     console.warn('Runtime Cache: storing the recipe table failed', error);
   }
-  return copy;
 }
 
 /** The copy in the Runtime Cache, or undefined if there is none or it can't be read. */

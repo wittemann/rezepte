@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import { RECIPE_FIELDS } from './fields.ts';
-import { forgetMemoryCopy, forgetTable, readTable, REFRESH_AFTER_MS } from './table-copy.ts';
+import {
+  forgetMemoryCopy,
+  forgetTable,
+  putRecord,
+  readTable,
+  REFRESH_AFTER_MS,
+} from './table-copy.ts';
 import {
   backgroundWorkDone,
   makeRuntimeCacheUnavailable,
@@ -176,5 +182,62 @@ describe('forgetTable', () => {
     expect(runtimeCache.has(SHARED_KEY)).toBe(false);
     expect(titlesOf(await readTable(connection))).toEqual(['Neu']);
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('putRecord', () => {
+  it('replaces the record with the same ID, in memory and in the Runtime Cache', async () => {
+    const { connection, fetch } = connectionAnswering(table('Alt', 'Andere'));
+    await readTable(connection);
+
+    await putRecord(connection, titled('rec0', 'Neu'));
+
+    expect(titlesOf(await readTable(connection))).toEqual(['Neu', 'Andere']);
+    forgetMemoryCopy();
+    expect(titlesOf(await readTable(connection))).toEqual(['Neu', 'Andere']);
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('adds a record that is not in the copy yet', async () => {
+    const { connection } = connectionAnswering(table('Eins'));
+    await readTable(connection);
+
+    await putRecord(connection, titled('recNew', 'Neu'));
+
+    expect(titlesOf(await readTable(connection))).toEqual(['Eins', 'Neu']);
+  });
+
+  it('keeps the age of the copy, so the next reload still happens on time', async () => {
+    const { connection, fetch } = connectionAnswering(table('Alt'), table('Neu'));
+    await readTable(connection);
+    vi.advanceTimersByTime(REFRESH_AFTER_MS);
+
+    await putRecord(connection, titled('rec0', 'Gespeichert'));
+    await readTable(connection);
+    await backgroundWorkDone();
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('does nothing without a copy and never asks Airtable', async () => {
+    const { connection, fetch } = connectionAnswering();
+    await putRecord(connection, titled('recNew', 'Neu'));
+    expect(fetch).not.toHaveBeenCalled();
+    expect(runtimeCache.size).toBe(0);
+  });
+
+  it('drops a background reload during which a record was saved', async () => {
+    const reload = Promise.withResolvers<Response>();
+    const { connection, fetch } = connectionAnswering(table('Alt'));
+    fetch.mockImplementationOnce(() => reload.promise);
+    await readTable(connection);
+    vi.advanceTimersByTime(REFRESH_AFTER_MS);
+
+    await readTable(connection); // starts the reload, which waits for Airtable
+    await putRecord(connection, titled('rec0', 'Gespeichert'));
+    reload.resolve(table('Vor dem Speichern'));
+    await backgroundWorkDone();
+
+    expect(titlesOf(await readTable(connection))).toEqual(['Gespeichert']);
   });
 });

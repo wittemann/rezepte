@@ -161,6 +161,19 @@ export async function listRecords(
   return records;
 }
 
+/**
+ * One record of a table, fields keyed by field ID.
+ *
+ * Throws before sending anything if `recordId` isn't a record ID. For an unknown record ID
+ * Airtable answers 403, not 404 (see updateRecord): call this only for records known to exist.
+ */
+export async function getRecord(connection: AirtableConnection, tableId: string, recordId: string) {
+  if (!isRecordId(recordId)) throw new Error(`Not an Airtable record ID: ${recordId}`);
+  const url = new URL(`${API_URL}/${connection.baseId}/${tableId}/${recordId}`);
+  url.searchParams.set('returnFieldsByFieldId', 'true');
+  return (await requestJson(connection, 'GET', url)) as AirtableRecord;
+}
+
 /** A table in the base's schema, with the parts the app looks at. */
 export type AirtableTable = {
   id: string;

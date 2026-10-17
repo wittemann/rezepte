@@ -437,7 +437,8 @@ describe('addPhoto', () => {
   it('checks the record exists, then uploads a JPEG to the photo field only', async () => {
     const { connection, fetch } = connectionAnswering(
       jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
-      jsonResponse(titled('recA', 'Testsuppe')),
+      jsonResponse(titled('recA', 'Testsuppe')), // upload
+      jsonResponse(titled('recA', 'Testsuppe')), // the record read again
     );
 
     expect(await addPhoto(connection, 'recA', '/9j/AAAA')).toBe(true);
@@ -476,24 +477,52 @@ describe('table copy', () => {
     expect(fetch).toHaveBeenCalledOnce();
   });
 
+  it('shows a created recipe at once, without loading the table again', async () => {
+    const { connection, fetch } = connectionAnswering(table(), jsonResponse(savedRecord('recNew')));
+
+    await getAll(connection);
+    await create(connection, testInput);
+
+    expect((await getAll(connection)).map((recipe) => recipe.id)).toEqual(['recA', 'recNew']);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
   it.each([
-    ['create', (connection: Connection) => create(connection, testInput)],
     ['update', (connection: Connection) => update(connection, 'recA', testInput)],
     ['setFavorite', (connection: Connection) => setFavorite(connection, 'recA', true)],
-    ['addPhoto', (connection: Connection) => addPhoto(connection, 'recA', '/9j/AAAA')],
-  ])('loads the table again after %s', async (_name, write) => {
-    const { connection, fetch } = connectionAnswering(
-      table(),
-      jsonResponse(savedRecord('recA')),
-      table(),
-    );
+  ])('shows the change at once after %s, without loading the table again', async (_name, write) => {
+    const changed = savedRecord('recA');
+    changed.fields[RECIPE_FIELDS.servings] = 6;
+    const { connection, fetch } = connectionAnswering(table(), jsonResponse(changed));
 
     await getAll(connection);
     await write(connection);
-    const callsBefore = fetch.mock.calls.length;
-    await getAll(connection);
 
-    expect(fetch).toHaveBeenCalledTimes(callsBefore + 1);
+    expect((await getById(connection, 'recA'))?.servings).toBe(6);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('shows a new photo at once, reading only that record again', async () => {
+    const withPhoto = testRecord('recA', {
+      [RECIPE_FIELDS.title]: 'Testsuppe',
+      [RECIPE_FIELDS.images]: [
+        { id: 'attNew', url: 'https://example.com/a.jpg', type: 'image/jpeg' },
+      ],
+    });
+    const { connection, fetch } = connectionAnswering(
+      table(),
+      jsonResponse(withPhoto), // upload
+      jsonResponse(withPhoto), // the record read again
+    );
+
+    await getAll(connection);
+    await addPhoto(connection, 'recA', '/9j/AAAA');
+
+    expect(String(fetch.mock.calls[2][0])).toBe(`${TABLE_URL}/recA?returnFieldsByFieldId=true`);
+    expect(await getImageUrl(connection, 'recA', 'attNew', 'full')).toBe(
+      'https://example.com/a.jpg',
+    );
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 
   it('loads the table again after a failed write', async () => {

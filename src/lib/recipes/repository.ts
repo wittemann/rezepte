@@ -6,6 +6,7 @@
 
 import {
   createRecord,
+  getRecord,
   isRecordId,
   updateRecord,
   uploadAttachment,
@@ -18,17 +19,24 @@ import { findImageUrl, type ImageSize } from './image-source.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import type { Recipe, RecipeId } from './recipe.ts';
 import { readRecord } from './record.ts';
-import { forgetTable, readTable } from './table-copy.ts';
+import { forgetTable, putRecord, readTable } from './table-copy.ts';
 
 const byTitle = new Intl.Collator('de').compare;
 
-/** Runs a write and forgets the table copy afterwards, also when the write fails halfway. */
-async function writing<T>(connection: AirtableConnection, write: () => Promise<T>) {
+/**
+ * Runs a write and puts the saved record into the table copy. A failed write may have changed
+ * the record halfway, so then the copy is forgotten and the next read loads the table.
+ */
+async function saving(connection: AirtableConnection, write: () => Promise<AirtableRecord>) {
+  let record: AirtableRecord;
   try {
-    return await write();
-  } finally {
+    record = await write();
+  } catch (error) {
     await forgetTable(connection);
+    throw error;
   }
+  await putRecord(connection, record);
+  return record;
 }
 
 /** All recipes that can be read, sorted by title (German order: "Äpfel" next to "Apfel"). */
@@ -51,9 +59,7 @@ export async function getById(connection: AirtableConnection, id: RecipeId) {
 /** Saves a new recipe and returns it as Airtable saved it. Throws a ZodError for invalid input. */
 export async function create(connection: AirtableConnection, input: RecipeInput) {
   const fields = toRecordFields(input);
-  const record = await writing(connection, () =>
-    createRecord(connection, RECIPES_TABLE_ID, fields),
-  );
+  const record = await saving(connection, () => createRecord(connection, RECIPES_TABLE_ID, fields));
   return readSavedRecord(record);
 }
 
@@ -68,7 +74,7 @@ export async function update(connection: AirtableConnection, id: RecipeId, input
   // This also makes sure the record is in the recipe table (Airtable finds record IDs across all
   // tables of a base).
   if (!(await findRecord(connection, id))) return undefined;
-  const record = await writing(connection, () =>
+  const record = await saving(connection, () =>
     updateRecord(connection, RECIPES_TABLE_ID, id, fields),
   );
   return readSavedRecord(record);
@@ -87,7 +93,7 @@ export async function setFavorite(
 ) {
   if (!(await findRecord(connection, id))) return undefined; // same reason as in update()
   const fields = { [RECIPE_FIELDS.favoritedAt]: favorite ? now.toISOString() : null };
-  const record = await writing(connection, () =>
+  const record = await saving(connection, () =>
     updateRecord(connection, RECIPES_TABLE_ID, id, fields),
   );
   return readSavedRecord(record);
@@ -100,7 +106,12 @@ export async function setFavorite(
 export async function addPhoto(connection: AirtableConnection, id: RecipeId, base64: string) {
   if (!(await findRecord(connection, id))) return false; // same reason as in update()
   const file = { contentType: 'image/jpeg', filename: 'foto.jpg', base64 };
-  await writing(connection, () => uploadAttachment(connection, id, RECIPE_FIELDS.images, file));
+  await saving(connection, async () => {
+    await uploadAttachment(connection, id, RECIPE_FIELDS.images, file);
+    // The upload answers with the photo field only, and Airtable's docs don't say whether that
+    // lists all photos or just the new one. The whole record is one call and leaves no doubt.
+    return getRecord(connection, RECIPES_TABLE_ID, id);
+  });
   return true;
 }
 

@@ -3,6 +3,7 @@ import { reportError, reportWarning } from '../monitoring.ts';
 import {
   AirtableError,
   createRecord,
+  getRecord,
   listRecords,
   listTables,
   RATE_LIMIT_WAIT_MS,
@@ -262,6 +263,27 @@ describe('createRecord', () => {
       message: `Airtable POST ${TABLE_PATH} failed with 422 (INVALID_VALUE_FOR_COLUMN: Bad value)`,
     });
   });
+});
+
+describe('getRecord', () => {
+  it('GETs one record with fields keyed by ID', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse(testRecord('recA')));
+
+    expect(await getRecord(connection, TABLE_ID, 'recA')).toEqual(testRecord('recA'));
+    expect(String(fetch.mock.calls[0][0])).toBe(`${TABLE_URL}/recA?returnFieldsByFieldId=true`);
+    expect(fetch.mock.calls[0][1]).toMatchObject({ method: 'GET' });
+  });
+
+  it.each(['', '..', 'recA/../tblOther', 'recA?x=1'])(
+    'refuses "%s" as record ID without sending anything',
+    async (recordId) => {
+      const { connection, fetch } = connectionAnswering();
+      await expect(getRecord(connection, TABLE_ID, recordId)).rejects.toThrow(
+        'Not an Airtable record ID',
+      );
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe('updateRecord', () => {
