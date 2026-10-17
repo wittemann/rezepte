@@ -1,8 +1,11 @@
 // Sentry on the server: errors, request performance (including the Airtable calls) and logs
 // (docs/decisions/0009-error-monitoring.md). The @sentry/astro integration loads this file, but
 // only when SENTRY_DSN is set at build time (astro.config.mjs).
+// @sentry/node, not @sentry/astro: the latter's main entry also loads the build integration
+// (Vite plugin, Sentry CLI), which slows every cold start. Astro's init only adds SDK metadata
+// and drops spans of prerendered pages, and we have none.
 
-import * as Sentry from '@sentry/astro';
+import * as Sentry from '@sentry/node';
 import { SENTRY_DSN, VERCEL_ENV } from 'astro:env/client';
 
 Sentry.init({

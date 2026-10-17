@@ -1,8 +1,9 @@
 // What the app reports to Sentry itself (docs/decisions/0009-error-monitoring.md). In one place,
 // so lib/ code doesn't depend on the SDK and tests can replace it. Without SENTRY_DSN the SDK is
 // never initialized and these calls do nothing.
+// @sentry/node for the cold-start reason in sentry.server.config.ts.
 
-import * as Sentry from '@sentry/astro';
+import * as Sentry from '@sentry/node';
 
 /** Searchable in Sentry, e.g. `airtable.status:429`. Never recipe names or texts. */
 export type ReportTags = Record<string, string | number>;

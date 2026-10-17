@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig, envField, fontProviders } from 'astro/config';
+import { defineConfig, envField, fontProviders, passthroughImageService } from 'astro/config';
 import preact from '@astrojs/preact';
 import vercel from '@astrojs/vercel';
 import sentry from '@sentry/astro';
@@ -26,6 +26,9 @@ export default defineConfig({
       telemetry: false,
     }),
   ],
+  // The app doesn't use Astro's image optimization (images go through our own proxy, see
+  // docs/decisions/0005-image-handling.md). Without this, sharp is bundled into the server function.
+  image: { service: passthroughImageService() },
   // Off in e2e runs (playwright.config.ts): it sits over the bottom controls and takes their clicks
   devToolbar: { enabled: !process.env.E2E },
   // Downloaded from Fontsource at build time and served from our own domain, so visitors'
