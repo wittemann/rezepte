@@ -7,7 +7,7 @@
 - `main` branch → production; every other branch or PR → preview deployment
 - Node version: current Active LTS supported by Vercel (see [ADR 0008](../decisions/0008-tooling.md))
 - Vercel project `rezepte` in the personal Hobby account (`martin-wittemanns-projects`); function region `iad1` (US East, close to Airtable)
-- **Production URL:** https://rezepte-rust.vercel.app (`rezepte.vercel.app` belongs to someone else, hence the random suffix). Moves to a custom domain later, see [ADR 0011](../decisions/0011-custom-domain.md)
+- **Production URL:** https://rezepte-rust.vercel.app (`rezepte.vercel.app` belongs to someone else, hence the random suffix). No custom domain planned
 
 ## Deployment protection
 
