@@ -183,7 +183,7 @@ Cold loads took several seconds: about 2 s to start the server, then waiting for
 - [x] Writes put the saved record into the copy instead of clearing it · `opus`
 - [x] Image proxy: on an expired Airtable link, fetch that record fresh and update it in the copy · `opus`
 - [x] Refresh button that reloads the table right away: a text button below the recipe list (the design has none; placement chosen by the project owner) · `sonnet`
-- [ ] Measure on production: cold start and first page with and without a copy · `sonnet`
+- [x] Measure on production: cold start and first page with and without a copy (numbers in ADR 0003) · `sonnet`
 
 ## Later (not v1)
 

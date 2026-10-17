@@ -39,8 +39,18 @@ Rejected:
 - **Runtime Cache on Hobby:** shared by all projects of the team (key prefix `rezepte`), separate for production and preview, 2 MB per entry (the table is far below that), usage counted against the plan's included amount. Entries can be evicted at any time, so the copy is a cache, never the source of truth
 - A recipe deleted directly in Airtable stays in the copy until the next reload; saving it then fails with Airtable's 403
 
+Measured on production (Sentry, October 2026; first page after a pause, so on a cold server):
+
+|               | Before (memory copy, Washington)           | With a copy (Frankfurt, `fra1`) | Without a copy (Frankfurt)  |
+| ------------- | ------------------------------------------ | ------------------------------- | --------------------------- |
+| Server render | slowest 5 %: 2.2 s, recipe pages up to 9 s | 189 ms, no Airtable call        | 1.1 s, Airtable 0.8 + 0.2 s |
+| Page load     | slowest 5 %: 5.0 s                         | 1.7 s                           | 3.2 s                       |
+
+- The rest of the 1.7 s is mostly Vercel starting the server after a pause (`/login` alone: 1.8 s to the first byte); following pages render in 5–30 ms
+- Without a copy, Frankfurt is slower than Washington (page load 2.2 s there), because Airtable is in the US. That's the first load after a deployment to a new region or after the Runtime Cache evicted the entry, so rare
+
 ## Revisit when
 
 - The monthly quota runs low (quota 429s are reported to Sentry, see [ADR 0009](0009-error-monitoring.md)), or
 - Runtime Cache usage gets near the Hobby limits, or
-- Pages are still slow with a copy in place (then look at the server region, see [bugs](../bugs.md))
+- Pages are still slow with a copy in place (the server already runs in Frankfurt, see [06-deployment](../specs/06-deployment.md))
