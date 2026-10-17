@@ -6,7 +6,7 @@
 - Keep Vercel's **Git fork protection** on, so PRs from forks never build with our env vars without approval
 - `main` branch → production; every other branch or PR → preview deployment
 - Node version: current Active LTS supported by Vercel (see [ADR 0008](../decisions/0008-tooling.md))
-- Vercel project `rezepte` in the personal Hobby account (`martin-wittemanns-projects`); function region `iad1` (US East, close to Airtable)
+- Vercel project `rezepte` in the personal Hobby account (`martin-wittemanns-projects`); function region `fra1` (Frankfurt, close to the users; set in `vercel.json`). Airtable is in the US, but pages read the copy of the recipe table ([ADR 0003](../decisions/0003-rendering-and-caching.md)), so only reloads and writes cross the Atlantic
 - **Production URL:** https://rezepte-rust.vercel.app (`rezepte.vercel.app` belongs to someone else, hence the random suffix). No custom domain planned
 
 ## Deployment protection
