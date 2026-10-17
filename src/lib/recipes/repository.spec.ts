@@ -9,6 +9,7 @@ import {
   getAll,
   getById,
   getImageUrl,
+  refreshImageUrl,
   setFavorite,
   update,
 } from './repository.ts';
@@ -430,6 +431,36 @@ describe('getImageUrl', () => {
     const { connection, fetch } = connectionAnswering();
     expect(await getImageUrl(connection, 'x/y', 'attOne', 'full')).toBeUndefined();
     expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe('refreshImageUrl', () => {
+  const withImage = (url: string) =>
+    testRecord('recA', {
+      [RECIPE_FIELDS.title]: 'Testsuppe',
+      [RECIPE_FIELDS.images]: [{ id: 'attOne', url, type: 'image/jpeg' }],
+    });
+
+  it('reads the recipe again, puts it into the copy and returns the new URL', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ records: [withImage('https://example.com/expired.jpg')] }),
+      jsonResponse(withImage('https://example.com/fresh.jpg')),
+    );
+
+    const url = await refreshImageUrl(connection, 'recA', 'attOne', 'full');
+
+    expect(url).toBe('https://example.com/fresh.jpg');
+    expect(String(fetch.mock.calls[1][0])).toBe(`${TABLE_URL}/recA?returnFieldsByFieldId=true`);
+    expect(await getImageUrl(connection, 'recA', 'attOne', 'full')).toBe(
+      'https://example.com/fresh.jpg',
+    );
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('returns undefined without asking Airtable for a recipe that is not in the copy', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse({ records: [] }));
+    expect(await refreshImageUrl(connection, 'recUnknown', 'attOne', 'full')).toBeUndefined();
+    expect(fetch).toHaveBeenCalledOnce(); // only the table
   });
 });
 

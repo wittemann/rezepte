@@ -1,5 +1,6 @@
-// Image proxy (docs/decisions/0005-image-handling.md): looks up a fresh Airtable URL and streams
-// the image, so pages never contain Airtable's expiring URLs.
+// Image proxy (docs/decisions/0005-image-handling.md): looks up the Airtable URL in the table copy
+// (renewing it once if it has expired, see ADR 0003) and streams the image, so pages never contain
+// Airtable's expiring URLs.
 //
 // Caching: an attachment ID never changes content, so the response may be cached for a year.
 // `Vercel-CDN-Cache-Control` makes the Vercel CDN keep it (the CDN doesn't act on max-age in
@@ -14,7 +15,7 @@ import {
   isPhotoType,
   type ImageSize,
 } from '../../../lib/recipes/image-source.ts';
-import { getImageUrl } from '../../../lib/recipes/repository.ts';
+import { getImageUrl, refreshImageUrl } from '../../../lib/recipes/repository.ts';
 
 const CACHE_FOR_A_YEAR = 'public, max-age=31536000, immutable';
 
@@ -27,15 +28,18 @@ export const GET: APIRoute = async ({ params, url }) => {
   // Nothing but real IDs reaches Airtable
   if (!isRecordId(recordId) || !isAttachmentId(attachmentId)) return notFound();
 
-  const imageUrl = await getImageUrl(
-    { token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID },
-    recordId,
-    attachmentId,
-    toSize(url.searchParams.get('size')),
-  );
+  const connection = { token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID };
+  const size = toSize(url.searchParams.get('size'));
+  const imageUrl = await getImageUrl(connection, recordId, attachmentId, size);
   if (!imageUrl) return notFound();
 
-  const upstream = await fetch(imageUrl);
+  let upstream = await fetch(imageUrl);
+  // A 4xx most likely means the URL from the table copy has expired: try once with a fresh one
+  if (upstream.status >= 400 && upstream.status < 500) {
+    const freshUrl = await refreshImageUrl(connection, recordId, attachmentId, size);
+    if (!freshUrl) return notFound();
+    upstream = await fetch(freshUrl);
+  }
   const contentType = upstream.headers.get('Content-Type');
   // Checked again on the answer: Airtable's type for the attachment could differ from the file's
   if (!upstream.ok || !upstream.body || !isPhotoType(contentType)) {

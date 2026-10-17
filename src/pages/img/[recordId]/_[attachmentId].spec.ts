@@ -4,13 +4,17 @@ import { GET } from './[attachmentId].ts';
 
 vi.mock('astro:env/server', () => ({ AIRTABLE_TOKEN: 'token', AIRTABLE_BASE_ID: 'appTest' }));
 
-const getImageUrl = vi.hoisted(() => vi.fn());
-vi.mock('../../../lib/recipes/repository.ts', () => ({ getImageUrl }));
+const { getImageUrl, refreshImageUrl } = vi.hoisted(() => ({
+  getImageUrl: vi.fn(),
+  refreshImageUrl: vi.fn(),
+}));
+vi.mock('../../../lib/recipes/repository.ts', () => ({ getImageUrl, refreshImageUrl }));
 
 const fetchMock = vi.fn<typeof fetch>();
 
 beforeEach(() => {
   getImageUrl.mockReset();
+  refreshImageUrl.mockReset();
   fetchMock.mockReset();
   vi.stubGlobal('fetch', fetchMock);
 });
@@ -80,9 +84,43 @@ describe('image route', () => {
 
   it('answers 502 without cache headers when the image can not be fetched', async () => {
     getImageUrl.mockResolvedValue('https://cdn.example.test/image');
+    refreshImageUrl.mockResolvedValue('https://cdn.example.test/fresh');
     fetchMock.mockResolvedValue(new Response(null, { status: 403 }));
     const response = await request('recA1', 'attB2');
     expect(response.status).toBe(502);
     expect(response.headers.get('Cache-Control')).toBeNull();
+  });
+
+  it('tries once more with a fresh URL when the one from the copy has expired', async () => {
+    getImageUrl.mockResolvedValue('https://cdn.example.test/expired');
+    refreshImageUrl.mockResolvedValue('https://cdn.example.test/fresh');
+    fetchMock
+      .mockResolvedValueOnce(new Response(null, { status: 410 }))
+      .mockResolvedValueOnce(new Response('bytes', { headers: { 'Content-Type': 'image/jpeg' } }));
+
+    const response = await request('recA1', 'attB2', '?size=small');
+
+    expect(await response.text()).toBe('bytes');
+    expect(refreshImageUrl).toHaveBeenCalledWith(
+      { token: 'token', baseId: 'appTest' },
+      'recA1',
+      'attB2',
+      'small',
+    );
+    expect(String(fetchMock.mock.calls[1][0])).toBe('https://cdn.example.test/fresh');
+  });
+
+  it('answers 404 when the image is gone from the fresh record', async () => {
+    getImageUrl.mockResolvedValue('https://cdn.example.test/expired');
+    refreshImageUrl.mockResolvedValue(undefined);
+    fetchMock.mockResolvedValue(new Response(null, { status: 410 }));
+    expect((await request('recA1', 'attB2')).status).toBe(404);
+  });
+
+  it('does not ask Airtable again for a server error of the image host', async () => {
+    getImageUrl.mockResolvedValue('https://cdn.example.test/image');
+    fetchMock.mockResolvedValue(new Response(null, { status: 503 }));
+    expect((await request('recA1', 'attB2')).status).toBe(502);
+    expect(refreshImageUrl).not.toHaveBeenCalled();
   });
 });

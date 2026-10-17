@@ -116,8 +116,8 @@ export async function addPhoto(connection: AirtableConnection, id: RecipeId, bas
 }
 
 /**
- * A fresh Airtable URL for one image of a recipe, or undefined if the recipe or the image doesn't
- * exist. The URL expires after a few hours: use it right away, never store it.
+ * The Airtable URL of one image of a recipe from the table copy, or undefined if the recipe or the
+ * image doesn't exist. It may have expired already (see refreshImageUrl): never store it.
  */
 export async function getImageUrl(
   connection: AirtableConnection,
@@ -127,6 +127,24 @@ export async function getImageUrl(
 ) {
   const record = await findRecord(connection, recipeId);
   return record ? findImageUrl(record.fields, attachmentId, size) : undefined;
+}
+
+/**
+ * Like getImageUrl, but reads the recipe again from Airtable (one call) and puts it into the
+ * table copy. For a URL from the copy that no longer works: Airtable's URLs expire after a few
+ * hours, and the copy can be older than that.
+ */
+export async function refreshImageUrl(
+  connection: AirtableConnection,
+  recipeId: RecipeId,
+  attachmentId: string,
+  size: ImageSize,
+) {
+  // Only for a recipe in the copy: Airtable answers an unknown ID with 403 (see update())
+  if (!(await findRecord(connection, recipeId))) return undefined;
+  const record = await getRecord(connection, RECIPES_TABLE_ID, recipeId);
+  await putRecord(connection, record);
+  return findImageUrl(record.fields, attachmentId, size);
 }
 
 /**
