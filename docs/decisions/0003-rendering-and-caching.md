@@ -6,7 +6,7 @@
 
 Airtable's free plan allows **1,000 API calls per workspace per month** (resets on the 1st; after a 30-day grace period, calls over the limit are blocked) and 5 requests/s per base. We stay on the free plan. Reading live on every request cost at least one call per page view, one per image cache miss and two per write, so the monthly budget lasted days.
 
-Airtable is also slow: one page of the table (up to 100 records) takes 0.7–2.5 s, and the table needs at least two pages in a row. The first version of this ADR kept the table in memory per server instance for 15 minutes. That saved calls, but every cold start (after a few minutes without use) and every expiry made a visitor wait several seconds for Airtable.
+Airtable is also unpredictable: from Vercel, one page of the table (up to 100 records) usually takes about 170 ms, but the slowest 5 % take over 2 s and single requests up to 11 s (Sentry, October 2026). The table needs at least two pages in a row. The first version of this ADR kept the table in memory per server instance for 15 minutes. That saved calls, but every cold start (after a few minutes without use) and every expiry made a visitor wait for Airtable, which made the slowest 5 % of recipe pages take 2–9 s.
 
 Recipes are also added directly in Airtable (e.g. through Claude), not only in the app.
 
