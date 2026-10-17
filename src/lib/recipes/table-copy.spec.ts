@@ -6,6 +6,7 @@ import {
   putRecord,
   readTable,
   REFRESH_AFTER_MS,
+  reloadTable,
 } from './table-copy.ts';
 import {
   backgroundWorkDone,
@@ -239,5 +240,27 @@ describe('putRecord', () => {
     await backgroundWorkDone();
 
     expect(titlesOf(await readTable(connection))).toEqual(['Gespeichert']);
+  });
+});
+
+describe('reloadTable', () => {
+  it('loads the table right away, also when the copy is new, and replaces it everywhere', async () => {
+    const { connection, fetch } = connectionAnswering(table('Alt'), table('Neu'));
+    await readTable(connection);
+
+    await reloadTable(connection);
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(titlesOf(await readTable(connection))).toEqual(['Neu']);
+    forgetMemoryCopy();
+    expect(titlesOf(await readTable(connection))).toEqual(['Neu']);
+  });
+
+  it('passes Airtable errors on and keeps no broken copy in memory', async () => {
+    const { connection, fetch } = connectionAnswering(serverError(), table('Neu'));
+
+    await expect(reloadTable(connection)).rejects.toMatchObject({ status: 500 });
+    expect(titlesOf(await readTable(connection))).toEqual(['Neu']);
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
 });

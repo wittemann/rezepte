@@ -6,11 +6,16 @@ import RecipesPage from './index.astro';
 
 vi.mock('astro:env/server', () => ({ AIRTABLE_TOKEN: 'token', AIRTABLE_BASE_ID: 'appTest' }));
 
+vi.mock('../../lib/monitoring.ts', () => ({ logInfo: vi.fn() }));
+
+const reloadAll = vi.hoisted(() => vi.fn());
+
 // Each of the four filters below removes exactly one of these recipes
 vi.mock('../../lib/recipes/repository.ts', async () => {
   const { makeRecipe } = await import('../../lib/recipes/test-recipe.ts');
   const base = { meals: ['Frühstück' as const], category: 'Suppe', totalMinutes: 20 };
   return {
+    reloadAll,
     getAll: async () => [
       makeRecipe({ ...base, id: 'recA', title: 'Beispiel Alpha' }),
       makeRecipe({ ...base, id: 'recB', title: 'Beispiel Beta', category: 'Backen' }),
@@ -28,6 +33,14 @@ async function renderPage(search = '') {
   container.addClientRenderer({ name: '@astrojs/preact', entrypoint: '@astrojs/preact/client.js' });
   return container.renderToString(RecipesPage, {
     request: new Request(`http://localhost/recipes${search}`),
+  });
+}
+
+async function postRefresh(search = '') {
+  const container = await AstroContainer.create();
+  container.addServerRenderer({ name: '@astrojs/preact', renderer: preactRenderer });
+  return container.renderToResponse(RecipesPage, {
+    request: new Request(`http://localhost/recipes${search}`, { method: 'POST' }),
   });
 }
 
@@ -179,6 +192,26 @@ describe('recipe list page', () => {
         );
       expect(hidden('form[role="search"]')).toEqual(['meal=baking', 'category=soup', 'max30=1']);
       expect(hidden('form:not([role="search"])')).toEqual(['q=Käse', 'meal=baking']);
+    });
+  });
+
+  describe('refresh button', () => {
+    it('is a POST form below the list that sends nothing else', async () => {
+      const form = parseDocument(await renderPage('?q=Käse')).querySelector('form.refresh');
+      expect(form?.getAttribute('method')).toBe('post');
+      expect(form?.hasAttribute('action')).toBe(false); // the same URL, query included
+      expect(form?.querySelectorAll('input')).toHaveLength(0);
+      expect(form?.querySelector('button[type="submit"]')?.textContent).toBe('Aktualisieren');
+    });
+
+    it('reloads the recipes and sends the browser back to the same list with a GET', async () => {
+      reloadAll.mockClear();
+
+      const response = await postRefresh('?meal=baking&q=K%C3%A4se');
+
+      expect(reloadAll).toHaveBeenCalledWith({ token: 'token', baseId: 'appTest' });
+      expect(response.status).toBe(303);
+      expect(response.headers.get('Location')).toBe('/recipes?meal=baking&q=K%C3%A4se');
     });
   });
 });

@@ -10,6 +10,8 @@ export const TEXT = {
   found: (recipeCount: number) => `${count(recipeCount)} gefunden`,
   meals: 'Mahlzeit',
   allMeals: 'Alle',
+  // Below the list: loads recipes changed directly in Airtable (docs/decisions/0003-rendering-and-caching.md)
+  refresh: 'Aktualisieren',
   // Short labels for the segmented control (the Airtable values are longer)
   mealLabels: {
     'lunch-dinner': 'Abend',

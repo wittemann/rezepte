@@ -57,6 +57,20 @@ export async function putRecord(connection: AirtableConnection, record: Airtable
   await storeSharedCopy(connection, updated);
 }
 
+/**
+ * Loads the table from Airtable right now and replaces the copy, e.g. after recipes were changed
+ * directly in Airtable. Waits for Airtable, unlike the reload in the background.
+ */
+export async function reloadTable(connection: AirtableConnection) {
+  const copy = loadTable(connection);
+  memoryCopy = { baseId: connection.baseId, copy };
+  const loaded = await copy.catch((error: unknown) => {
+    if (memoryCopy?.copy === copy) memoryCopy = undefined;
+    throw error;
+  });
+  await storeSharedCopy(connection, loaded);
+}
+
 /** Forgets the copy in memory and in the Runtime Cache, so the next read loads the table. */
 export async function forgetTable(connection: AirtableConnection) {
   memoryCopy = undefined;

@@ -182,7 +182,7 @@ Cold loads took several seconds: about 2 s to start the server, then 1.5–5 s t
 - [x] Shared copy of the recipe table in the Vercel Runtime Cache, read before Airtable; background refresh when older than 10 minutes · `opus`
 - [x] Writes put the saved record into the copy instead of clearing it · `opus`
 - [x] Image proxy: on an expired Airtable link, fetch that record fresh and update it in the copy · `opus`
-- [ ] Refresh button that reloads the table right away (placement and look: ask before building, the design has none) · `sonnet`
+- [x] Refresh button that reloads the table right away: a text button below the recipe list (the design has none; placement chosen by the project owner) · `sonnet`
 - [ ] Measure on production: cold start and first page with and without a copy · `sonnet`
 
 ## Later (not v1)

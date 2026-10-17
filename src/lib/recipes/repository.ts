@@ -19,7 +19,7 @@ import { findImageUrl, type ImageSize } from './image-source.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import type { Recipe, RecipeId } from './recipe.ts';
 import { readRecord } from './record.ts';
-import { forgetTable, putRecord, readTable } from './table-copy.ts';
+import { forgetTable, putRecord, readTable, reloadTable } from './table-copy.ts';
 
 const byTitle = new Intl.Collator('de').compare;
 
@@ -48,6 +48,11 @@ export async function getAll(connection: AirtableConnection) {
     if (recipe) recipes.push(recipe); // records without a title are skipped
   }
   return recipes.sort((first, second) => byTitle(first.title, second.title));
+}
+
+/** Loads all recipes from Airtable again, for changes made there directly (refresh button). */
+export async function reloadAll(connection: AirtableConnection) {
+  await reloadTable(connection);
 }
 
 /** One recipe, or undefined if there is none with this ID or it has no title (→ 404 page). */

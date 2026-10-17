@@ -2,6 +2,8 @@
 // Recipe list (design/README.md, "Rezepte"). Rendered on the server; search, meal and filters
 // live in the URL (docs/decisions/0006-forms-and-interactivity.md), so every change is a
 // normal page load. Airtable errors are not caught: Astro shows the 500 page.
+// A POST is the refresh button: it reloads the recipe table from Airtable, then shows the same
+// list again (docs/decisions/0003-rendering-and-caching.md).
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
 import Base from '../../layouts/Base.astro';
 import Button from '../../components/Button.astro';
@@ -21,12 +23,22 @@ import {
   toFilterChoices,
   toSearchParams,
 } from '../../lib/recipes/list-query.ts';
-import { getAll } from '../../lib/recipes/repository.ts';
+import { logInfo } from '../../lib/monitoring.ts';
+import { getAll, reloadAll } from '../../lib/recipes/repository.ts';
 import { filterRecipes, searchRecipes } from '../../lib/recipes/search.ts';
 import { TEXT } from './_index.texts.ts';
 
+const connection = { token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID };
+
+if (Astro.request.method === 'POST') {
+  await reloadAll(connection);
+  logInfo('Recipes reloaded');
+  // 303: the browser follows with a GET, so reloading the page doesn't send the form again
+  return Astro.redirect(Astro.url.pathname + Astro.url.search, 303);
+}
+
 const { query, filters } = parseListQuery(Astro.url.searchParams);
-const allRecipes = await getAll({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID });
+const allRecipes = await getAll(connection);
 // What the filter sheet's filters apply to; the sheet counts the matches in the browser
 const searchedInMeal = searchRecipes(filterRecipes(allRecipes, { meal: filters.meal }), query);
 const recipes = filterRecipes(searchedInMeal, filters);
@@ -131,6 +143,11 @@ const activeFilterCount = countActiveFilters(filters);
     <div class="list">
       <RecipeList {recipes} grouped={!query} />
     </div>
+    <form class="refresh" method="post">
+      <button class="refreshButton" type="submit">
+        {TEXT.refresh}
+      </button>
+    </form>
   </main>
 </Base>
 
@@ -170,6 +187,25 @@ const activeFilterCount = countActiveFilters(filters);
 
   .list {
     padding: 0 var(--space-xl);
+  }
+
+  .refresh {
+    display: flex;
+    justify-content: center;
+    padding: 0 var(--space-xl) var(--space-l);
+  }
+
+  /* Text button, looks like "Zurücksetzen" in the filter sheet */
+  .refresh .refreshButton {
+    min-height: var(--touch-target);
+    padding: 0 var(--space-s);
+    border: none;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 800;
+    cursor: pointer;
   }
 
   /* Filter sheet content (slotted into the FilterSheet island) */
