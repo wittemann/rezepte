@@ -23,10 +23,10 @@ Unclear: whether iOS opens an `.ics` link from a web app on the home screen (`di
 
 ## Consequences
 
-- Small: one route, one pure function that builds the `.ics` text (unit-tested), one row of buttons
+- Small: one route, one pure function that builds the `.ics` text (unit-tested), one button and a sheet
 - No third-party requests, no new keys or storage
 - One tap more than a direct write (the iOS sheet)
-- The design has no such buttons: placement and look are a deviation, noted in [05-design-integration](../specs/05-design-integration.md)
+- The design has no such buttons: a round calendar button in the header card (next to the heart) opens a bottom sheet „Wann gibt’s das?“ with one row per day (Montag–Sonntag, with date). Chosen by the project owner from a Claude Design sketch, noted as a deviation in [05-design-integration](../specs/05-design-integration.md)
 
 ## To accept
 

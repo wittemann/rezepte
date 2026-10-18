@@ -47,3 +47,4 @@ The visual design is created in **Claude Design**. This spec describes how it be
 | Stored in `localStorage` in the prototype (edits, photos) | Written to Airtable                                | As the design README asks                                                                     |
 | Favorites per device (`localStorage`)                     | Favorites shared by everyone, field `Favorit seit` | Project owner's decision (2026-10-01): one shared password, rarely changed, no personal state |
 | Edit form: „Quelle“ as a text field                       | A list of the known sources                        | Quelle only takes known values ([03-data-model](03-data-model.md), Data conventions)          |
+| No weekly menu                                            | Header button → sheet with Mo–So and dates         | Owner's choice (2026-10-18); [ADR 0013](../decisions/0013-weekly-menu-calendar.md)            |
