@@ -185,6 +185,17 @@ Cold loads took several seconds: about 2 s to start the server, then waiting for
 - [x] Refresh button that reloads the table right away: a text button below the recipe list (the design has none; placement chosen by the project owner) · `sonnet`
 - [x] Measure on production: cold start and first page with and without a copy (numbers in ADR 0003) · `sonnet`
 
+## 12. Weekly menu
+
+Add a recipe to the calendar for a day of the coming week, per [ADR 0013](decisions/0013-weekly-menu-calendar.md).
+
+- [ ] Spike: hard-coded `.ics` link opens the iOS "add event" sheet in Safari and in the home-screen app, logged in; then set ADR 0013 to Accepted (or pick the fallback) **(owner)** · `sonnet`
+- [ ] Pure function: recipe + date → `.ics` text (all-day event, escaping per RFC 5545), with unit tests · `sonnet`
+- [ ] Route `/recipes/[id]/calendar.ics?date=YYYY-MM-DD`: login, 404 for an unknown recipe, 400 for a bad date · `sonnet`
+- [ ] Placement and look of the buttons Mo–So on the recipe page (no design; decided by the project owner, noted in [05-design-integration](specs/05-design-integration.md)) **(owner)**
+- [ ] Buttons Mo–So with the date of the next such weekday, computed in the browser; links to the route · `sonnet`
+- [ ] E2E: the buttons show the dates of the coming week and the link returns `text/calendar` with the recipe name · `sonnet`
+
 ## Later (not v1)
 
 See "Later" in [01-requirements](specs/01-requirements.md): shopping list, deleting recipes in the app, logout button, offline use, a lighter outline for Maulti in dark mode.

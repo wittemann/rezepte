@@ -28,6 +28,11 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 - Steps with sections and hints; notes expandable
 - Recipes without instructions are shown as ideas with "Rezept ergänzen"
 
+**Weekly menu** (after v1, [ADR 0013](../decisions/0013-weekly-menu-calendar.md), Proposed)
+
+- On the recipe page, buttons Mo–So add the recipe as an all-day event on that day of the coming week to the phone's calendar
+- No menu suggestions and no planner in the app; the week is planned in the calendar
+
 **Cooking mode**
 
 - One step at a time, swipe or buttons, progress dots, ingredients sheet
