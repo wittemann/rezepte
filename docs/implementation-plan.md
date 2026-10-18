@@ -190,11 +190,24 @@ Cold loads took several seconds: about 2 s to start the server, then waiting for
 Add a recipe to the calendar for a day of the coming week, per [ADR 0013](decisions/0013-weekly-menu-calendar.md).
 
 - [x] Spike: hard-coded `.ics` link opens the iOS "add event" sheet in Safari and in the home-screen app, logged in; then set ADR 0013 to Accepted (or pick the fallback) **(owner)** · `sonnet`
-- [ ] Pure function: recipe + date → `.ics` text (all-day event, escaping per RFC 5545), with unit tests · `sonnet`
+- [x] Pure function: recipe + date → `.ics` text (all-day event, escaping per RFC 5545), with unit tests · `sonnet`
 - [ ] Route `/recipes/[id]/calendar.ics?date=YYYY-MM-DD`: login, 404 for an unknown recipe, 400 for a bad date · `sonnet`
 - [x] Placement and look of the buttons Mo–So on the recipe page (no design; decided by the project owner, noted in [05-design-integration](specs/05-design-integration.md)) **(owner)**
 - [ ] Calendar button in the header card and sheet „Wann gibt’s das?“ with Montag–Sonntag and the date of the next such weekday, computed in the browser; each row links to the route · `sonnet`
 - [ ] E2E: the sheet shows the dates of the coming week and the link returns `text/calendar` with the recipe name · `sonnet`
+
+## 13. Bring! shopping list
+
+Send picked ingredients of a recipe to the family's Bring! list, per [ADR 0014](decisions/0014-bring-shopping-list.md) (Proposed).
+
+- [ ] Dedicated Bring account, member of the family list; `BRING_EMAIL`, `BRING_PASSWORD`, `BRING_LIST_UUID` in Vercel and `.env`, listed in [06-deployment](specs/06-deployment.md) **(owner)**
+- [ ] Spike: from a Vercel function, log in and add one item; it shows up in the Bring app; then set ADR 0014 to Accepted (or drop it) **(owner)** · `sonnet`
+- [ ] Bring client (`fetch`): login, add item; unit tests with a mocked `fetch` · `sonnet`
+- [ ] Pure function: picked `IngredientLine`s + servings → Bring items (name, specification), with unit tests · `sonnet`
+- [ ] Action `addToBring`: login, validate recipe id and lines, German error messages · `sonnet`
+- [ ] Placement and look of the button and the sheet (no design; decided by the project owner, noted in [05-design-integration](specs/05-design-integration.md)) **(owner)**
+- [ ] Sheet: ingredient lines with checkboxes (all checked, headings as group titles), button „Zu Bring! hinzufügen“, success and error state · `sonnet`
+- [ ] E2E: the sheet lists the ingredients and unchecking works (no send: read-only) · `sonnet`
 
 ## Later (not v1)
 
