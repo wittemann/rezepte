@@ -1,0 +1,28 @@
+---
+// Temporary spike for ADR 0013 (docs/decisions/0013-weekly-menu-calendar.md): three ways to hand
+// the same all-day event to the iOS calendar. Tested by the project owner on the iPhone, in Safari
+// and in the home-screen app. Not linked anywhere; delete src/pages/spike/ once the ADR is decided.
+// German texts inline on purpose: throwaway page, not part of the app.
+import Base from '../../layouts/Base.astro';
+import { SPIKE_EVENT_ICS } from './_calendar-event.ts';
+
+const dataUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(SPIKE_EVENT_ICS)}`;
+---
+
+<Base title="Kalender-Test">
+  <main style="padding: 1.25rem; display: grid; gap: 1rem">
+    <h1>Kalender-Test</h1>
+    <p>
+      Jeder Link soll „Kochbuch-Test (löschen)“ am Mo, 26. Oktober als ganztägigen Termin anbieten.
+    </p>
+    <a href="/spike/calendar.ics">1 · Datei vom Server (.ics)</a>
+    <a href={dataUrl}>2 · data:-Link</a>
+    <a id="blob-link" href="#" download="kochbuch-test.ics">
+      3 · Blob-Link
+    </a>
+  </main>
+  <script is:inline define:vars={{ ics: SPIKE_EVENT_ICS }}>
+    const blob = new Blob([ics], { type: 'text/calendar' });
+    document.getElementById('blob-link').href = URL.createObjectURL(blob);
+  </script>
+</Base>
