@@ -189,7 +189,7 @@ Cold loads took several seconds: about 2 s to start the server, then waiting for
 
 Add a recipe to the calendar for a day of the coming week, per [ADR 0013](decisions/0013-weekly-menu-calendar.md).
 
-- [ ] Spike: hard-coded `.ics` link opens the iOS "add event" sheet in Safari and in the home-screen app, logged in; then set ADR 0013 to Accepted (or pick the fallback) **(owner)** · `sonnet`
+- [x] Spike: hard-coded `.ics` link opens the iOS "add event" sheet in Safari and in the home-screen app, logged in; then set ADR 0013 to Accepted (or pick the fallback) **(owner)** · `sonnet`
 - [ ] Pure function: recipe + date → `.ics` text (all-day event, escaping per RFC 5545), with unit tests · `sonnet`
 - [ ] Route `/recipes/[id]/calendar.ics?date=YYYY-MM-DD`: login, 404 for an unknown recipe, 400 for a bad date · `sonnet`
 - [x] Placement and look of the buttons Mo–So on the recipe page (no design; decided by the project owner, noted in [05-design-integration](specs/05-design-integration.md)) **(owner)**
