@@ -54,7 +54,8 @@ describe('recipe page', () => {
 
     const ingredients = parseIngredients('200 g Mehl');
     const { document } = await renderPage(makeRecipe({ ingredients, servings: 4 }));
-    expect(document.querySelector('h2')?.textContent).toBe('Zutaten');
+    const headings = [...document.querySelectorAll('h2')].map((heading) => heading.textContent);
+    expect(headings).toContain('Zutaten');
     expect(document.body.textContent).toContain('200 g');
   });
 

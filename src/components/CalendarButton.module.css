@@ -1,0 +1,56 @@
+/*
+ * Calendar button and day rows (owner's choice, docs/specs/05-design-integration.md): the button is
+ * round and white like the heart; the rows look like the stepper buttons in the ingredient list.
+ */
+
+.button {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--button-height-outline);
+  height: var(--button-height-outline);
+  padding: 0;
+  background: var(--white);
+  color: var(--on-pastel);
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.days {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  /* Room for the row shadows at the end of the scrolling body */
+  padding: 0 0 var(--space-xxs);
+  list-style: none;
+}
+
+.day {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+  min-height: 3.125rem; /* 50px */
+  padding: 0 var(--space-l);
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--border);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-s);
+  text-decoration: none;
+}
+
+.name {
+  flex-grow: 1;
+  font-family: var(--font-display);
+  font-size: 1.0625rem; /* 17px */
+  font-weight: 600;
+}
+
+.date {
+  color: var(--muted);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 700;
+}

@@ -1,11 +1,12 @@
 ---
-// Header card of the recipe page (design/README.md, "Rezept-Detail"): back, heart, "Bearbeiten",
+// Header card of the recipe page (design/README.md, "Rezept-Detail"): back, calendar, heart, "Bearbeiten",
 // optional photo, category, title, source and Maulti. The card has the color of the category.
 import type { Recipe } from '../lib/recipes/recipe.ts';
 import { categoryName } from '../lib/recipes/fields.ts';
 import { isFavorite } from '../lib/recipes/favorites.ts';
 import { sizedImageUrl } from '../lib/recipes/image-source.ts';
 import Button from './Button.astro';
+import CalendarButton from './CalendarButton.tsx';
 import FavoriteButton from './FavoriteButton.tsx';
 import Icon from './Icon.tsx';
 import Maulti from './Maulti.tsx';
@@ -37,6 +38,7 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
       <Icon name="back" size={22} strokeWidth={2.4} />
     </Button>
     <div class="actions-end">
+      <CalendarButton client:load recipeId={recipe.id} />
       <FavoriteButton client:load recipeId={recipe.id} {favorite} />
       <Button variant="outline" onPastel href={`/recipes/${recipe.id}/edit`}>
         {TEXT.edit}
