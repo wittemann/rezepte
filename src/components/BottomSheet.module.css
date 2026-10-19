@@ -61,6 +61,8 @@
 
 .title {
   font-size: var(--sheet-title-size);
+  /* Only focused on open (BottomSheet.tsx), not interactive, so no focus ring */
+  outline: none;
 }
 
 .close {

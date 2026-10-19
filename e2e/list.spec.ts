@@ -49,6 +49,8 @@ test('the filter sheet counts, applies and resets a filter', async ({ page }) =>
   await page.getByRole('button', { name: FILTER_TEXT.filter, exact: true }).click();
   const sheet = page.getByRole('dialog', { name: FILTER_TEXT.filter });
   await expect(sheet).toBeVisible();
+  // Focus starts on the title, not on a button that would show the focus ring
+  await expect(sheet.getByRole('heading', { name: FILTER_TEXT.filter })).toBeFocused();
 
   await sheet.getByText(TEXT.withInstructions).click();
   const apply = sheet.getByRole('button', { name: /anzeigen$/ });

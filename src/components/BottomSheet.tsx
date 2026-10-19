@@ -76,7 +76,10 @@ export default function BottomSheet({ open, onClose, title, headerAction, childr
       onClick={handleClick}
     >
       <div class={styles.header}>
-        <h2 id={titleId} class={styles.title}>
+        {/* showModal() focuses the first focusable element, and iOS Safari then shows the
+            focus ring on it (e.g. „Zurücksetzen“). `autofocus` makes the title take the focus
+            instead, which also has screen readers start at the heading. */}
+        <h2 id={titleId} class={styles.title} tabIndex={-1} autofocus>
           {title}
         </h2>
         {headerAction ?? (
