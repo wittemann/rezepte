@@ -194,7 +194,7 @@ Add a recipe to the calendar for a day of the coming week, per [ADR 0013](decisi
 - [x] Route `/recipes/[id]/calendar.ics?date=YYYY-MM-DD`: login, 404 for an unknown recipe, 400 for a bad date · `sonnet`
 - [x] Placement and look of the buttons Mo–So on the recipe page (no design; decided by the project owner, noted in [05-design-integration](specs/05-design-integration.md)) **(owner)**
 - [x] Calendar button in the header card and sheet „Wann gibt’s das?“ with Montag–Sonntag and the date of the next such weekday, computed in the browser; each row links to the route · `sonnet`
-- [ ] E2E: the sheet shows the dates of the coming week and the link returns `text/calendar` with the recipe name · `sonnet`
+- [x] E2E: the sheet shows the dates of the coming week and the link returns `text/calendar` with the recipe name · `sonnet`
 
 ## 13. Bring! shopping list
 
