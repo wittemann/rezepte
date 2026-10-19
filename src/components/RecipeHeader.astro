@@ -93,6 +93,8 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
 
   .actions-end {
     display: flex;
+    flex-wrap: wrap; /* with large text, the three buttons don't fit in one line */
+    justify-content: flex-end;
     align-items: center;
     gap: var(--space-xs);
   }
