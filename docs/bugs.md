@@ -18,25 +18,14 @@ Known bugs, found while using the app. Fixed like every other change: small comm
 
 Findings of the section 9 reviews in [implementation-plan](implementation-plan.md), merged and deduplicated. Severity as in the reviews: **blocker** = fix before launch, **should fix**, **nice to have**. Security findings are added here only with their fix (the repo is public).
 
+The open findings were dropped on 2026-10-19: none had an effect seen in use, and a check of the base showed no record the edit form would lose data on. They are in the git history of this file; reopen one when it shows up in use.
+
 ### Blocker
 
 - [x] **Airtable monthly API cap:** the free plan allows 1,000 API calls per workspace per month; without a cache (ADR 0003) every page view costs at least 1 call, every write 2, plus image cache misses and CI e2e runs, so the budget lasts days. Check the workspace plan first; on Free, add a short server cache of the recipe table cleared on every write (update ADR 0003) or move to a paid plan. Either way, tell a quota 429 from a rate-limit 429 and fail fast instead of waiting 30 s · `opus`
 
 ### Should fix
 
-- [ ] **FavoriteButton error handling:** a rejected fetch (offline) or an expired session leaves the heart flipped with no toast; two quick taps race and the rollback uses a stale value · `sonnet`
-- [ ] **Edit form loses data** (`form.ts`, `input.ts`, `RecipeForm.tsx`): categories and sources outside the fixed lists are saved as empty, unknown meals are dropped (ADR 0002 allows new ones); servings like 2,5 and non-whole-minute durations can't be saved. The form tests assert this behavior and need to change too · `opus`
-- [ ] **Edit overwrites all fields** (last write wins): the PATCH sends every field from the loaded values, so two people editing at once lose changes. Send only changed fields, or at least document it · `sonnet`
-- [ ] **Duplicated definitions:** meal/category value lists and the URL rule exist 2–3 times (`record.ts`, `form.ts`, `input.ts`); the „not found“ block is copied into three pages; the ingredient list markup exists in `Ingredients.tsx` and `CookingMode.tsx` · `sonnet`
-- [ ] **Airtable client robustness:** no fetch timeout, no retry of GETs on network errors or 5xx, a 30 s inline wait on 429 during a page render; network errors (fetch rejects) aren't reported to Sentry · `opus`
-- [ ] **Image proxy bursts:** every `/img` cache miss calls Airtable; a cold list can exceed 5 requests/s and push page renders into the 30 s wait · `opus`
-- [ ] **Missing tests:** actions (`src/actions/index.ts`), `_save-form.ts`, the login/edit/new pages, `PhotoStep`, the photo-upload hook; no test for double submit · `sonnet`
-- [ ] **E2E and CI:** tests depend on the current recipe data (helper loads every recipe page), the favorites test passes silently when the list is empty, CI retries hide flaky tests, e2e doesn't gate deploys, the e2e job likely fails on Dependabot PRs (no secrets); the edit test „Abbrechen goes back“ flaked once locally · `sonnet`
-- [ ] **Sentry Node SDK on cold start:** the static import in `lib/monitoring.ts` took 0.3–0.9 s locally, also without a DSN. Measure on Vercel; if confirmed, load it lazily or only with a DSN · `sonnet`
-- [ ] **Repeated UI texts:** „N Rezept(e)“ plural in 4 texts files, meal short labels in 3, `✕` in 4, the login title in 2; servings formatted differently in the recipe row and on the recipe page · `haiku`
-- [ ] **Stale comments and unused branches:** `input.ts` comment about the form action, unused modes in `Chip.astro` and the button branch in `SegmentedControl.astro`, ADR file name `0010-e2e-tests-deferred` vs its status · `haiku`
-- [ ] **Outdated docs:** ADR 0002 and spec 02 list repository functions and a delete flow that don't exist and say typecast creates new options (code forbids it); the „hint“ on the detail page for unreadable fields isn't built; spec 01 says „no third-party requests from the browser“ (not true with Sentry); „for two / both of us“ in README, 06-deployment and ADRs 0001, 0003; ADR 0008's CI description; ADR 0009 promises reports for failed image uploads, only the Airtable part is reported · `sonnet`
-- [ ] **`path-to-regexp` advisory** via `@astrojs/vercel`: build time only, not reachable at runtime; recheck when `@astrojs/vercel` updates · `haiku`
 - [x] **Favoriten tab heart color:** filled in ink when active, design has accent (`TabBar.astro`); also remove the „Open: color of the filled heart“ note in the plan · `haiku`
 - [x] **Gap before „Bearbeiten“** is 16 px instead of 8 px: the toast's empty status element is a second flex item in the header (`FavoriteButton.tsx`, `Toast.tsx`) · `haiku`
 - [x] **Chosen servings don't reach cooking mode:** cooking mode always shows the base amounts; pass the servings in the URL. The plan item „ingredients sheet (scaled)“ is ticked although it isn't · `sonnet`
@@ -47,19 +36,5 @@ Findings of the section 9 reviews in [implementation-plan](implementation-plan.m
 
 ### Nice to have
 
-- [ ] **Source link hidden** when „Quelle“ is empty although a URL is set · `haiku`
-- [ ] **Security headers:** no CSP, `frame-ancestors`, `nosniff` or referrer policy; only Vercel's HSTS is sent · `opus`
-- [ ] **Search ignores umlaut/ß variants** („ae“, „ss“) · `sonnet`
-- [ ] **Cooking-mode swipe** also fires on mouse text selection · `haiku`
-- [ ] **Dependencies:** GitHub Actions v7 → v8; no `dependabot.yml` (check whether Dependabot security updates are on in the repo settings); patch updates for eslint, vitest, typescript-eslint, globals, preact-render-to-string, `@types/node` · `haiku`
-- [ ] **Repository API:** pages and actions build the Airtable connection in 9 places; one server-only module would be the natural home for a cache; `fields.ts` mixes Airtable field IDs with lists the browser uses · `opus`
-- [ ] **Writes make 2–3 sequential Airtable calls** (lookup before PATCH) · `sonnet`
 - [x] **Server region:** functions run in Washington (`iad1`, Vercel default), so every request from Germany crosses the Atlantic. Hobby allows one region, e.g. `fra1` (`"regions"` in `vercel.json` or project settings). Airtable is in the US, so table loads, writes and image proxy misses get slower there; do it together with a shared recipe-table cache on Vercel (ADR 0003), then measure · `sonnet`
-- [ ] **Fonts:** both fonts are preloaded on every page (107 KB) · `sonnet`
-- [ ] **Design details:** alarm backdrop 40 % (design 50 %), ingredients sheet title 22 px (design 20 px), tab bar without its 6 px inner padding, source line 15 px/600 (design 13 px/700), meta stickers wrap earlier, the native „Quelle“ select looks different from the other inputs, no pressed states or tap-highlight handling, focus ring on the search and login fields on every tap · `sonnet`
-- [ ] **Tokens:** no type scale (font sizes as `rem` literals in 28 files); repeated sizes (56, 58, 18 px), the focus ring (6 copies) without tokens; disabled opacity 0.35 vs 0.4 · `sonnet`
-- [ ] **Code style details:** duplicated small logic (`AMOUNT` regex, `wait()`, page heading CSS), routes hard-coded about 20 times, undocumented `data-*` test hooks in production markup, clever `{valid, value}` helpers in `form.ts`, untyped `let`s in `edit.astro`, abbreviated names (`a`/`b` in `favorites.ts`, `err` in `password.ts`) · `sonnet`
-- [ ] **Tests:** filler tests that restate markup (Pill, Button, Icon) and a vacuous type-level test, brittle selectors (scoped class names), mocks that hide behavior, no DST cases, no test for logout/session expiry · `sonnet`
-- [ ] **Docs details:** ADR 0006 example (`client:visible` carousel) not built; 03-data-model units (`Pck.`), ranges, `SOURCES`, `interface` in the draft types; 06-deployment env table misses `VERCEL_ENV` and the `AIRTABLE_BASE_ID` CI secret; 04-auth misses the one-year server-side session check; the `Europe/Berlin` time zone isn't documented; 05-design-integration process list, docs/README row 0009, ADR 0010's first bullet, the README scripts table and ADR 0005 („JPEG/WebP“, replace/delete) are out of date · `haiku`
-- [ ] **Login guessing:** each attempt costs a scrypt hash on Hobby; accepted in ADR 0004, revisit if Sentry Logs show many „Login failed“ · `sonnet`
 - [x] **Image hints:** no `fetchpriority` on the header image, no `decoding="async"` · `haiku`

@@ -4,6 +4,8 @@ Steps to build v1 as defined in [01-requirements](specs/01-requirements.md), fol
 
 Bugs are not tracked here but in [bugs](bugs.md).
 
+**Status (2026-10-19):** finished for now. Sections 1–12 are done; section 13 (Bring!) is parked and not started.
+
 Legend: **(owner)** = needs the project owner (accounts, secrets, decisions, testing on the phone). `haiku` / `sonnet` / `opus` = the model to use for the sub-agent that builds the item (see "Sub-agents and models").
 
 ## How we work: every item goes through a manual review
