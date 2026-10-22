@@ -26,9 +26,12 @@ jobs:
       - run: npm test
       - run: npm run build
 
-  # Needs the Airtable secrets, which PRs from forks don't get: skipped there.
+  # Needs the Airtable secrets, which PRs from forks and Dependabot PRs don't get: skipped there.
   e2e:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    if: >-
+      github.event_name == 'push' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login != 'dependabot[bot]')
     runs-on: ubuntu-latest
     env:
       AIRTABLE_E2E_TOKEN: ${{ secrets.AIRTABLE_E2E_TOKEN }}
