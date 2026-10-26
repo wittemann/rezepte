@@ -14,9 +14,11 @@ import { TEXT as FILTER_TEXT } from '../../components/FilterSheet.texts.ts';
 import RecipeList from '../../components/RecipeList.astro';
 import SearchField from '../../components/SearchField.astro';
 import SegmentedControl from '../../components/SegmentedControl.astro';
+import Star from '../../components/Star.tsx';
 import { CATEGORIES, MEALS } from '../../lib/recipes/fields.ts';
 import {
   LIST_PATH,
+  RATING_CHOICES,
   countActiveFilters,
   listHref,
   parseListQuery,
@@ -65,9 +67,13 @@ const mealOptions = [
 
 // The search form sends q itself and keeps the filters, the meal and the sort as hidden fields
 const hiddenSearchFields = [...toSearchParams({ query: '', filters, sort }).entries()];
-// The filter form sends the filters itself and keeps the search text, the meal and the sort
+// The filter form sends the filters and the sort itself and keeps the search text and the meal
 const hiddenFilterFields = [
-  ...toSearchParams({ query, filters: { meal: filters.meal }, sort }).entries(),
+  ...toSearchParams({ query, filters: { meal: filters.meal } }).entries(),
+];
+const sortOptions = [
+  { label: TEXT.sortByTitle, value: 'az', active: sort !== 'best' },
+  { label: TEXT.sortBestFirst, value: 'best', active: sort === 'best' },
 ];
 const countText = query ? TEXT.found(recipes.length) : TEXT.count(recipes.length);
 const choices = toFilterChoices(filters);
@@ -116,6 +122,10 @@ const activeFilterCount = countActiveFilters(filters);
             <input type="hidden" {name} {value} />
           ))}
           <fieldset class="group">
+            <legend class="legend">{TEXT.sort}</legend>
+            <SegmentedControl name="sort" options={sortOptions} />
+          </fieldset>
+          <fieldset class="group">
             <legend class="legend">{TEXT.category}</legend>
             <div class="chips">
               {CATEGORIES.map((category) => (
@@ -126,6 +136,32 @@ const activeFilterCount = countActiveFilters(filters);
                   checked={choices.categories.includes(category.name)}
                 />
               ))}
+            </div>
+          </fieldset>
+          <fieldset class="group">
+            <legend class="legend">{TEXT.rating}</legend>
+            <div class="chips">
+              {RATING_CHOICES.map((choice) =>
+                choice === 'unrated' ? (
+                  <Chip
+                    label={TEXT.unrated}
+                    name="rating"
+                    value={choice}
+                    checked={choices.ratings.includes(choice)}
+                  />
+                ) : (
+                  <Chip
+                    label={TEXT.stars(choice)}
+                    name="rating"
+                    value={String(choice)}
+                    checked={choices.ratings.includes(String(choice))}
+                  >
+                    {Array.from({ length: choice }, () => (
+                      <Star size={14} strokeWidth={2.2} />
+                    ))}
+                  </Chip>
+                ),
+              )}
             </div>
           </fieldset>
           <fieldset class="group">

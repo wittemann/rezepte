@@ -45,4 +45,22 @@ describe('SegmentedControl', () => {
     expect(html).toContain('bis 30 Min.');
     expect(html.match(/class="hint/g)).toHaveLength(1);
   });
+
+  it('renders radio buttons in a form when it has a name, without a group of its own', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(SegmentedControl, {
+      props: {
+        name: 'sort',
+        options: [
+          { label: 'A–Z', value: 'az', active: false },
+          { label: 'Beste zuerst', value: 'best', active: true },
+        ],
+      },
+    });
+    expect(html.match(/type="radio"/g)).toHaveLength(2);
+    expect(html.match(/name="sort"/g)).toHaveLength(2);
+    expect(html).toMatch(/value="best"[^>]*checked/);
+    expect(html).not.toMatch(/value="az"[^>]*checked/);
+    expect(html).not.toContain('role="group"');
+  });
 });

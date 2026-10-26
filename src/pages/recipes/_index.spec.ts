@@ -207,6 +207,39 @@ describe('recipe list page', () => {
     );
   });
 
+  it('offers the sort in the sheet, checked as in the URL', async () => {
+    const sortRadio = (html: string) =>
+      parseDocument(html).querySelector('input[name="sort"][checked]')?.getAttribute('value');
+    expect(sortRadio(await renderPage())).toBe('az');
+    expect(sortRadio(await renderPage('?sort=best'))).toBe('best');
+  });
+
+  it('offers the rating chips, named for screen readers and checked as in the URL', async () => {
+    const document = parseDocument(await renderPage('?rating=unrated&rating=3'));
+    const chips = [...document.querySelectorAll('input[type="checkbox"][name="rating"]')];
+    expect(chips.map((chip) => chip.getAttribute('value'))).toEqual([
+      'unrated',
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+    ]);
+    expect(chips.map((chip) => chip.getAttribute('aria-label'))).toEqual([
+      null, // „Unbewertet“ is its visible text
+      '1 Stern',
+      '2 Sterne',
+      '3 Sterne',
+      '4 Sterne',
+      '5 Sterne',
+    ]);
+    expect(
+      chips
+        .filter((chip) => chip.hasAttribute('checked'))
+        .map((chip) => chip.getAttribute('value')),
+    ).toEqual(['unrated', '3']);
+  });
+
   describe('links', () => {
     const search = '?q=K%C3%A4se&meal=baking&category=soup&max30=1';
 

@@ -64,4 +64,15 @@ describe('Chip', () => {
     const html = await renderChip({ label: 'Suppe', name: 'category', value: 'soup' });
     expect(html).not.toMatch(/<input[^>]*\schecked[\s>=]/);
   });
+
+  it('shows its content instead of the label, and names the checkbox with the label', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(Chip, {
+      props: { label: '2 Sterne', name: 'rating', value: '2' },
+      slots: { default: '<svg aria-hidden="true"></svg><svg aria-hidden="true"></svg>' },
+    });
+    expect(html).toMatch(/<input[^>]*aria-label="2 Sterne"/);
+    expect(html.match(/<svg/g)).toHaveLength(2);
+    expect(html).not.toContain('>2 Sterne<');
+  });
 });

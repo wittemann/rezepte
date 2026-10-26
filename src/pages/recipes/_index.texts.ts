@@ -22,7 +22,14 @@ export const TEXT = {
   } satisfies Record<(typeof MEALS)[number]['name'], string>,
   // Filter sheet
   reset: 'Zurücksetzen',
+  sort: 'Sortieren',
+  sortByTitle: 'A–Z',
+  sortBestFirst: 'Beste zuerst',
   category: 'Kategorie',
+  rating: 'Bewertung',
+  unrated: 'Unbewertet',
+  /** Screen reader name of a rating chip, which shows only stars */
+  stars: (count: number) => (count === 1 ? '1 Stern' : `${count} Sterne`),
   other: 'Sonstiges',
   quick: 'Bis 30 Min.',
   withInstructions: 'Mit Anleitung',

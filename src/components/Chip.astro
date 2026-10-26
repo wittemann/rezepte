@@ -4,6 +4,8 @@
 //   renders it and passes it into the FilterSheet island as children)
 // - with `href`: a link (filter in the URL); no user yet
 // - otherwise a toggle button; no user yet
+// A checkbox chip can show something else than its label (the rating stars): pass it as children,
+// and `label` names the chip for screen readers.
 type Props = {
   label: string;
   active?: boolean;
@@ -15,12 +17,20 @@ type Props = {
 };
 
 const { label, active = false, href, name, value = 'on', checked = false } = Astro.props;
+const hasContent = Astro.slots.has('default');
 ---
 
 {name !== undefined ? (
   <label class="chip checkbox">
-    <input class="input" type="checkbox" {name} {value} {checked} />
-    {label}
+    <input
+      class="input"
+      type="checkbox"
+      {name}
+      {value}
+      {checked}
+      aria-label={hasContent ? label : undefined}
+    />
+    {hasContent ? <slot /> : label}
   </label>
 ) : href ? (
   <a class="chip" href={href} aria-current={active ? 'true' : undefined} data-active={active}>
@@ -36,6 +46,7 @@ const { label, active = false, href, name, value = 'on', checked = false } = Ast
   .chip {
     display: inline-flex;
     align-items: center;
+    gap: 2px; /* between rating stars */
     min-height: var(--chip-height);
     padding: 0 var(--space-l);
     border: var(--border);

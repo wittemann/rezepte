@@ -68,3 +68,28 @@ test('the filter sheet counts, applies and resets a filter', async ({ page }) =>
   await expect(page).not.toHaveURL(/steps=1/);
   await expect(page.getByRole('button', { name: FILTER_TEXT.filter, exact: true })).toBeVisible();
 });
+
+test('the filter sheet sorts best first and filters by rating, counted as one filter', async ({
+  page,
+}) => {
+  await login(page);
+  await page.goto('/recipes');
+  await page.waitForLoadState('networkidle');
+
+  await page.getByRole('button', { name: FILTER_TEXT.filter, exact: true }).click();
+  const sheet = page.getByRole('dialog', { name: FILTER_TEXT.filter });
+  await sheet.getByRole('radio', { name: TEXT.sortBestFirst }).check();
+  // Two chips, one filter
+  await sheet.getByRole('checkbox', { name: TEXT.unrated }).check();
+  await sheet.getByRole('checkbox', { name: TEXT.stars(5) }).check();
+  const apply = sheet.getByRole('button', { name: /anzeigen$/ });
+  const count = Number((await apply.innerText()).match(/^\d+/)?.[0]);
+  await apply.click();
+
+  await expect(page).toHaveURL(/sort=best/);
+  await expect(page).toHaveURL(/rating=unrated&rating=5/);
+  await expect(page.getByRole('button', { name: FILTER_TEXT.filterLabel(1) })).toBeVisible();
+  await expect(page.locator('main > header .count')).toHaveText(
+    `${TEXT.count(count)}${TEXT.bestFirst}`,
+  );
+});

@@ -1,42 +1,58 @@
 ---
 // Choice of one out of a few (design/README.md: meal "Alle · Frühstück · Abend · Backen",
 // "Wie viel Zeit?"). Sunk track, the active option is raised with surface and border.
-// An option with `href` is a link (state in the URL), otherwise a toggle button.
+// An option with `href` is a link (state in the URL); with a control `name`, each option is a
+// radio button in a form (the filter sheet's „Sortieren“); otherwise a toggle button.
 // Options may have a second line (`hint`).
 export type SegmentedOption = {
   label: string;
   hint?: string;
   active: boolean;
   href?: string;
+  /** Radio buttons only: the value sent with the form */
+  value?: string;
 };
 
 type Props = {
-  /** Names the group for screen readers */
-  label: string;
+  /** Names the group for screen readers; radio buttons are named by their fieldset's legend */
+  label?: string;
+  /** Radio buttons: the form field name */
+  name?: string;
   options: SegmentedOption[];
 };
 
-const { label, options } = Astro.props;
+const { label, name, options } = Astro.props;
 ---
 
-<div class="control" role="group" aria-label={label}>
-  {options.map((option) => {
-    const Tag = option.href ? 'a' : 'button';
-    return (
-      <Tag
-        class:list={['option', { withHint: option.hint }]}
-        href={option.href}
-        type={option.href ? undefined : 'button'}
-        aria-current={option.href && option.active ? 'true' : undefined}
-        aria-pressed={option.href ? undefined : option.active}
-        data-active={option.active}
-      >
+{name !== undefined ? (
+  <div class="control">
+    {options.map((option) => (
+      <label class="option radio">
+        <input class="input" type="radio" {name} value={option.value} checked={option.active} />
         <span class="label">{option.label}</span>
-        {option.hint && <span class="hint">{option.hint}</span>}
-      </Tag>
-    );
-  })}
-</div>
+      </label>
+    ))}
+  </div>
+) : (
+  <div class="control" role="group" aria-label={label}>
+    {options.map((option) => {
+      const Tag = option.href ? 'a' : 'button';
+      return (
+        <Tag
+          class:list={['option', { withHint: option.hint }]}
+          href={option.href}
+          type={option.href ? undefined : 'button'}
+          aria-current={option.href && option.active ? 'true' : undefined}
+          aria-pressed={option.href ? undefined : option.active}
+          data-active={option.active}
+        >
+          <span class="label">{option.label}</span>
+          {option.hint && <span class="hint">{option.hint}</span>}
+        </Tag>
+      );
+    })}
+  </div>
+)}
 
 <style>
   .control {
@@ -66,10 +82,29 @@ const { label, options } = Astro.props;
     cursor: pointer;
   }
 
-  .option[data-active='true'] {
+  .option[data-active='true'],
+  .radio:has(:checked) {
     background: var(--surface);
     border-color: var(--outline);
     color: var(--ink);
+  }
+
+  /* The radio button covers the option, so the whole option is tappable and stays focusable */
+  .radio {
+    position: relative;
+  }
+
+  .radio:has(:focus-visible) {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
   }
 
   .label {
