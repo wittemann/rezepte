@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Kochmodus: Wie war’s?</title>
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 54px 16px 34px; display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-family: Nunito, system-ui, sans-serif; {{ themeVars }}">
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+    <button type="button" aria-label="Kochmodus beenden" style="width: 46px; height: 46px; border-radius: 23px; background: var(--surface); border: 2px solid var(--outline); color: var(--ink); display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M6 6l12 12M18 6L6 18" style="fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round"></path></svg>
+    </button>
+    <div role="img" aria-label="Fortschritt: Schritt 12 von 12" style="display: flex; gap: 5px; align-items: center">
+      <sc-for list="{{ dots }}" as="dot" hint-placeholder-count="12">
+        <div style="width: 10px; height: 10px; border-radius: 5px; background: var(--accent); border: 1.5px solid var(--outline); box-sizing: border-box"></div>
+      </sc-for>
+    </div>
+    <button type="button" style="height: 46px; padding: 0 16px; border-radius: 23px; background: var(--surface); border: 2px solid var(--outline); color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-size: 16px; font-weight: 800; cursor: pointer">Zutaten</button>
+  </div>
+
+  <div style="display: flex; justify-content: center; margin-top: {{ maultiGap }}">
+    <dc-import name="Maulti" pose="{{ maultiPose }}" size="{{ maultiSize }}" hint-size="150px,150px"></dc-import>
+  </div>
+
+  <div style="margin-top: 14px; background: var(--surface); border: 2.5px solid var(--outline); border-radius: 28px; box-shadow: 0 5px 0 var(--outline); padding: 22px 20px 20px">
+    <div style="font-size: 13px; font-weight: 800; color: var(--accent)">Letzter Schritt</div>
+    <h2 style="margin: 6px 0 0; font-family: Fredoka, system-ui, sans-serif; font-size: 23px; font-weight: 600; line-height: 1.2">{{ heading }}</h2>
+    <p style="margin: 6px 0 0; font-size: 15px; font-weight: 600; line-height: 1.45; color: var(--muted)">Tipp auf die Sterne. Die Bewertung sehen alle in der Familie.</p>
+
+    <div role="radiogroup" aria-label="{{ groupLabel }}" style="display: flex; justify-content: center; gap: 2px; margin-top: 14px">
+      <sc-for list="{{ stars }}" as="star" hint-placeholder-count="5">
+        <button type="button" role="radio" aria-checked="{{ star.checked }}" aria-label="{{ star.label }}" onClick="{{ star.pick }}" style="width: 56px; height: 56px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true" style="display: block; overflow: visible"><path d="M12 2.6l2.8 5.7 6.3.9-4.55 4.43 1.07 6.27L12 16.96l-5.62 2.94 1.07-6.27L2.9 9.2l6.3-.9z" style="fill: {{ star.fill }}; stroke: {{ star.stroke }}; stroke-width: 1.7; stroke-linejoin: round"></path></svg>
+        </button>
+      </sc-for>
+    </div>
+    <div aria-live="polite" style="margin-top: 4px; min-height: 24px; text-align: center; font-family: Fredoka, system-ui, sans-serif; font-size: 18px; font-weight: 600; color: {{ captionColor }}">{{ caption }}</div>
+
+    <sc-if value="{{ photoStep }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top: 16px; padding-top: 16px; border-top: 2px dotted var(--line)">
+        <div style="font-size: 16px; font-weight: 800">Machst du noch ein Foto für mich?</div>
+        <p style="margin: 4px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--muted)">Das Rezept hat noch kein Bild.</p>
+        <button type="button" style="margin-top: 12px; width: 100%; height: 54px; border-radius: 27px; background: var(--sunk); border: 2.5px dashed var(--outline); color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-size: 17px; font-weight: 800; cursor: pointer">Foto aufnehmen</button>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <div style="display: flex; gap: 12px; align-items: center">
+    <button type="button" aria-label="Voriger Schritt" style="width: 62px; height: 62px; flex: none; border-radius: 31px; background: var(--surface); border: 2.5px solid var(--outline); box-shadow: 0 4px 0 var(--outline); color: var(--ink); display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M19 12H5M11 6l-6 6 6 6" style="fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round"></path></svg>
+    </button>
+    <button type="button" style="flex: 1; height: 62px; border-radius: 31px; background: var(--accent); color: var(--on-accent); border: 2.5px solid var(--outline); box-shadow: 0 4px 0 var(--outline); font-family: Fredoka, system-ui, sans-serif; font-size: 20px; font-weight: 600; cursor: pointer">{{ mainButton }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"rating":{"editor":"enum","options":["0","1","2","3","4","5"],"default":"0","tsType":"string"},"photoStep":{"editor":"boolean","default":false},"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+const LEVELS = ['', 'Naja', 'Ganz okay', 'Gut', 'Richtig gut', 'Mega lecker!'];
+const THEMES = {
+  light: '--bg:#fff6e8;--surface:#ffffff;--sunk:#fbe9cf;--ink:#2b2118;--muted:#6e5e4f;--line:#eddcc3;--accent:oklch(0.56 0.17 30);--on-accent:#ffffff;--outline:#2b2118;--star:#f2c94c;',
+  dark: '--bg:#1f1826;--surface:#2b2233;--sunk:#362b40;--ink:#fbf3e6;--muted:#bcaec2;--line:#44394e;--accent:oklch(0.72 0.15 30);--on-accent:#1f1826;--outline:#0c0910;--star:#f2c94c;'
+};
+class Component extends DCLogic {
+  currentRating() {
+    if (this.state && this.state.rating != null) return this.state.rating;
+    return Number(this.props.rating || 0);
+  }
+  renderVals() {
+    const rating = this.currentRating();
+    const photoStep = this.props.photoStep === true || this.props.photoStep === 'true';
+    const dark = this.props.dark === true || this.props.dark === 'true';
+    const stars = [1, 2, 3, 4, 5].map((value) => ({
+      checked: value === rating ? 'true' : 'false',
+      label: value === 1 ? '1 Stern' : value + ' Sterne',
+      fill: value <= rating ? 'var(--star)' : 'var(--sunk)',
+      stroke: value <= rating ? '#2b2118' : 'var(--muted)',
+      // Tapping the selected star again removes the rating
+      pick: () => this.setState({ rating: value === rating ? 0 : value })
+    }));
+    return {
+      themeVars: dark ? THEMES.dark : THEMES.light,
+      dots: Array.from({ length: 12 }, (_, index) => ({ index })),
+      maultiPose: rating > 0 ? 'cheer' : (photoStep ? 'cheer' : 'taste'),
+      maultiSize: photoStep ? '120' : '150',
+      maultiGap: photoStep ? '12px' : '28px',
+      heading: photoStep ? 'Juhu, geschafft! Wie war’s?' : 'Wie war’s?',
+      stars,
+      photoStep,
+      groupLabel: rating > 0 ? 'Bewertung: ' + rating + ' von 5 Sternen' : 'Bewertung: noch keine',
+      caption: rating > 0 ? LEVELS[rating] : 'Noch nicht bewertet',
+      captionColor: rating > 0 ? 'var(--ink)' : 'var(--muted)',
+      mainButton: rating > 0 ? 'Fertig' : 'Überspringen'
+    };
+  }
+}
+</script>
+</body>
+</html>

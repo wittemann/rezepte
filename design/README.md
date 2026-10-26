@@ -85,6 +85,40 @@ Liste aller Favoriten. Leer: Maulti `sleep`, „Noch keine Favoriten“ / „Tip
 ### 7. Rezept bearbeiten / neu
 Kopf: Abbrechen · „Bearbeiten“/„Neues Rezept“ · Sichern (deaktiviert ohne Name). Felder: Name, Kategorie (Chips), Passt zu (Mehrfach: Frühstück/Abend/Backen), Portionen, Arbeitszeit, Gesamtzeit (`h:mm`), Zutaten (Hilfetext zu Überschriften), Zubereitung (Hilfetext zu 1., 2., …), Quelle, Link, Notizen. Inputs 16px+. Hinweis „Änderungen sind für alle in der Familie sichtbar.“ Toast „Gespeichert“.
 
+### 8. Bewertung (Ergänzung 2026-10-26)
+Eine gemeinsame Bewertung pro Rezept, **1–5 Sterne**, für alle gleich (wie das Herz). Wer zuletzt bewertet, gewinnt. Leer = noch nicht bewertet. Design-Dateien: `rating/` (Einstieg `rating/Kochen.dc.html`), Brief: `docs/design-briefs/rating.md`.
+
+**Stern:** 5-zackig, Pfad in `rating/*.dc.html` (viewBox 24). Gefüllt: Fläche `star`, Kontur `#2b2118` (immer, auch dunkel). Leer auf `surface`: Fläche `sunk`, Kontur `muted`. Leer auf Pastell: Fläche `rgba(255,255,255,.6)`, Kontur `#2b2118`.
+**Stufen** (Zeile unter den Sternen): 1 „Naja“ · 2 „Ganz okay“ · 3 „Gut“ · 4 „Richtig gut“ · 5 „Mega lecker!“.
+**Screenreader:** Sterne sind eine Auswahl: `radiogroup` „Bewertung: 4 von 5 Sternen“ bzw. „Bewertung: noch keine“, Radios „1 Stern“ … „5 Sterne“.
+
+#### Kochmodus: „Wie war’s?“
+- Letzter Schritt nach dem letzten Kochschritt (zählt bei den Fortschrittspunkten mit).
+- Maulti 150px, Pose `taste` (neu: probiert vom Löffel, „mmh?“), nach dem Bewerten `cheer`.
+- Karte wie Schritt-Karte: „Letzter Schritt“ (Akzent 13/800), Titel „Wie war’s?“ (Fredoka 23/600), Text „Tipp auf die Sterne. Die Bewertung sehen alle in der Familie.“ (15/600 muted). 5 Sterne zentriert, Touch-Ziel 56px, Stern 44px, Gap 2. Darunter Stufe (Fredoka 18/600) bzw. „Noch nicht bewertet“ (muted).
+- **Rezept ohne Foto:** Bewertung und Foto auf **einem** Screen, kein eigener Foto-Schritt mehr. Titel „Juhu, geschafft! Wie war’s?“, Maulti 120px `cheer`. Unter den Sternen gepunktete Trennlinie (2px `line`), „Machst du noch ein Foto für mich?“ (16/800), „Das Rezept hat noch kein Bild.“ (14/600 muted), gestrichelter Button „Foto aufnehmen“ (54px, `sunk`, Rand 2.5px dashed).
+- Stern antippen = sofort gespeichert, kein Extra-Button. Vorhandene Bewertung ist vorausgewählt; gewählten Stern noch mal antippen = entfernen.
+- Button unten: „Überspringen“, sobald bewertet (oder Foto gemacht) „Fertig“. Beides beendet den Kochmodus.
+- Feedback: gewählter Stern hüpft (scale 1 → 1.2 → 1, 200 ms, nur ohne `prefers-reduced-motion`), Maulti wechselt zu `cheer`, Stufe erscheint. Kein Toast.
+
+#### Rezept-Detail: Kopfkarte
+- Buttons oben: ← · (Abstand) · Herz · Kalender · „Bearbeiten“, alle 46px.
+- Unter „von {Quelle}“ (Abstand 8): 5 Sterne, Touch-Ziel 44×44, Stern 30px, kein Gap, Zeile um 8px nach links eingerückt (Stern fluchtet mit dem Text). Darunter Stufe (14/800) bzw. „Wie war’s? Tipp auf einen Stern.“
+- Titel bekommt rechts 64px Platz für Maulti; Sterne enden vor Maulti.
+- Entfernen: gewählten Stern noch mal antippen.
+- Fehler beim Speichern: Sterne springen auf den alten Wert zurück, Toast wie beim Herz: „Das hat nicht geklappt. Bitte versuch es noch mal.“
+
+#### Rezept-Zeile
+- Bewertet: vorn in der Meta-Zeile **ein Stern pro Punkt** (14px, Gap 2), dann „·“ und die übliche Meta („★★★★ · 45 Min. · 4 Portionen“). Screenreader: „4 von 5 Sternen“. Nur Anzeige.
+- Unbewertet: nichts extra.
+
+#### Filter-Sheet und Sortierung
+- Neuer Abschnitt oben **„Sortieren“**: Segmented Control (wie Mahlzeit, `sunk`, Radius 25, Padding 3, Segmente 44px) „A–Z“ · „Beste zuerst“. Ist kein Filter: zählt nicht zu „Filter [n]“, „Zurücksetzen“ stellt aber A–Z wieder her.
+- Neuer Abschnitt **„Bewertung“** (zwischen Kategorie und Sonstiges): Chips „Unbewertet“, ★, ★★, ★★★, ★★★★, ★★★★★ (Sterne 14px). Mehrfachauswahl, oder-verknüpft (z. B. unbewertet ODER genau 3 Sterne). Aktiv wie andere Chips (Akzent). Jede Auswahl zählt als **1** zu „Filter [n]“.
+- Beste zuerst **ohne** Suche: Gruppen nach Kategorie bleiben, innerhalb nach Sternen absteigend (gleich: A–Z, unbewertet zuletzt).
+- Beste zuerst **mit** Suche: Namenstreffer bleiben vorn, innerhalb jeder Stufe nach Sternen.
+- Unter dem Titel: „4 Rezepte gefunden · beste zuerst“ bzw. „95 Rezepte · beste zuerst“.
+
 ### 0. Login (vor allen anderen Screens)
 Zweck:
 Einfacher Schutz für Familie und Freunde: ein gemeinsames Passwort, kein Benutzername.
@@ -122,6 +156,7 @@ Referenz: `screenshots/00-login.png`, Grafik `maulti-login.svg`.
 ## Design Tokens (Variante `playful`)
 **Hell:** bg `#fff6e8` · surface `#ffffff` · sunk `#fbe9cf` · ink `#2b2118` · muted `#6e5e4f` · line `#eddcc3` · accent `oklch(0.56 0.17 30)` · onAccent `#ffffff` · outline `#2b2118`
 **Dunkel** (folgt `prefers-color-scheme`, kein eigener Schalter): bg `#1f1826` · surface `#2b2233` · sunk `#362b40` · ink `#fbf3e6` · muted `#bcaec2` · line `#44394e` · accent `oklch(0.72 0.15 30)` · onAccent `#1f1826` · outline `#0c0910`
+**Stern** (neu, hell und dunkel): star `#f2c94c`, immer mit Kontur `#2b2118`.
 **Pastell:** `oklch(L 0.09 H)` mit L = 0.88 (hell) / 0.78 (dunkel); Text darauf immer `#2b2118`.
 - Kategorie-Hues: Grillen 5 · Hauptgericht 30 · Dessert 335 · Backen 65 · Beilage 95 · Salat 145 · Suppe 205 · Grundrezept 265
 - Mahlzeit-Hues: Frühstück 90 · Abend 25 · Backen 165
@@ -136,16 +171,18 @@ Referenz: `screenshots/00-login.png`, Grafik `maulti-login.svg`.
 - Kontraste: Button-Texte auf Akzent ≥ 4.5:1 geprüft (hell: weiß auf L 0.56; dunkel: dunkel auf L 0.72).
 
 ## Assets
-- `Maskottchen.dc.html`: Maulti als SVG (viewBox 120×120), Props `pose` (`wave | think | cook | cheer | sleep | heart | alarm | lock`), `size`, `accent`. Einsatz: Start `wave`, leere Suche/Stub `think`, leere Favoriten `sleep`, Detail `heart`/`wave`, Kochmodus `cook`, Foto-Schritt `cheer`, Timer-Ende `alarm`, Login `lock` (bei falschem Passwort `think`).
+- `Maskottchen.dc.html`: Maulti als SVG (viewBox 120×120), Props `pose` (`wave | think | cook | cheer | sleep | heart | alarm | lock | taste`), `size`, `accent`. Einsatz: Start `wave`, leere Suche/Stub `think`, leere Favoriten `sleep`, Detail `heart`/`wave`, Kochmodus `cook`, Foto-Schritt `cheer`, Timer-Ende `alarm`, Login `lock` (bei falschem Passwort `think`), „Wie war’s?“ `taste` (nach dem Bewerten `cheer`).
 - `icon-180.png`: Apple-Touch-Icon (Maulti auf Pfirsich). Für die PWA zusätzlich 192/512px aus dem SVG erzeugen und ein `manifest.webmanifest` (Name „Kochbuch“, display `standalone`, theme `#fff6e8`) anlegen.
 - Kategorie-Icons: einfache 24px-Linienpfade, siehe `CAT_ICON` in `Kochbuch App.dc.html`.
 
 ## Screenshots
 `screenshots/` (390×844 @2x): 01 Start · 02 Start unten (Favoriten, Stöbern) · 03 Rezepte · 04 Filter-Sheet · 05 Favoriten · 06 Rezept-Detail · 07 Zutaten/Schritte · 08 Kochmodus mit Timer-Button · 09 Foto-Schritt · 10 Rezept ohne Anleitung · 11 Bearbeiten.
+Bewertung (`screenshots/rating/`): 01 Kochmodus „Wie war’s?“ · 02 Bewertung + Foto · 03 Kochmodus dunkel · 04 Kopfkarte unbewertet · 05 Kopfkarte bewertet · 06 Speichern fehlgeschlagen · 07 Kopfkarte dunkel · 08 Liste · 09 Suche, beste zuerst · 10 Filter-Sheet.
 
 ## Dateien
 - `Kochbuch App.dc.html`: kompletter Prototyp (Logik im `<script data-dc-script>`: Parser, Vorschlagslogik, Timer, Portionsrechner). Relevant: Template-Zweig `isPlay` und das gemeinsame Bearbeiten-Formular.
 - `Maskottchen.dc.html`: Maulti-Komponente.
+- `rating/`: Screens der Bewertung (Abschnitt 8). Die Rezeptnamen darin sind erfunden. `rating/Maulti.dc.html` ist eine Kopie von `Maskottchen.dc.html` für die Imports dort.
 - `Kochbuch Clickdummy.dc.html`: Präsentations-Canvas mit iPhone-Rahmen.
 - `support.js`: Laufzeit für die Prototyp-Dateien (nicht übernehmen).
 - `data/rezepte.json`: aus dem CSV aufbereitete Rezepte inkl. `mahlzeit`.

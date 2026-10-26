@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Filter-Sheet mit Sortierung und Bewertung</title>
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; font-family: Nunito, system-ui, sans-serif; {{ themeVars }}">
+  <div aria-hidden="true" style="position: absolute; inset: 0">
+    <dc-import name="Liste" filter-count="{{ filterCount }}" hint-size="390px,844px"></dc-import>
+  </div>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(43,33,24,.45)"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="filter-title" style="position: absolute; left: 8px; right: 8px; bottom: 8px; box-sizing: border-box; padding: 22px 20px 20px; background: var(--surface); color: var(--ink); border: 2.5px solid var(--outline); border-radius: 30px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <h2 id="filter-title" style="margin: 0; font-family: Fredoka, system-ui, sans-serif; font-size: 26px; font-weight: 600">Filter</h2>
+      <button type="button" onClick="{{ reset }}" style="height: 44px; padding: 0 4px; border: 0; background: transparent; color: var(--accent); font-family: Nunito, system-ui, sans-serif; font-size: 15px; font-weight: 800; cursor: pointer">Zurücksetzen</button>
+    </div>
+
+    <div id="sort-label" style="margin-top: 10px; font-size: 14px; font-weight: 800; color: var(--muted)">Sortieren</div>
+    <div role="radiogroup" aria-labelledby="sort-label" style="display: flex; margin-top: 8px; padding: 3px; border-radius: 25px; background: var(--sunk)">
+      <sc-for list="{{ sortOptions }}" as="option" hint-placeholder-count="2">
+        <button type="button" role="radio" aria-checked="{{ option.checked }}" onClick="{{ option.pick }}" style="flex: 1; height: 44px; border-radius: 22px; background: {{ option.bg }}; border: {{ option.border }}; color: {{ option.fg }}; font-family: Nunito, system-ui, sans-serif; font-size: 15px; font-weight: 800; cursor: pointer">{{ option.label }}</button>
+      </sc-for>
+    </div>
+
+    <div style="margin-top: 16px; font-size: 14px; font-weight: 800; color: var(--muted)">Kategorie</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px">
+      <sc-for list="{{ categories }}" as="category" hint-placeholder-count="8">
+        <button type="button" aria-pressed="false" style="height: 44px; padding: 0 14px; border-radius: 22px; background: transparent; border: 2.5px solid var(--outline); color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-size: 15px; font-weight: 800; cursor: pointer">{{ category }}</button>
+      </sc-for>
+    </div>
+
+    <div id="rating-label" style="margin-top: 16px; font-size: 14px; font-weight: 800; color: var(--muted)">Bewertung</div>
+    <div role="group" aria-labelledby="rating-label" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px">
+      <sc-for list="{{ ratingChips }}" as="chip" hint-placeholder-count="6">
+        <button type="button" aria-pressed="{{ chip.pressed }}" aria-label="{{ chip.label }}" onClick="{{ chip.toggle }}" style="height: 44px; padding: 0 14px; display: flex; align-items: center; gap: 2px; border-radius: 22px; background: {{ chip.bg }}; border: 2.5px solid var(--outline); color: {{ chip.fg }}; font-family: Nunito, system-ui, sans-serif; font-size: 15px; font-weight: 800; cursor: pointer">
+          <sc-if value="{{ chip.unrated }}" hint-placeholder-val="{{ false }}">Unbewertet</sc-if>
+          <sc-for list="{{ chip.stars }}" as="star" hint-placeholder-count="3">
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="display: block; overflow: visible"><path d="M12 2.6l2.8 5.7 6.3.9-4.55 4.43 1.07 6.27L12 16.96l-5.62 2.94 1.07-6.27L2.9 9.2l6.3-.9z" style="fill: var(--star); stroke: #2b2118; stroke-width: 2.2; stroke-linejoin: round"></path></svg>
+          </sc-for>
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="margin-top: 16px; font-size: 14px; font-weight: 800; color: var(--muted)">Sonstiges</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px">
+      <sc-for list="{{ extras }}" as="chip" hint-placeholder-count="2">
+        <button type="button" aria-pressed="{{ chip.pressed }}" onClick="{{ chip.toggle }}" style="height: 44px; padding: 0 14px; border-radius: 22px; background: {{ chip.bg }}; border: 2.5px solid var(--outline); color: {{ chip.fg }}; font-family: Nunito, system-ui, sans-serif; font-size: 15px; font-weight: 800; cursor: pointer">{{ chip.label }}</button>
+      </sc-for>
+    </div>
+
+    <button type="button" style="margin-top: 20px; width: 100%; height: 54px; border-radius: 27px; background: var(--accent); color: var(--on-accent); border: 2.5px solid var(--outline); box-shadow: 0 4px 0 var(--outline); font-family: Fredoka, system-ui, sans-serif; font-size: 17px; font-weight: 600; cursor: pointer">[N] Rezepte anzeigen</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+const THEMES = {
+  light: '--bg:#fff6e8;--surface:#ffffff;--sunk:#fbe9cf;--ink:#2b2118;--muted:#6e5e4f;--line:#eddcc3;--accent:oklch(0.56 0.17 30);--on-accent:#ffffff;--outline:#2b2118;--star:#f2c94c;',
+  dark: '--bg:#1f1826;--surface:#2b2233;--sunk:#362b40;--ink:#fbf3e6;--muted:#bcaec2;--line:#44394e;--accent:oklch(0.72 0.15 30);--on-accent:#1f1826;--outline:#0c0910;--star:#f2c94c;'
+};
+const CATEGORIES = ['Hauptgericht', 'Beilage', 'Salat', 'Suppe', 'Grillen', 'Dessert', 'Backen', 'Grundrezept'];
+// ratings: the selected chips, 0 = unrated; several are combined with "or"
+const INITIAL = { sort: 'best', ratings: [0, 3], quick: false, withSteps: false };
+class Component extends DCLogic {
+  current() {
+    return Object.assign({}, INITIAL, this.state || {});
+  }
+  renderVals() {
+    const filters = this.current();
+    const dark = this.props.dark === true || this.props.dark === 'true';
+    const sortOptions = [['az', 'A–Z'], ['best', 'Beste zuerst']].map(([value, label]) => {
+      const active = filters.sort === value;
+      return {
+        label,
+        checked: active ? 'true' : 'false',
+        bg: active ? 'var(--surface)' : 'transparent',
+        border: active ? '2px solid var(--outline)' : '2px solid transparent',
+        fg: active ? 'var(--ink)' : 'var(--muted)',
+        pick: () => this.setState({ sort: value })
+      };
+    });
+    const ratingChips = [0, 1, 2, 3, 4, 5].map((value) => {
+      const active = filters.ratings.includes(value);
+      return {
+        unrated: value === 0,
+        stars: Array.from({ length: value }, (_, index) => ({ index })),
+        label: value === 0 ? 'Unbewertet' : value === 1 ? '1 Stern' : value + ' Sterne',
+        pressed: active ? 'true' : 'false',
+        bg: active ? 'var(--accent)' : 'transparent',
+        fg: active ? 'var(--on-accent)' : 'var(--ink)',
+        toggle: () => this.setState({
+          ratings: active ? filters.ratings.filter((rating) => rating !== value) : filters.ratings.concat([value])
+        })
+      };
+    });
+    const extras = [
+      ['quick', 'Bis 30 Min.'],
+      ['withSteps', 'Mit Anleitung']
+    ].map(([key, label]) => {
+      const active = filters[key];
+      return {
+        label,
+        pressed: active ? 'true' : 'false',
+        bg: active ? 'var(--accent)' : 'transparent',
+        fg: active ? 'var(--on-accent)' : 'var(--ink)',
+        toggle: () => this.setState({ [key]: !active })
+      };
+    });
+    // Sorting is not a filter: it does not count towards "Filter [n]"; any rating selection counts as one
+    const filterCount = [filters.quick, filters.withSteps, filters.ratings.length > 0].filter(Boolean).length;
+    return {
+      themeVars: dark ? THEMES.dark : THEMES.light,
+      sortOptions,
+      categories: CATEGORIES,
+      ratingChips,
+      extras,
+      filterCount: String(filterCount),
+      reset: () => this.setState({ sort: 'az', ratings: [], quick: false, withSteps: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

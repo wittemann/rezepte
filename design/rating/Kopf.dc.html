@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Rezept-Kopfkarte mit Bewertung</title>
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2b2118}a:hover{color:#000000}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; padding: 54px 0 34px; display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-family: Nunito, system-ui, sans-serif; overflow: hidden; {{ themeVars }}">
+  <div style="position: relative; margin: 0 10px; background: {{ pastel }}; color: #2b2118; border: 2.5px solid var(--outline); border-radius: 34px; box-shadow: 0 5px 0 var(--outline); padding: 14px 16px 20px">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <button type="button" aria-label="Zurück" style="width: 46px; height: 46px; border-radius: 23px; background: #ffffff; border: 2.5px solid var(--outline); color: #2b2118; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M19 12H5M11 6l-6 6 6 6" style="fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round"></path></svg>
+      </button>
+      <div style="flex: 1"></div>
+      <button type="button" aria-label="{{ heartLabel }}" aria-pressed="{{ heartPressed }}" style="width: 46px; height: 46px; border-radius: 23px; background: #ffffff; border: 2.5px solid var(--outline); color: #2b2118; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" style="fill: {{ heartFill }}; stroke: #2b2118; stroke-width: 2.2; stroke-linejoin: round"></path></svg>
+      </button>
+      <button type="button" aria-label="In den Kalender" style="width: 46px; height: 46px; border-radius: 23px; background: #ffffff; border: 2.5px solid var(--outline); color: #2b2118; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M5 6.5h14a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7.5a1 1 0 0 1 1-1zM4 10.5h16M8.5 4v4M15.5 4v4" style="fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round"></path></svg>
+      </button>
+      <button type="button" style="height: 46px; padding: 0 16px; border-radius: 23px; background: #ffffff; border: 2.5px solid var(--outline); color: #2b2118; font-family: Nunito, system-ui, sans-serif; font-size: 16px; font-weight: 800; cursor: pointer">Bearbeiten</button>
+    </div>
+
+    <div style="display: inline-flex; margin-top: 16px; height: 30px; padding: 0 12px; align-items: center; border-radius: 15px; background: #ffffff; border: 2px solid #2b2118; font-size: 14px; font-weight: 800">Backen</div>
+    <h1 style="margin: 10px 0 0; padding-right: 64px; font-family: Fredoka, system-ui, sans-serif; font-size: 28px; font-weight: 600; line-height: 1.12">Hefezopf mit Mandeln</h1>
+    <div style="margin-top: 6px; font-size: 15px; font-weight: 600">von <a href="#">Chefkoch</a></div>
+
+    <div role="radiogroup" aria-label="{{ groupLabel }}" style="display: flex; margin: 8px 0 0 -8px">
+      <sc-for list="{{ stars }}" as="star" hint-placeholder-count="5">
+        <button type="button" role="radio" aria-checked="{{ star.checked }}" aria-label="{{ star.label }}" onClick="{{ star.pick }}" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true" style="display: block; overflow: visible"><path d="M12 2.6l2.8 5.7 6.3.9-4.55 4.43 1.07 6.27L12 16.96l-5.62 2.94 1.07-6.27L2.9 9.2l6.3-.9z" style="fill: {{ star.fill }}; stroke: #2b2118; stroke-width: 1.8; stroke-linejoin: round"></path></svg>
+        </button>
+      </sc-for>
+    </div>
+    <div aria-live="polite" style="min-height: 20px; font-size: 14px; font-weight: 800">{{ caption }}</div>
+
+    <div style="position: absolute; right: -6px; bottom: -22px">
+      <dc-import name="Maulti" pose="{{ maultiPose }}" size="108" hint-size="108px,108px"></dc-import>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 10px; margin: 26px 16px 0; flex-wrap: wrap">
+    <div style="padding: 8px 12px; background: var(--surface); border: 2.5px solid var(--outline); border-radius: 20px">
+      <div style="font-size: 13px; font-weight: 700; color: var(--muted)">Arbeitszeit</div>
+      <div style="font-family: Fredoka, system-ui, sans-serif; font-size: 18px; font-weight: 600">30 Min.</div>
+    </div>
+    <div style="padding: 8px 12px; background: var(--surface); border: 2.5px solid var(--outline); border-radius: 20px">
+      <div style="font-size: 13px; font-weight: 700; color: var(--muted)">Gesamtzeit</div>
+      <div style="font-family: Fredoka, system-ui, sans-serif; font-size: 18px; font-weight: 600">2 Std. 10 Min.</div>
+    </div>
+    <div style="padding: 8px 12px; background: var(--surface); border: 2.5px solid var(--outline); border-radius: 20px">
+      <div style="font-size: 13px; font-weight: 700; color: var(--muted)">pro Portion</div>
+      <div style="font-family: Fredoka, system-ui, sans-serif; font-size: 18px; font-weight: 600">[kcal]</div>
+    </div>
+  </div>
+
+  <div style="margin: 28px 20px 0; font-family: Fredoka, system-ui, sans-serif; font-size: 24px; font-weight: 600">Zutaten</div>
+
+  <div style="flex: 1"></div>
+
+  <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="position: absolute; left: 16px; right: 16px; bottom: 126px; display: flex; justify-content: center">
+      <div style="padding: 10px 18px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 14px; font-weight: 600; text-align: center">Das hat nicht geklappt. Bitte versuch es noch mal.</div>
+    </div>
+  </sc-if>
+
+  <div style="margin: 0 16px">
+    <button type="button" style="width: 100%; height: 62px; border-radius: 31px; background: var(--accent); color: var(--on-accent); border: 2.5px solid var(--outline); box-shadow: 0 4px 0 var(--outline); font-family: Fredoka, system-ui, sans-serif; font-size: 20px; font-weight: 600; cursor: pointer">Los, wir kochen!</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"rating":{"editor":"enum","options":["0","1","2","3","4","5"],"default":"0","tsType":"string"},"favorite":{"editor":"boolean","default":false},"error":{"editor":"boolean","default":false},"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+const LEVELS = ['', 'Naja', 'Ganz okay', 'Gut', 'Richtig gut', 'Mega lecker!'];
+const THEMES = {
+  light: '--bg:#fff6e8;--surface:#ffffff;--sunk:#fbe9cf;--ink:#2b2118;--muted:#6e5e4f;--line:#eddcc3;--accent:oklch(0.56 0.17 30);--on-accent:#ffffff;--outline:#2b2118;--star:#f2c94c;',
+  dark: '--bg:#1f1826;--surface:#2b2233;--sunk:#362b40;--ink:#fbf3e6;--muted:#bcaec2;--line:#44394e;--accent:oklch(0.72 0.15 30);--on-accent:#1f1826;--outline:#0c0910;--star:#f2c94c;'
+};
+const BACKEN_HUE = 65;
+class Component extends DCLogic {
+  isOn(value) {
+    return value === true || value === 'true';
+  }
+  currentRating() {
+    if (this.state && this.state.rating != null) return this.state.rating;
+    return Number(this.props.rating || 0);
+  }
+  renderVals() {
+    const rating = this.currentRating();
+    const dark = this.isOn(this.props.dark);
+    const favorite = this.isOn(this.props.favorite);
+    const stars = [1, 2, 3, 4, 5].map((value) => ({
+      checked: value === rating ? 'true' : 'false',
+      label: value === 1 ? '1 Stern' : value + ' Sterne',
+      fill: value <= rating ? 'var(--star)' : 'rgba(255,255,255,.6)',
+      // Tapping the selected star again removes the rating
+      pick: () => this.setState({ rating: value === rating ? 0 : value })
+    }));
+    return {
+      themeVars: dark ? THEMES.dark : THEMES.light,
+      pastel: 'oklch(' + (dark ? 0.78 : 0.88) + ' 0.09 ' + BACKEN_HUE + ')',
+      heartLabel: favorite ? 'Aus den Favoriten entfernen' : 'Als Favorit markieren',
+      heartPressed: favorite ? 'true' : 'false',
+      heartFill: favorite ? 'var(--accent)' : 'none',
+      maultiPose: favorite ? 'heart' : 'wave',
+      stars,
+      groupLabel: rating > 0 ? 'Bewertung: ' + rating + ' von 5 Sternen' : 'Bewertung: noch keine',
+      caption: rating > 0 ? LEVELS[rating] : 'Wie war’s? Tipp auf einen Stern.',
+      error: this.isOn(this.props.error)
+    };
+  }
+}
+</script>
+</body>
+</html>

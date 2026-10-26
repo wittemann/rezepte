@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Rezepte mit Bewertung</title>
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; padding: 54px 16px 0; display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-family: Nunito, system-ui, sans-serif; overflow: hidden; {{ themeVars }}">
+  <h1 style="margin: 8px 4px 0; font-family: Fredoka, system-ui, sans-serif; font-size: 30px; font-weight: 600; line-height: 1.1">Rezepte</h1>
+  <div style="margin: 4px 4px 0; font-size: 15px; font-weight: 600; color: var(--muted)">{{ subtitle }}</div>
+
+  <label style="margin-top: 14px; height: 56px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 16px; background: var(--surface); border: 2.5px solid var(--outline); border-radius: 20px; box-shadow: 0 4px 0 var(--outline)">
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="display: block; flex: none"><circle cx="10.5" cy="10.5" r="6.5" style="fill: none; stroke: var(--ink); stroke-width: 2.4"></circle><path d="M15.5 15.5L20 20" style="stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round"></path></svg>
+    <input type="search" aria-label="Rezepte durchsuchen" placeholder="Worauf hast du Lust?" value="{{ query }}" style="flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-size: 17px; font-weight: 600; outline: none">
+  </label>
+
+  <div style="display: flex; gap: 10px; margin-top: 14px; align-items: center">
+    <div style="flex: 1; display: flex; padding: 3px; border-radius: 22px; background: var(--sunk); font-size: 14px; font-weight: 800">
+      <div style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 19px; background: var(--surface); border: 2px solid var(--outline); box-sizing: border-box">Alle</div>
+      <div style="flex: 1.3; height: 38px; display: flex; align-items: center; justify-content: center; color: var(--muted)">Frühstück</div>
+      <div style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; color: var(--muted)">Abend</div>
+      <div style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; color: var(--muted)">Backen</div>
+    </div>
+    <button type="button" aria-label="{{ filterLabel }}" style="height: 46px; padding: 0 14px; display: flex; align-items: center; gap: 8px; border-radius: 23px; background: {{ filterBg }}; color: {{ filterFg }}; border: 2.5px solid var(--outline); box-shadow: 0 3px 0 var(--outline); font-family: Nunito, system-ui, sans-serif; font-size: 15px; font-weight: 800; cursor: pointer">
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M4 7h16M7 12h10M10 17h4" style="fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round"></path></svg>
+      {{ filterText }}
+    </button>
+  </div>
+
+  <sc-if value="{{ grouped }}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; align-items: center; gap: 10px; margin: 22px 4px 10px">
+      <h2 style="margin: 0; font-family: Fredoka, system-ui, sans-serif; font-size: 20px; font-weight: 600">Hauptgericht</h2>
+      <div style="height: 26px; padding: 0 10px; display: flex; align-items: center; border-radius: 13px; background: var(--sunk); font-size: 13px; font-weight: 800">[n]</div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ flat }}" hint-placeholder-val="{{ false }}">
+    <div style="height: 16px"></div>
+  </sc-if>
+
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <sc-for list="{{ rows }}" as="row" hint-placeholder-count="5">
+      <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 10px; background: var(--surface); border: 2px solid var(--outline); border-radius: 22px; box-shadow: 0 3px 0 var(--outline); color: var(--ink); text-decoration: none">
+        <div aria-hidden="true" style="width: 52px; height: 52px; flex: none; border-radius: 18px; background: {{ row.tile }}; color: #2b2118; display: flex; align-items: center; justify-content: center; font-family: Fredoka, system-ui, sans-serif; font-size: 24px; font-weight: 600">{{ row.initial }}</div>
+        <div style="flex: 1; min-width: 0">
+          <div style="font-family: Fredoka, system-ui, sans-serif; font-size: 16px; font-weight: 600">{{ row.title }}</div>
+          <div style="margin-top: 2px; display: flex; flex-wrap: wrap; align-items: center; column-gap: 4px; font-size: 13px; font-weight: 600; color: var(--muted)">
+            <sc-if value="{{ row.rated }}" hint-placeholder-val="{{ true }}">
+              <span role="img" aria-label="{{ row.ratingLabel }}" style="display: inline-flex; align-items: center; gap: 2px">
+                <sc-for list="{{ row.stars }}" as="star" hint-placeholder-count="4">
+                  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="display: block; overflow: visible"><path d="M12 2.6l2.8 5.7 6.3.9-4.55 4.43 1.07 6.27L12 16.96l-5.62 2.94 1.07-6.27L2.9 9.2l6.3-.9z" style="fill: var(--star); stroke: #2b2118; stroke-width: 2.2; stroke-linejoin: round"></path></svg>
+                </sc-for>
+              </span>
+              <span aria-hidden="true">·</span>
+            </sc-if>
+            <span>{{ row.meta }}</span>
+          </div>
+        </div>
+        <sc-if value="{{ row.favorite }}" hint-placeholder-val="{{ false }}">
+          <svg width="22" height="22" viewBox="0 0 24 24" role="img" aria-label="Favorit" style="display: block; flex: none"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" style="fill: var(--accent); stroke: var(--outline); stroke-width: 2; stroke-linejoin: round"></path></svg>
+        </sc-if>
+      </a>
+    </sc-for>
+  </div>
+
+  <nav aria-label="Hauptnavigation" style="position: absolute; left: 12px; right: 12px; bottom: 22px; height: 68px; box-sizing: border-box; display: flex; background: var(--surface); border: 2.5px solid var(--outline); border-radius: 28px; box-shadow: 0 4px 0 var(--outline)">
+    <a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M4 11l8-6.5 8 6.5V20h-5v-5.5H9V20H4z" style="fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linejoin: round"></path></svg>Start
+    </a>
+    <a href="#" aria-current="page" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><circle cx="10.5" cy="10.5" r="6.5" style="fill: none; stroke: currentColor; stroke-width: 2.2"></circle><path d="M15.5 15.5L20 20" style="stroke: currentColor; stroke-width: 2.2; stroke-linecap: round"></path></svg>Rezepte
+      <div style="width: 5px; height: 5px; border-radius: 3px; background: var(--accent)"></div>
+    </a>
+    <a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" style="fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linejoin: round"></path></svg>Favoriten
+    </a>
+    <a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M12 5v14M5 12h14" style="fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round"></path></svg>Neu
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["grouped","search"],"default":"grouped","tsType":"string"},"filterCount":{"editor":"enum","options":["0","1","2"],"default":"0","tsType":"string"},"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+const THEMES = {
+  light: '--bg:#fff6e8;--surface:#ffffff;--sunk:#fbe9cf;--ink:#2b2118;--muted:#6e5e4f;--line:#eddcc3;--accent:oklch(0.56 0.17 30);--on-accent:#ffffff;--outline:#2b2118;--star:#f2c94c;',
+  dark: '--bg:#1f1826;--surface:#2b2233;--sunk:#362b40;--ink:#fbf3e6;--muted:#bcaec2;--line:#44394e;--accent:oklch(0.72 0.15 30);--on-accent:#1f1826;--outline:#0c0910;--star:#f2c94c;'
+};
+const HUES = { Hauptgericht: 30, Salat: 145, Suppe: 205 };
+// Invented example recipes, not from the Airtable base
+const GROUPED_ROWS = [
+  { title: 'Gemüsecurry', category: 'Hauptgericht', rating: 4, meta: '45 Min. · 4 Portionen', favorite: true },
+  { title: 'Kartoffelgratin', category: 'Hauptgericht', rating: 0, meta: '1 Std. 10 Min. · 4 Portionen' },
+  { title: 'Linsen-Dal', category: 'Hauptgericht', rating: 5, meta: '40 Min. · 4 Portionen' },
+  { title: 'Nudelauflauf', category: 'Hauptgericht', rating: 3, meta: '50 Min. · 6 Portionen' },
+  { title: 'Ofengemüse', category: 'Hauptgericht', rating: 0, meta: 'Noch ohne Anleitung' }
+];
+// Search "Nudel", best first: name hits first, each tier by stars, unrated last
+const SEARCH_ROWS = [
+  { title: 'Nudelsalat', category: 'Salat', rating: 5, meta: '25 Min. · 4 Portionen', favorite: true },
+  { title: 'Nudelauflauf', category: 'Hauptgericht', rating: 3, meta: '50 Min. · 6 Portionen' },
+  { title: 'Nudelsuppe', category: 'Suppe', rating: 0, meta: '35 Min. · 4 Portionen' },
+  { title: 'Gemüsecurry', category: 'Hauptgericht', rating: 4, meta: '45 Min. · 4 Portionen', favorite: true }
+];
+class Component extends DCLogic {
+  renderVals() {
+    const dark = this.props.dark === true || this.props.dark === 'true';
+    const search = this.props.mode === 'search';
+    const filterCount = Number(this.props.filterCount || 0);
+    const pastelLightness = dark ? 0.78 : 0.88;
+    const rows = (search ? SEARCH_ROWS : GROUPED_ROWS).map((recipe) => ({
+      title: recipe.title,
+      initial: recipe.title.charAt(0),
+      tile: 'oklch(' + pastelLightness + ' 0.09 ' + HUES[recipe.category] + ')',
+      rated: recipe.rating > 0,
+      // One star per point: a 4 shows four stars
+      stars: Array.from({ length: recipe.rating }, (_, index) => ({ index })),
+      ratingLabel: recipe.rating + ' von 5 Sternen',
+      meta: recipe.meta,
+      favorite: recipe.favorite === true
+    }));
+    return {
+      themeVars: dark ? THEMES.dark : THEMES.light,
+      grouped: !search,
+      flat: search,
+      query: search ? 'Nudel' : '',
+      subtitle: search ? '4 Rezepte gefunden · beste zuerst' : '[N] Rezepte',
+      filterLabel: filterCount > 0 ? 'Filter, ' + filterCount + ' aktiv' : 'Filter',
+      filterText: filterCount > 0 ? 'Filter ' + filterCount : 'Filter',
+      filterBg: filterCount > 0 ? 'var(--accent)' : 'var(--surface)',
+      filterFg: filterCount > 0 ? 'var(--on-accent)' : 'var(--ink)',
+      rows
+    };
+  }
+}
+</script>
+</body>
+</html>
