@@ -26,6 +26,7 @@ import {
 import { logInfo } from '../../lib/monitoring.ts';
 import { getAll, reloadAll } from '../../lib/recipes/repository.ts';
 import { filterRecipes, searchRecipes } from '../../lib/recipes/search.ts';
+import { sortByRating } from '../../lib/recipes/sort.ts';
 import { TEXT } from './_index.texts.ts';
 
 const connection = { token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID };
@@ -37,16 +38,21 @@ if (Astro.request.method === 'POST') {
   return Astro.redirect(Astro.url.pathname + Astro.url.search, 303);
 }
 
-const { query, filters } = parseListQuery(Astro.url.searchParams);
-const allRecipes = await getAll(connection);
+const { query, filters, sort } = parseListQuery(Astro.url.searchParams);
+const recipesByTitle = await getAll(connection);
+// Sorted first, so the search hits and the category groups keep this order
+const allRecipes = sort === 'best' ? sortByRating(recipesByTitle) : recipesByTitle;
 // What the filter sheet's filters apply to; the sheet counts the matches in the browser
 const searchedInMeal = searchRecipes(filterRecipes(allRecipes, { meal: filters.meal }), query);
 const recipes = filterRecipes(searchedInMeal, filters);
-const countableRecipes = searchedInMeal.map(({ category, totalMinutes, hasInstructions }) => ({
-  category,
-  totalMinutes,
-  hasInstructions,
-}));
+const countableRecipes = searchedInMeal.map(
+  ({ category, totalMinutes, hasInstructions, rating }) => ({
+    category,
+    totalMinutes,
+    hasInstructions,
+    rating,
+  }),
+);
 
 const mealOptions = [
   { label: TEXT.allMeals, meal: undefined },
@@ -54,15 +60,16 @@ const mealOptions = [
 ].map(({ label, meal }) => ({
   label,
   active: filters.meal === meal,
-  href: listHref({ query, filters: { ...filters, meal } }),
+  href: listHref({ query, filters: { ...filters, meal }, sort }),
 }));
 
-// The search form sends q itself and keeps the filters and the meal as hidden fields
-const hiddenSearchFields = [...toSearchParams({ query: '', filters }).entries()];
-// The filter form sends the filters itself and keeps the search text and the meal
+// The search form sends q itself and keeps the filters, the meal and the sort as hidden fields
+const hiddenSearchFields = [...toSearchParams({ query: '', filters, sort }).entries()];
+// The filter form sends the filters itself and keeps the search text, the meal and the sort
 const hiddenFilterFields = [
-  ...toSearchParams({ query, filters: { meal: filters.meal } }).entries(),
+  ...toSearchParams({ query, filters: { meal: filters.meal }, sort }).entries(),
 ];
+const countText = query ? TEXT.found(recipes.length) : TEXT.count(recipes.length);
 const choices = toFilterChoices(filters);
 const activeFilterCount = countActiveFilters(filters);
 ---
@@ -71,13 +78,13 @@ const activeFilterCount = countActiveFilters(filters);
   <main>
     <header class="heading">
       <h1 class="title">{TEXT.title}</h1>
-      <p class="count">{query ? TEXT.found(recipes.length) : TEXT.count(recipes.length)}</p>
+      <p class="count">{sort === 'best' ? `${countText}${TEXT.bestFirst}` : countText}</p>
     </header>
     <div class="search">
       <SearchField
         {query}
         hiddenFields={hiddenSearchFields}
-        clearHref={listHref({ query: '', filters })}
+        clearHref={listHref({ query: '', filters, sort })}
       />
     </div>
     <div class="controls">

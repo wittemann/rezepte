@@ -29,6 +29,18 @@ describe('parseListQuery', () => {
     });
   });
 
+  it('reads the ratings in display order, each once, and the sort', () => {
+    expect(parse('rating=4&rating=unrated&rating=4&rating=9&rating=&sort=best')).toEqual({
+      query: '',
+      filters: { ratings: ['unrated', 4] },
+      sort: 'best',
+    });
+  });
+
+  it('sorts A–Z for anything but "best"', () => {
+    expect(parse('sort=worst').sort).toBeUndefined();
+  });
+
   it('ignores unknown meals, categories and flags', () => {
     expect(
       parse('meal=Frühstück&category=pizza&category=soup&category=soup&max30=yes&steps=0'),
@@ -48,7 +60,9 @@ describe('toSearchParams and listHref', () => {
       categories: ['Beilage', 'Salat'],
       maxTotalMinutes: 30,
       onlyWithInstructions: true,
+      ratings: ['unrated', 5],
     },
+    sort: 'best',
   };
 
   it('round-trips through parseListQuery', () => {
@@ -60,10 +74,18 @@ describe('toSearchParams and listHref', () => {
     expect(listHref({ query: 'a b', filters: { meal: 'Backen' } })).toBe(
       '/recipes?q=a+b&meal=baking',
     );
+    expect(listHref({ query: '', filters: { ratings: [3] }, sort: 'best' })).toBe(
+      '/recipes?rating=3&sort=best',
+    );
   });
 });
 
 describe('countActiveFilters', () => {
+  it('counts the ratings as one, like the categories', () => {
+    expect(countActiveFilters({ ratings: ['unrated', 2, 5] })).toBe(1);
+    expect(countActiveFilters({ ratings: [] })).toBe(0);
+  });
+
   it('counts categories as one and ignores the meal', () => {
     expect(countActiveFilters({})).toBe(0);
     expect(countActiveFilters({ meal: 'Backen', categories: [] })).toBe(0);
@@ -80,14 +102,25 @@ describe('countActiveFilters', () => {
 
 describe('toFilterChoices', () => {
   it('names the checked chips', () => {
-    expect(toFilterChoices({})).toEqual({ categories: [], quick: false, withInstructions: false });
+    expect(toFilterChoices({})).toEqual({
+      ratings: [],
+      categories: [],
+      quick: false,
+      withInstructions: false,
+    });
     expect(
       toFilterChoices({
         meal: 'Backen',
         categories: ['Suppe', 'Hauptgericht'],
         maxTotalMinutes: 30,
         onlyWithInstructions: true,
+        ratings: [4, 'unrated'],
       }),
-    ).toEqual({ categories: ['main', 'soup'], quick: true, withInstructions: true });
+    ).toEqual({
+      ratings: ['unrated', '4'],
+      categories: ['main', 'soup'],
+      quick: true,
+      withInstructions: true,
+    });
   });
 });

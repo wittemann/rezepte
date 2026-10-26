@@ -131,3 +131,25 @@ describe('matchesSheetFilters', () => {
     expect(matchesSheetFilters(recipeData, { meal: 'Backen' })).toBe(true);
   });
 });
+
+describe('matchesSheetFilters by rating', () => {
+  const rated = (rating?: 1 | 2 | 3 | 4 | 5) => ({ hasInstructions: true, rating });
+
+  it('matches exactly the chosen numbers of stars, combined with or', () => {
+    expect(matchesSheetFilters(rated(3), { ratings: [3] })).toBe(true);
+    expect(matchesSheetFilters(rated(4), { ratings: [3] })).toBe(false);
+    expect(matchesSheetFilters(rated(4), { ratings: [3, 4] })).toBe(true);
+  });
+
+  it('matches unrated recipes with „Unbewertet“', () => {
+    expect(matchesSheetFilters(rated(), { ratings: ['unrated'] })).toBe(true);
+    expect(matchesSheetFilters(rated(2), { ratings: ['unrated'] })).toBe(false);
+    expect(matchesSheetFilters(rated(), { ratings: ['unrated', 3] })).toBe(true);
+    expect(matchesSheetFilters(rated(), { ratings: [3] })).toBe(false);
+  });
+
+  it('matches every rating when no chip is chosen', () => {
+    expect(matchesSheetFilters(rated(), { ratings: [] })).toBe(true);
+    expect(matchesSheetFilters(rated(5), {})).toBe(true);
+  });
+});

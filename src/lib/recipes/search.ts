@@ -1,7 +1,7 @@
 // Search and filters for the recipe list (docs/implementation-plan.md, "Data layer").
 // Pure functions over already loaded recipes: the list is small, so the page filters in memory.
 
-import type { Meal } from './fields.ts';
+import type { Meal, Rating } from './fields.ts';
 import type { Recipe } from './recipe.ts';
 
 export type RecipeFilters = {
@@ -9,7 +9,11 @@ export type RecipeFilters = {
   categories?: string[]; // empty or undefined = any category
   maxTotalMinutes?: number; // "Bis 30 Min."; recipes without a total time don't match
   onlyWithInstructions?: boolean; // "Mit Anleitung"
+  ratings?: RatingChoice[]; // "Bewertung": any of these (or); empty or undefined = any rating
 };
+
+/** A chip of the rating filter: exactly this many stars, or not rated. */
+export type RatingChoice = Rating | 'unrated';
 
 function normalize(text: string) {
   return text.trim().toLocaleLowerCase('de');
@@ -33,14 +37,17 @@ export function searchRecipes(recipes: Recipe[], query: string) {
 }
 
 /** What the filters other than the meal look at. */
-export type FilterableRecipe = Pick<Recipe, 'category' | 'totalMinutes' | 'hasInstructions'>;
+export type FilterableRecipe = Pick<
+  Recipe,
+  'category' | 'totalMinutes' | 'hasInstructions' | 'rating'
+>;
 
 /**
  * Whether a recipe passes the filters of the filter sheet (everything but the meal).
  * The sheet uses it too, to count the matches while chips are toggled.
  */
 export function matchesSheetFilters(recipe: FilterableRecipe, filters: RecipeFilters) {
-  const { categories = [], maxTotalMinutes, onlyWithInstructions } = filters;
+  const { categories = [], maxTotalMinutes, onlyWithInstructions, ratings = [] } = filters;
   if (categories.length > 0 && !(recipe.category && categories.includes(recipe.category))) {
     return false;
   }
@@ -48,6 +55,7 @@ export function matchesSheetFilters(recipe: FilterableRecipe, filters: RecipeFil
     if (recipe.totalMinutes === undefined || recipe.totalMinutes > maxTotalMinutes) return false;
   }
   if (onlyWithInstructions && !recipe.hasInstructions) return false;
+  if (ratings.length > 0 && !ratings.includes(recipe.rating ?? 'unrated')) return false;
   return true;
 }
 

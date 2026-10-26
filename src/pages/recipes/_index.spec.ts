@@ -10,19 +10,25 @@ vi.mock('../../lib/monitoring.ts', () => ({ logInfo: vi.fn() }));
 
 const reloadAll = vi.hoisted(() => vi.fn());
 
-// Each of the four filters below removes exactly one of these recipes
+// Each of the four filters below removes exactly one of these recipes. Three are rated.
 vi.mock('../../lib/recipes/repository.ts', async () => {
   const { makeRecipe } = await import('../../lib/recipes/test-recipe.ts');
   const base = { meals: ['Frühstück' as const], category: 'Suppe', totalMinutes: 20 };
   return {
     reloadAll,
     getAll: async () => [
-      makeRecipe({ ...base, id: 'recA', title: 'Beispiel Alpha' }),
+      makeRecipe({ ...base, id: 'recA', title: 'Beispiel Alpha', rating: 2 }),
       makeRecipe({ ...base, id: 'recB', title: 'Beispiel Beta', category: 'Backen' }),
-      makeRecipe({ ...base, id: 'recC', title: 'Beispiel Gamma', totalMinutes: 90 }),
+      makeRecipe({ ...base, id: 'recC', title: 'Beispiel Gamma', totalMinutes: 90, rating: 5 }),
       makeRecipe({ ...base, id: 'recD', title: 'Beispiel Delta', hasInstructions: false }),
       makeRecipe({ ...base, id: 'recE', title: 'Beispiel Epsilon', meals: ['Backen'] }),
-      makeRecipe({ ...base, id: 'recF', title: 'Beispiel Zeta', ingredientsText: 'Alpha' }),
+      makeRecipe({
+        ...base,
+        id: 'recF',
+        title: 'Beispiel Zeta',
+        ingredientsText: 'Alpha',
+        rating: 4,
+      }),
     ],
   };
 });
@@ -46,6 +52,12 @@ async function postRefresh(search = '') {
 
 function parseDocument(html: string) {
   return new new Window().DOMParser().parseFromString(html, 'text/html');
+}
+
+/** Titles of the listed recipes in page order, without the common "Beispiel " */
+function pageOrder(html: string) {
+  const titles = parseDocument(html).querySelectorAll('[data-recipe-id] .title');
+  return [...titles].map((element) => element.textContent.slice(9));
 }
 
 /** Titles of the listed recipes, sorted (grouping changes the page order) */
@@ -99,6 +111,43 @@ describe('recipe list page', () => {
 
   it('filters by instructions', async () => {
     expect(listedTitles(await renderPage('?steps=1'))).toEqual(without('Delta'));
+  });
+
+  it('filters by any of the chosen ratings', async () => {
+    expect(listedTitles(await renderPage('?rating=5&rating=unrated'))).toEqual(
+      without('Alpha', 'Zeta'),
+    );
+  });
+
+  it('keeps the order from the repository (A–Z there) by default', async () => {
+    expect(pageOrder(await renderPage())).toEqual([
+      'Alpha',
+      'Gamma',
+      'Delta',
+      'Epsilon',
+      'Zeta',
+      'Beta', // the Backen group comes after Suppe
+    ]);
+  });
+
+  it('sorts best first within the category groups, unrated last, and says so', async () => {
+    const html = await renderPage('?sort=best');
+    expect(pageOrder(html)).toEqual(['Gamma', 'Zeta', 'Alpha', 'Delta', 'Epsilon', 'Beta']);
+    expect(html).toContain('6 Rezepte · beste zuerst');
+  });
+
+  it('sorts the search hits best first within name and ingredient hits', async () => {
+    const html = await renderPage('?q=alpha&sort=best');
+    expect(pageOrder(html)).toEqual(['Alpha', 'Zeta']); // name hit first despite fewer stars
+    expect(html).toContain('2 Rezepte gefunden · beste zuerst');
+    expect(pageOrder(await renderPage('?q=beispiel&sort=best'))).toEqual([
+      'Gamma',
+      'Zeta',
+      'Alpha',
+      'Beta',
+      'Delta',
+      'Epsilon',
+    ]);
   });
 
   it('shows a flat hit list with the name matches first', async () => {
@@ -192,6 +241,17 @@ describe('recipe list page', () => {
         );
       expect(hidden('form[role="search"]')).toEqual(['meal=baking', 'category=soup', 'max30=1']);
       expect(hidden('form:not([role="search"])')).toEqual(['q=Käse', 'meal=baking']);
+    });
+
+    it('meal links, the clear link and the search keep the sort; reset goes back to A–Z', async () => {
+      const html = await renderPage('?q=K%C3%A4se&rating=3&sort=best');
+      expect(hrefWithText(html, 'Frühstück')).toBe(
+        '/recipes?q=K%C3%A4se&meal=breakfast&rating=3&sort=best',
+      );
+      expect(hrefOf(html, 'a[aria-label="Suche löschen"]')).toBe('/recipes?rating=3&sort=best');
+      expect(hrefWithText(html, 'Zurücksetzen')).toBe('/recipes?q=K%C3%A4se');
+      const searchForm = parseDocument(html).querySelector('form[role="search"]')!;
+      expect(searchForm.querySelector('input[name="sort"]')?.getAttribute('value')).toBe('best');
     });
   });
 
