@@ -55,6 +55,7 @@ const steps = recipe ? cookingSteps(recipe.method) : [];
         recipeHref={`/recipes/${recipe.id}`}
         cookHref={`/recipes/${recipe.id}/cook`}
         hasPhoto={recipe.images.length > 0}
+        rating={recipe.rating}
         {steps}
         ingredients={recipe.ingredients}
         servings={recipe.servings}

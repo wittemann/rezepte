@@ -39,7 +39,7 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 - One step at a time, swipe or buttons, progress dots, ingredients sheet
 - Screen stays on (Screen Wake Lock API)
 - No timers: set them with Siri, Alexa or the Clock app ([ADR 0012](../decisions/0012-pwa-and-timers.md))
-- Photo step at the end if the recipe has no photo: take a photo, resize in the browser, upload to Airtable ([ADR 0005](../decisions/0005-image-handling.md))
+- Last step „Wie war’s?“: rate the recipe. If it has no photo, the same screen asks for one: take a photo, resize in the browser, upload to Airtable ([ADR 0005](../decisions/0005-image-handling.md))
 
 **Edit / new**
 

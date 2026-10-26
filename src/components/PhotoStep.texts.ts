@@ -1,8 +1,7 @@
-// UI texts of the photo step at the end of cooking mode (design/README.md, "Kochmodus")
+// UI texts of the photo question at the end of cooking mode (design/README.md, "Kochmodus: „Wie war’s?“")
 export const TEXT = {
-  label: 'Letzter Schritt',
-  title: 'Juhu, geschafft! Machst du ein Foto für mich?',
-  explanation: 'Das Rezept hat noch kein Bild. Dein Foto erscheint im Rezept und in den Listen.',
+  title: 'Machst du noch ein Foto für mich?',
+  explanation: 'Das Rezept hat noch kein Bild.',
   take: 'Foto aufnehmen',
   retry: 'Nochmal versuchen',
   uploading: 'Foto wird gespeichert …',

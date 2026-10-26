@@ -28,6 +28,7 @@ if (!recipe) Astro.response.status = 404;
       client:load
       recipeId={recipe.id}
       hasPhoto={recipe.images.length > 0}
+      rating={recipe.rating}
       recipeHref={`/recipes/${recipe.id}`}
       steps={steps}
       ingredients={recipe.ingredients}

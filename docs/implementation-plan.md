@@ -218,7 +218,7 @@ One shared 1–5 star rating per recipe, for everyone, like the heart: whoever r
 - [x] Data: read and write the field `Meine Bewertung`, action `setRating`, documented in [03-data-model](specs/03-data-model.md) · `sonnet`
 - [x] Token `star` and the Maulti pose `taste` · `haiku`
 - [x] Header card: star radiogroup, tap the selected star to remove; on failure back to the old value plus the heart's toast · `sonnet`
-- [ ] Cooking mode: „Wie war’s?“ as the last step; without a photo, rating and photo on one screen instead of the photo step · `opus`
+- [x] Cooking mode: „Wie war’s?“ as the last step; without a photo, rating and photo on one screen instead of the photo step · `opus`
 - [ ] Recipe rows: one small star per point at the start of the meta line · `sonnet`
 - [ ] Filter sheet: „Sortieren“ A–Z / Beste zuerst for the grouped list and the search hits, „Bewertung“ chips (OR) · `opus`
 

@@ -1,0 +1,37 @@
+/* Card content of „Wie war’s?“ in cooking mode (design/README.md, "Kochmodus: „Wie war’s?“") */
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.4375rem; /* 23px */
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.level {
+  min-height: 1.5rem; /* 24px: the card doesn't jump when the level appears */
+  font-family: var(--font-display);
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  text-align: center;
+}
+
+.unrated {
+  color: var(--muted);
+}
+
+/* The photo question under the stars, behind a dotted line */
+.photo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  margin-top: var(--space-xxs);
+  padding-top: var(--space-xl);
+  border-top: 2px dotted var(--line);
+}

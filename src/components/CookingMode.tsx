@@ -1,8 +1,10 @@
 // Cooking mode (design/README.md, "Kochmodus"): one step at a time with Maulti, progress dots
-// and the ingredients in a sheet, without tab bar. Usually opened on the recipe page by
+// and the ingredients in a sheet, without tab bar. The last step asks for the rating, and for a
+// photo if the recipe has none („Wie war’s?“). Usually opened on the recipe page by
 // CookingLauncher; on its own page (/cook) when loaded directly.
 import { useRef, useState } from 'preact/hooks';
 import type { CookingStep } from '../lib/recipes/cooking-steps.ts';
+import type { Rating } from '../lib/recipes/fields.ts';
 import type { IngredientLine } from '../lib/recipes/ingredients.ts';
 import {
   formatAmount,
@@ -13,23 +15,28 @@ import {
 import Icon from './Icon.tsx';
 import BottomSheet from './BottomSheet.tsx';
 import PhotoStep from './PhotoStep.tsx';
+import RatingStep from './RatingStep.tsx';
 import styles from './CookingMode.module.css';
 import { TEXT } from './CookingMode.texts.ts';
-import { TEXT as PHOTO_TEXT } from './PhotoStep.texts.ts';
+import { TEXT as RATING_TEXT } from './RatingStep.texts.ts';
 import Maulti from './Maulti.tsx';
+import Toast from './Toast.tsx';
 import { usePhotoUpload } from './use-photo-upload.ts';
+import { useRating } from './use-rating.ts';
 import { useWakeLock } from './use-wake-lock.ts';
 
 /** How far a finger has to move sideways to count as a swipe (design/README.md, "Kochmodus") */
 const SWIPE_THRESHOLD = 50;
 
 type Props = {
-  /** For the photo upload */
+  /** For the rating and the photo upload */
   recipeId: string;
   /** The recipe page, where the close button leads */
   recipeHref: string;
-  /** Whether the recipe has a photo; without one, a photo step follows the last step */
+  /** Whether the recipe has a photo; without one, the last step also asks for a photo */
   hasPhoto: boolean;
+  /** The recipe's rating when the page was rendered, preselected in the last step */
+  rating?: Rating;
   steps: CookingStep[];
   ingredients: IngredientLine[];
   /** What the ingredient amounts are written for */
@@ -38,15 +45,16 @@ type Props = {
   chosenServings?: number;
   /**
    * Set when opened on the recipe page: called instead of following the close and done links,
-   * with whether a photo was added (then the recipe page is out of date)
+   * with whether a photo was added or the rating changed (then the recipe page is out of date)
    */
-  onClose?: (photoAdded: boolean) => void;
+  onClose?: (recipeChanged: boolean) => void;
 };
 
 export default function CookingMode({
   recipeId,
   recipeHref,
   hasPhoto,
+  rating: initialRating,
   steps,
   ingredients,
   servings,
@@ -58,20 +66,21 @@ export default function CookingMode({
   const [ingredientsOpen, setIngredientsOpen] = useState(false);
   const swipeStartRef = useRef<number>();
   const photo = usePhotoUpload(recipeId);
-  const stepCount = hasPhoto ? steps.length : steps.length + 1;
+  const rating = useRating(recipeId, initialRating);
+  const stepCount = steps.length + 1; // the cooking steps and „Wie war’s?“
   const isFirst = stepIndex === 0;
   const isLast = stepIndex === stepCount - 1;
-  const onPhotoStep = stepIndex === steps.length;
-  const step = onPhotoStep ? undefined : steps[stepIndex];
+  const step = isLast ? undefined : steps[stepIndex];
   const factor = servings && chosenServings ? servingsFactor(chosenServings, servings) : 1;
   const label = step
     ? [TEXT.stepLabel(stepIndex + 1, steps.length), step.section].filter(Boolean).join(' · ')
-    : PHOTO_TEXT.label;
+    : RATING_TEXT.label;
+  const finished = rating.rating !== undefined || photo.status === 'saved';
 
   function handleClose(event: MouseEvent) {
     if (!onClose) return; // a page of its own: the link loads the recipe page
     event.preventDefault();
-    onClose(photo.status === 'saved');
+    onClose(photo.status === 'saved' || rating.rating !== initialRating);
   }
 
   function goToPrevious() {
@@ -134,13 +143,21 @@ export default function CookingMode({
       </header>
 
       <main class={styles.main}>
-        <Maulti pose={onPhotoStep ? 'cheer' : 'cook'} size={150} />
+        <Maulti {...maultiLook(step !== undefined, hasPhoto, rating.rating)} />
         <section class={styles.card}>
           <h1 class={styles.label}>{label}</h1>
           {step ? (
             <p class={styles.text}>{step.text}</p>
           ) : (
-            <PhotoStep status={photo.status} previewUrl={photo.previewUrl} onPick={photo.upload} />
+            <RatingStep rating={rating.rating} onPick={rating.pick}>
+              {!hasPhoto && (
+                <PhotoStep
+                  status={photo.status}
+                  previewUrl={photo.previewUrl}
+                  onPick={photo.upload}
+                />
+              )}
+            </RatingStep>
           )}
           {!isLast && <p class={styles.swipeHint}>{TEXT.swipeHint}</p>}
         </section>
@@ -163,7 +180,7 @@ export default function CookingMode({
           </button>
         ) : isLast ? (
           <a href={recipeHref} class={styles.next} onClick={handleClose}>
-            {onPhotoStep && photo.status !== 'saved' ? TEXT.skip : TEXT.done}
+            {finished ? TEXT.done : TEXT.skip}
           </a>
         ) : (
           <button type="button" class={styles.next} onClick={goToNext}>
@@ -192,8 +209,19 @@ export default function CookingMode({
           )}
         </ul>
       </BottomSheet>
+      <Toast message={rating.failed ? RATING_TEXT.error : null} onDone={rating.clearFailed} />
     </div>
   );
+}
+
+/**
+ * Maulti cooks during the steps. On „Wie war’s?“ he tastes until the recipe is rated, then cheers;
+ * with the photo question on the card he cheers from the start, a bit smaller.
+ */
+function maultiLook(cooking: boolean, hasPhoto: boolean, rating: Rating | undefined) {
+  if (cooking) return { pose: 'cook', size: 150 } as const;
+  if (!hasPhoto) return { pose: 'cheer', size: 120 } as const;
+  return { pose: rating ? 'cheer' : 'taste', size: 150 } as const;
 }
 
 function sheetTitle(servings: number | undefined) {

@@ -4,6 +4,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { TEXT } from '../src/components/CookingMode.texts.ts';
 import { TEXT as COOK_BUTTON_TEXT } from '../src/components/CookButton.texts.ts';
 import { TEXT as INGREDIENTS_TEXT } from '../src/components/Ingredients.texts.ts';
+import { TEXT as RATING_STEP_TEXT } from '../src/components/RatingStep.texts.ts';
 import { login } from './login.ts';
 
 /**
@@ -51,7 +52,9 @@ test('cooking mode steps forward and back and ends at the recipe', async ({ page
   while (await page.getByRole('button', { name: TEXT.next }).isVisible()) {
     await page.getByRole('button', { name: TEXT.next }).click();
   }
-  // Recipes without a photo end with the photo step, which can be skipped
+  // The last step asks for the rating (and a photo, if the recipe has none) and can be skipped
+  await expect(page.getByText(RATING_STEP_TEXT.label)).toBeVisible();
+  await expect(page.getByRole('radiogroup', { name: /^Bewertung: / })).toBeVisible();
   const end = page
     .getByRole('link', { name: TEXT.done })
     .or(page.getByRole('link', { name: TEXT.skip }));

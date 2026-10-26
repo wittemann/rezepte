@@ -2,11 +2,13 @@
 import { render } from 'preact';
 import { act } from 'preact/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Rating } from '../lib/recipes/fields.ts';
 import { parseIngredients } from '../lib/recipes/ingredients.ts';
 import CookingMode from './CookingMode.tsx';
 
 const addPhoto = vi.hoisted(() => vi.fn());
-vi.mock('astro:actions', () => ({ actions: { addPhoto } }));
+const setRating = vi.hoisted(() => vi.fn());
+vi.mock('astro:actions', () => ({ actions: { addPhoto, setRating } }));
 const resizePhoto = vi.hoisted(() => vi.fn());
 vi.mock('./resize-photo.ts', () => ({ resizePhoto }));
 
@@ -21,6 +23,7 @@ let container: HTMLElement;
 
 beforeEach(() => {
   addPhoto.mockReset();
+  setRating.mockReset();
   resizePhoto.mockReset();
   URL.createObjectURL = vi.fn(() => 'blob:preview');
   URL.revokeObjectURL = vi.fn();
@@ -36,14 +39,16 @@ afterEach(() => {
 function renderCooking(
   servings?: number,
   hasPhoto = true,
-  onClose?: (photoAdded: boolean) => void,
+  onClose?: (recipeChanged: boolean) => void,
   chosenServings?: number,
+  rating?: Rating,
 ) {
   act(() => {
     render(
       <CookingMode
         recipeId="recX1"
         hasPhoto={hasPhoto}
+        rating={rating}
         recipeHref="/recipes/recX1"
         steps={steps}
         ingredients={ingredients}
@@ -56,6 +61,17 @@ function renderCooking(
   });
 }
 
+/** Taps "Weiter" through all cooking steps to „Wie war’s?“. */
+function toLastStep() {
+  for (let step = 0; step < steps.length; step++) {
+    act(() => {
+      [...container.querySelectorAll('button')]
+        .find((button) => button.textContent === 'Weiter')!
+        .click();
+    });
+  }
+}
+
 describe('CookingMode', () => {
   it('shows the first step with its position, and a close link to the recipe', () => {
     renderCooking();
@@ -64,11 +80,11 @@ describe('CookingMode', () => {
     expect(container.querySelector('a')?.getAttribute('href')).toBe('/recipes/recX1');
   });
 
-  it('has a progress dot per step and marks the current one', () => {
+  it('has a progress dot per step and one for „Wie war’s?“, and marks the current one', () => {
     renderCooking();
     const dots = [...container.querySelectorAll('ol[aria-label="Fortschritt"] li')];
-    expect(dots).toHaveLength(3);
-    expect(dots.map((dot) => dot.getAttribute('aria-current'))).toEqual(['step', null, null]);
+    expect(dots).toHaveLength(4);
+    expect(dots.map((dot) => dot.getAttribute('aria-current'))).toEqual(['step', null, null, null]);
   });
 
   it('opens the ingredients with the number of servings in the title', () => {
@@ -129,22 +145,29 @@ describe('CookingMode', () => {
       expect(stepText()).toBe('Teig 10 Minuten ruhen lassen.');
       expect(container.textContent).toContain('Schritt 2 von 3 · Teig');
       const dots = [...container.querySelectorAll('ol li')];
-      expect(dots.map((dot) => dot.getAttribute('aria-current'))).toEqual([null, 'step', null]);
+      expect(dots.map((dot) => dot.getAttribute('aria-current'))).toEqual([
+        null,
+        'step',
+        null,
+        null,
+      ]);
 
       click('Voriger Schritt');
       expect(stepText()).toBe('Zwiebeln würfeln.');
     });
 
-    it('ends with a "Fertig" link back to the recipe instead of "Weiter"', () => {
+    it('ends with „Wie war’s?“ and a link back to the recipe instead of "Weiter"', () => {
       renderCooking();
       click('Weiter');
       click('Weiter');
       expect(stepText()).toBe('Backen.');
+      click('Weiter');
+      expect(container.textContent).toContain('Wie war’s?');
       expect(button('Weiter')).toBeUndefined();
-      const done = [...container.querySelectorAll('a')].find(
-        (link) => link.textContent === 'Fertig',
+      const skip = [...container.querySelectorAll('a')].find(
+        (link) => link.textContent === 'Überspringen',
       );
-      expect(done?.getAttribute('href')).toBe('/recipes/recX1');
+      expect(skip?.getAttribute('href')).toBe('/recipes/recX1');
     });
 
     it('swipes left for the next step and right for the previous one', () => {
@@ -192,16 +215,84 @@ describe('CookingMode', () => {
     });
   });
 
-  describe('photo step', () => {
-    const toPhotoStep = () => {
-      for (let step = 0; step < steps.length; step++) {
-        act(() => {
-          [...container.querySelectorAll('button')]
-            .find((button) => button.textContent === 'Weiter')!
-            .click();
-        });
-      }
+  describe('„Wie war’s?“', () => {
+    const tapStar = async (label: string) => {
+      await act(async () => {
+        container
+          .querySelector<HTMLButtonElement>(`[role="radio"][aria-label="${label}"]`)!
+          .click();
+      });
     };
+    const footerAction = () => container.querySelector('footer a');
+    const level = () => container.querySelector('[aria-live="polite"]')?.textContent;
+    const tastes = () => container.textContent!.includes('mmh?');
+
+    it('asks for the rating with Maulti tasting, without the photo question', () => {
+      renderCooking();
+      toLastStep();
+      expect(container.textContent).toContain('Letzter Schritt');
+      expect(container.querySelector('section p')?.textContent).toBe('Wie war’s?');
+      expect(container.querySelector('[role="radiogroup"]')?.getAttribute('aria-label')).toBe(
+        'Bewertung: noch keine',
+      );
+      expect(level()).toBe('Noch nicht bewertet');
+      expect(tastes()).toBe(true);
+      expect(container.querySelector('input[type="file"]')).toBeNull();
+      expect(footerAction()?.textContent).toBe('Überspringen');
+    });
+
+    it('saves a tapped star, shows the level, cheers and ends with "Fertig"', async () => {
+      setRating.mockResolvedValue({ data: { rating: 5 } });
+      renderCooking();
+      toLastStep();
+
+      await tapStar('5 Sterne');
+
+      expect(setRating).toHaveBeenCalledWith({ id: 'recX1', rating: 5 });
+      expect(level()).toBe('Mega lecker!');
+      expect(tastes()).toBe(false);
+      expect(footerAction()?.textContent).toBe('Fertig');
+    });
+
+    it('preselects the rating the recipe already has', () => {
+      renderCooking(undefined, true, undefined, undefined, 3);
+      toLastStep();
+      expect(level()).toBe('Gut');
+      expect(container.querySelector('[aria-checked="true"]')?.getAttribute('aria-label')).toBe(
+        '3 Sterne',
+      );
+      expect(footerAction()?.textContent).toBe('Fertig');
+    });
+
+    it('goes back and shows a toast when saving fails', async () => {
+      setRating.mockResolvedValue({ error: { code: 'INTERNAL_SERVER_ERROR' } });
+      renderCooking();
+      toLastStep();
+
+      await tapStar('4 Sterne');
+
+      expect(level()).toBe('Noch nicht bewertet');
+      expect(container.querySelector('[role="status"]')?.textContent).toBe(
+        'Das hat nicht geklappt. Bitte versuch es noch mal.',
+      );
+      expect(footerAction()?.textContent).toBe('Überspringen');
+    });
+
+    it('tells onClose whether the rating changed', async () => {
+      setRating.mockResolvedValue({ data: { rating: 2 } });
+      const onClose = vi.fn();
+      renderCooking(undefined, true, onClose, undefined, 4);
+      toLastStep();
+      act(() => (footerAction() as HTMLElement).click());
+      expect(onClose).toHaveBeenLastCalledWith(false);
+
+      await tapStar('2 Sterne');
+      act(() => (footerAction() as HTMLElement).click());
+      expect(onClose).toHaveBeenLastCalledWith(true);
+    });
+  });
+
+  describe('photo question', () => {
     const pickPhoto = async () => {
       const input = container.querySelector<HTMLInputElement>('input[type="file"]')!;
       Object.defineProperty(input, 'files', {
@@ -213,17 +304,14 @@ describe('CookingMode', () => {
     };
     const footerAction = () => container.querySelector('footer a, footer button:last-child');
 
-    it('is not there when the recipe has a photo', () => {
-      renderCooking(undefined, true);
-      expect(container.querySelectorAll('ol li')).toHaveLength(3);
-    });
-
-    it('follows the last step of a recipe without photo, with a dot of its own', () => {
+    it('comes with the rating on the last step of a recipe without photo, no step of its own', () => {
       renderCooking(undefined, false);
       expect(container.querySelectorAll('ol li')).toHaveLength(4);
-      toPhotoStep();
+      toLastStep();
       expect(container.textContent).toContain('Letzter Schritt');
-      expect(container.textContent).toContain('Machst du ein Foto für mich?');
+      expect(container.querySelector('section p')?.textContent).toBe('Juhu, geschafft! Wie war’s?');
+      expect(container.querySelector('[role="radiogroup"]')).not.toBeNull();
+      expect(container.textContent).toContain('Machst du noch ein Foto für mich?');
       const input = container.querySelector('input[type="file"]')!;
       expect(input.getAttribute('accept')).toBe('image/*');
       expect(input.getAttribute('capture')).toBe('environment');
@@ -235,7 +323,7 @@ describe('CookingMode', () => {
       resizePhoto.mockResolvedValue({ blob: new Blob(['x']), base64: '/9j/AAAA' });
       addPhoto.mockResolvedValue({ error: undefined });
       renderCooking(undefined, false);
-      toPhotoStep();
+      toLastStep();
       await pickPhoto();
 
       expect(addPhoto).toHaveBeenCalledWith({ id: 'recX1', file: '/9j/AAAA' });
@@ -250,7 +338,7 @@ describe('CookingMode', () => {
       addPhoto.mockResolvedValue({ error: undefined });
       const onClose = vi.fn();
       renderCooking(undefined, false, onClose);
-      toPhotoStep();
+      toLastStep();
       await pickPhoto();
 
       act(() => (footerAction() as HTMLElement).click());
@@ -261,7 +349,7 @@ describe('CookingMode', () => {
       resizePhoto.mockResolvedValue({ blob: new Blob(['x']), base64: '/9j/AAAA' });
       addPhoto.mockReturnValue(new Promise(() => {}));
       renderCooking(undefined, false);
-      toPhotoStep();
+      toLastStep();
       await pickPhoto();
 
       expect(container.textContent).toContain('Foto wird gespeichert');
@@ -275,7 +363,7 @@ describe('CookingMode', () => {
       resizePhoto.mockResolvedValue({ blob: new Blob(['x']), base64: '/9j/AAAA' });
       addPhoto.mockResolvedValue({ error: new Error('boom') });
       renderCooking(undefined, false);
-      toPhotoStep();
+      toLastStep();
       await pickPhoto();
 
       expect(container.textContent).toContain('konnte nicht gespeichert werden');
@@ -286,7 +374,7 @@ describe('CookingMode', () => {
     it('also fails gracefully when the photo cannot be read', async () => {
       resizePhoto.mockRejectedValue(new Error('not an image'));
       renderCooking(undefined, false);
-      toPhotoStep();
+      toLastStep();
       await pickPhoto();
 
       expect(addPhoto).not.toHaveBeenCalled();

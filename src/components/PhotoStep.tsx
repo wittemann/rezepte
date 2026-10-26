@@ -1,5 +1,5 @@
-// Card content of the photo step: the recipe has no photo yet, so cooking mode ends by asking for
-// one. The upload itself is in use-photo-upload.ts; this only shows its state.
+// The photo question under the stars of the last cooking step: the recipe has no photo yet, so
+// cooking mode asks for one. The upload itself is in use-photo-upload.ts; this only shows its state.
 import styles from './PhotoStep.module.css';
 import { TEXT } from './PhotoStep.texts.ts';
 import type { PhotoStatus } from './use-photo-upload.ts';

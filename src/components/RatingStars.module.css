@@ -32,3 +32,16 @@
   width: 3.5rem; /* 56px */
   height: 3.5rem;
 }
+
+/* The picked star hops: scale 1 → 1.2 → 1 in 200 ms */
+@media (prefers-reduced-motion: no-preference) {
+  .hop {
+    animation: hop 200ms ease-out;
+  }
+}
+
+@keyframes hop {
+  50% {
+    transform: scale(1.2);
+  }
+}

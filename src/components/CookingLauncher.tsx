@@ -6,6 +6,7 @@
 // The link carries the servings chosen on the recipe page (Ingredients.tsx), like the /cook page.
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { CookingStep } from '../lib/recipes/cooking-steps.ts';
+import type { Rating } from '../lib/recipes/fields.ts';
 import type { IngredientLine } from '../lib/recipes/ingredients.ts';
 import { SERVINGS_PARAM, parseServings } from '../lib/recipes/servings.ts';
 import CookingMode from './CookingMode.tsx';
@@ -16,6 +17,7 @@ type Props = {
   /** Cooking mode as a page of its own; taps on links to it open it here instead */
   cookHref: string;
   hasPhoto: boolean;
+  rating?: Rating;
   steps: CookingStep[];
   ingredients: IngredientLine[];
   servings?: number;
@@ -69,7 +71,7 @@ export default function CookingLauncher({ cookHref, ...cookingProps }: Props) {
     function handlePopState(event: PopStateEvent) {
       const cooking = (event.state as { cooking?: boolean } | null)?.cooking === true;
       if (!cooking && reloadOnCloseRef.current) {
-        window.location.reload(); // shows the photo added in cooking mode
+        window.location.reload(); // shows the photo or rating changed in cooking mode
         return;
       }
       if (cooking) openCooking();
@@ -84,8 +86,8 @@ export default function CookingLauncher({ cookHref, ...cookingProps }: Props) {
     };
   }, [cookHref]);
 
-  function close(photoAdded: boolean) {
-    reloadOnCloseRef.current = photoAdded;
+  function close(recipeChanged: boolean) {
+    reloadOnCloseRef.current = recipeChanged;
     history.back(); // closes it through popstate, like the browser's back button
   }
 
