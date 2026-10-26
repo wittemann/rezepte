@@ -2,7 +2,17 @@ import { render } from 'preact-render-to-string';
 import { describe, expect, it } from 'vitest';
 import Maulti, { type MaultiPose } from './Maulti.tsx';
 
-const POSES: MaultiPose[] = ['wave', 'think', 'cook', 'cheer', 'sleep', 'heart', 'alarm', 'lock'];
+const POSES: MaultiPose[] = [
+  'wave',
+  'think',
+  'cook',
+  'cheer',
+  'sleep',
+  'heart',
+  'alarm',
+  'lock',
+  'taste',
+];
 
 // Distinctive paths from design/Maskottchen.dc.html
 const RIGHT_EYE = 'cx="72"';
@@ -10,6 +20,8 @@ const WINK = 'M67 69 Q72 73 77 69';
 const CLOSED_EYES = 'M43 70 Q48 74 53 70';
 const PADLOCK = 'M106 92 V86';
 const CHEFS_HAT = 'cx="60" cy="18" r="12"';
+const HAPPY_EYES = 'M43 71 Q48 64 53 71';
+const SPOON = 'M86 95 L69 86';
 
 describe('Maulti', () => {
   it.each(POSES)('renders the %s pose as a decorative SVG', (pose) => {
@@ -41,6 +53,15 @@ describe('Maulti', () => {
   it('wears the chef’s hat only when cooking', () => {
     expect(render(<Maulti pose="cook" />)).toContain(CHEFS_HAT);
     expect(render(<Maulti pose="think" />)).not.toContain(CHEFS_HAT);
+  });
+
+  it('tastes from a spoon with happy eyes in the taste pose', () => {
+    const svg = render(<Maulti pose="taste" />);
+    expect(svg).toContain(HAPPY_EYES);
+    expect(svg).toContain(SPOON);
+    expect(svg).toContain('mmh?');
+    expect(svg).not.toContain(RIGHT_EYE);
+    expect(render(<Maulti pose="cheer" />)).not.toContain(SPOON);
   });
 
   it('converts the size from px to rem so it follows the text size', () => {

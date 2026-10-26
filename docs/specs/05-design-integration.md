@@ -6,7 +6,7 @@ The visual design is created in **Claude Design**. This spec describes how it be
 
 - **Location:** `design/`. Start with `design/README.md` (German): screens, rules, tokens, assets. Screenshots in `design/screenshots/`
 - **Relevant variant:** `playful` only (template branch `isPlay` in `Kochbuch App.dc.html`). The other variants were explorations and are not built
-- **Fidelity:** high. Colors, type, spacing, radii, shadows and interactions are final. The mascot Maulti is final as SVG (`Maskottchen.dc.html`, 8 poses incl. `lock` for the login; `maulti-login.svg`)
+- **Fidelity:** high. Colors, type, spacing, radii, shadows and interactions are final. The mascot Maulti is final as SVG (`Maskottchen.dc.html`, 9 poses incl. `lock` for the login and `taste` for the rating; `maulti-login.svg`)
 - **Prototype:** open `design/Kochbuch App.dc.html?variant=playful` in a browser. It needs `support.js` and `data/rezepte.json` next to it
 - **Not in git:** `design/Rezepte-Grid view.csv`, `design/data/` and `design/Mahlzeit-Zuordnung.csv` contain our recipe data (the full Airtable export with texts partly copied from other sites and signed image URLs; the list of all recipes with their meals). They're in `.gitignore` because the repo is public. The prototype only runs where these files exist locally
 - **Addition (2026-10-26): recipe rating.** Section 8 in `design/README.md`, screens in `design/rating/`, screenshots in `design/screenshots/rating/`, brief in `docs/design-briefs/rating.md`. Adds the token `star` and the Maulti pose `taste`

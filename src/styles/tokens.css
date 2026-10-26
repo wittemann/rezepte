@@ -26,6 +26,9 @@
   --outline: #2b2118;
   /* Maulti's accent (lock, heart, confetti): a lighter coral than --accent, as in the design */
   --mascot-accent: #e8674f;
+  /* Filled rating star, the same in dark mode (design/README.md, "8. Bewertung") */
+  --star: #f2c94c;
+  --star-outline: #2b2118;
 
   /*
    * Pastels: oklch(L 0.09 hue), one hue per category and meal.

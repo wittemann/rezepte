@@ -5,7 +5,8 @@
 // The character's own colors are part of the artwork and stay in this file.
 // Only the accent follows the theme (--mascot-accent in tokens.css).
 
-export type MaultiPose = 'wave' | 'think' | 'cook' | 'cheer' | 'sleep' | 'heart' | 'alarm' | 'lock';
+export type MaultiPose =
+  'wave' | 'think' | 'cook' | 'cheer' | 'sleep' | 'heart' | 'alarm' | 'lock' | 'taste';
 
 type Props = {
   pose?: MaultiPose;
@@ -32,6 +33,7 @@ function brows(pose: MaultiPose) {
     case 'alarm':
       return ['M42 56 Q47 59 53 58', 'M67 58 Q73 59 78 56'];
     case 'cheer':
+    case 'taste':
       return ['M42 58 Q47 53 53 57', 'M67 57 Q73 53 78 58'];
     case 'sleep':
       return ['M43 63 Q48 62 52 63', 'M68 63 Q72 62 77 63'];
@@ -42,13 +44,14 @@ function brows(pose: MaultiPose) {
 
 export default function Maulti({ pose = 'wave', size = 96 }: Props) {
   const show = {
-    eyesOpen: pose !== 'sleep',
+    eyesOpen: pose !== 'sleep' && pose !== 'taste',
     eyesClosed: pose === 'sleep',
+    eyesHappy: pose === 'taste',
     rightEye: pose !== 'lock',
     wink: pose === 'lock',
     smile: pose === 'wave' || pose === 'cook' || pose === 'heart' || pose === 'lock',
     open: pose === 'cheer' || pose === 'alarm',
-    oh: pose === 'think' || pose === 'sleep',
+    oh: pose === 'think' || pose === 'sleep' || pose === 'taste',
     wave: pose === 'wave',
     think: pose === 'think',
     cook: pose === 'cook',
@@ -57,6 +60,7 @@ export default function Maulti({ pose = 'wave', size = 96 }: Props) {
     heart: pose === 'heart',
     alarm: pose === 'alarm',
     lock: pose === 'lock',
+    taste: pose === 'taste',
   };
   const eyeY = pose === 'think' ? 66 : 69;
   const highlightY = pose === 'think' ? 63.8 : 66.8;
@@ -128,6 +132,12 @@ export default function Maulti({ pose = 'wave', size = 96 }: Props) {
         <g fill="none" stroke="#3b2a1d" stroke-width="3" stroke-linecap="round">
           <path d="M43 70 Q48 74 53 70" />
           <path d="M67 70 Q72 74 77 70" />
+        </g>
+      )}
+      {show.eyesHappy && (
+        <g fill="none" stroke="#3b2a1d" stroke-width="3" stroke-linecap="round">
+          <path d="M43 71 Q48 64 53 71" />
+          <path d="M67 71 Q72 64 77 71" />
         </g>
       )}
       <ellipse cx="37" cy="80" rx="6" ry="3.6" fill="#f39a8c" opacity=".9" />
@@ -203,7 +213,36 @@ export default function Maulti({ pose = 'wave', size = 96 }: Props) {
             <path d="M104 76 Q113 80 112 90" />
           </g>
         )}
+        {show.taste && (
+          <g>
+            <path d="M15 80 Q8 92 22 98" />
+            <path d="M105 78 Q110 96 88 96" />
+          </g>
+        )}
       </g>
+      {show.taste && (
+        <g>
+          <path d="M86 95 L69 86" stroke="#b07a45" stroke-width="4" stroke-linecap="round" />
+          <ellipse
+            cx="64"
+            cy="83"
+            rx="6.5"
+            ry="4.2"
+            fill="#b07a45"
+            stroke="#3b2a1d"
+            stroke-width="2.2"
+            transform="rotate(28 64 83)"
+          />
+          <path
+            d="M60 74 q-3 -5 0 -9 M67 73 q-3 -5 0 -9"
+            fill="none"
+            stroke="#c9985a"
+            stroke-width="2"
+            stroke-linecap="round"
+            opacity=".8"
+          />
+        </g>
+      )}
       <g fill="#f8e4bb" stroke="#3b2a1d" stroke-width="3">
         {show.wave && <circle cx="111" cy="41" r="5.5" />}
         {show.think && <circle cx="83" cy="92" r="5.5" />}
@@ -214,7 +253,19 @@ export default function Maulti({ pose = 'wave', size = 96 }: Props) {
           </g>
         )}
         {show.alarm && <circle cx="9" cy="42" r="5.5" />}
+        {show.taste && <circle cx="87" cy="96" r="5.5" />}
       </g>
+      {show.taste && (
+        <text
+          x="88"
+          y="32"
+          font-size="15"
+          font-weight="600"
+          style={{ fill: ACCENT, fontFamily: FONT }}
+        >
+          mmh?
+        </text>
+      )}
       {show.wave && (
         <path
           d="M118 31 l6 -4 M120 42 l7 0"

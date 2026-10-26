@@ -216,7 +216,7 @@ Send picked ingredients of a recipe to the family's Bring! list, per [ADR 0014](
 One shared 1–5 star rating per recipe, for everyone, like the heart: whoever rates last wins, empty = not rated. Design: `design/README.md`, section „8. Bewertung“; brief: [rating](design-briefs/rating.md).
 
 - [x] Data: read and write the field `Meine Bewertung`, action `setRating`, documented in [03-data-model](specs/03-data-model.md) · `sonnet`
-- [ ] Token `star` and the Maulti pose `taste` · `haiku`
+- [x] Token `star` and the Maulti pose `taste` · `haiku`
 - [ ] Header card: star radiogroup, tap the selected star to remove; on failure back to the old value plus the heart's toast · `sonnet`
 - [ ] Cooking mode: „Wie war’s?“ as the last step; without a photo, rating and photo on one screen instead of the photo step · `opus`
 - [ ] Recipe rows: one small star per point at the start of the meta line · `sonnet`
