@@ -47,6 +47,7 @@ describe('readRecord', () => {
         sourceUrl: 'https://example.org/testsuppe',
         notes: 'Schmeckt auch kalt.',
         favoritedAt: '2026-10-01T08:30:00.000Z',
+        rating: 4,
       }),
     );
 
@@ -74,6 +75,7 @@ describe('readRecord', () => {
       sourceUrl: 'https://example.org/testsuppe',
       notes: 'Schmeckt auch kalt.',
       favoritedAt: '2026-10-01T08:30:00.000Z',
+      rating: 4,
     });
   });
 
@@ -81,6 +83,12 @@ describe('readRecord', () => {
     const { recipe, invalidFields } = readRecord(testRecord({ favoritedAt: 'gestern' }));
     expect(invalidFields).toEqual(['favoritedAt']);
     expect(recipe?.favoritedAt).toBeUndefined();
+  });
+
+  it.each([0, 6, 2.5, '4'])('leaves out the rating %s and keeps the recipe', (rating) => {
+    const { recipe, invalidFields } = readRecord(testRecord({ rating }));
+    expect(invalidFields).toEqual(['rating']);
+    expect(recipe?.rating).toBeUndefined();
   });
 
   it('trims the title', () => {

@@ -32,8 +32,11 @@ interface Recipe {
   sourceUrl?: string;
   notes?: string;
   favoritedAt?: string; // ISO timestamp; set → favorite (shared by everyone), newest first
+  rating?: Rating; // 1–5 stars, shared by everyone; missing → not rated
   createdAt: string;
 }
+
+type Rating = 1 | 2 | 3 | 4 | 5;
 
 type IngredientLine =
   | { kind: 'heading'; text: string } // "Für den Teig:"
@@ -68,6 +71,8 @@ Constants (from the design): `CATEGORIES` = Hauptgericht, Beilage, Salat, Suppe,
 
 Favorites are **shared by everyone** (one shared password, no personal accounts): the field `Favorit seit` holds the time the recipe was marked. Empty → not a favorite. Deviates from the design README, which says per device ([05-design-integration](05-design-integration.md)).
 
+The rating is **shared by everyone** too: one 1–5 star rating per recipe in the field `Meine Bewertung`, no rating per person and no average. Whoever rates last wins, like the heart. Empty → not rated. The field's name predates the app; the app uses its ID.
+
 ## Airtable mapping
 
 Table `Rezepte` = `tblsuZ3AUOqkpY1vk`. The code uses the **field ID** (ADR 0002); the name is for humans. Durations come from the API in **seconds**.
@@ -87,7 +92,7 @@ Table `Rezepte` = `tblsuZ3AUOqkpY1vk`. The code uses the **field ID** (ADR 0002)
 | `images`                          | Foto                 | `fldshOL4NdmkjPqXe` | multipleAttachments      | via upload only (ADR 0005) |
 | `source`                          | Quelle               | `fldFlH3z4ScSU3oJz` | singleSelect             | yes                        |
 | `sourceUrl`                       | Original-Link        | `fldqeCigWMnW400lN` | url                      | yes                        |
-| –                                 | Meine Bewertung      | `fldNQWaV85W4mRwgu` | rating                   | no (not used by the app)   |
+| `rating`                          | Meine Bewertung      | `fldNQWaV85W4mRwgu` | rating (5 stars)         | yes, only via the stars    |
 | `notes`                           | Notizen              | `fldavsvzGmItYK5Va` | multilineText            | yes                        |
 | `favoritedAt`                     | Favorit seit         | `fldYS250RG0Aa3mzC` | dateTime (with time)     | yes, only via the heart    |
 
@@ -106,6 +111,7 @@ The app keeps a copy of the recipe table ([ADR 0003](../decisions/0003-rendering
 - **Mahlzeit:** any of `Frühstück`, `Mittag & Abend`, `Backen`. Empty = the recipe doesn't appear in the start page suggestions
 - **Portionen:** a whole number: the number the ingredient amounts are written for. Leave empty if that makes no sense (e.g. a marinade); the app then hides the serving scaler
 - **Arbeitszeit / Gesamtzeit:** Airtable duration `h:mm`
+- **Meine Bewertung:** a whole number 1–5 (Airtable's star field, max 5) or empty = not rated. Other values are ignored by the app
 - **Quelle:** one of `Chefkoch`, `YouTube`, `Instagram`, `Webseite` (any other website), `Apple Notes`. The app offers only these
 - **Never write** `Kalorien pro Portion` (formula). Don't write fields the app doesn't know; use `PATCH`, never `PUT`
 

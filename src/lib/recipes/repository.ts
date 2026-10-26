@@ -14,7 +14,7 @@ import {
   type AirtableRecord,
 } from '../airtable/client.ts';
 import { reportWarning } from '../monitoring.ts';
-import { RECIPE_FIELDS, RECIPES_TABLE_ID } from './fields.ts';
+import { RECIPE_FIELDS, RECIPES_TABLE_ID, type Rating } from './fields.ts';
 import { findImageUrl, type ImageSize } from './image-source.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import type { Recipe, RecipeId } from './recipe.ts';
@@ -98,6 +98,23 @@ export async function setFavorite(
 ) {
   if (!(await findRecord(connection, id))) return undefined; // same reason as in update()
   const fields = { [RECIPE_FIELDS.favoritedAt]: favorite ? now.toISOString() : null };
+  const record = await saving(connection, () =>
+    updateRecord(connection, RECIPES_TABLE_ID, id, fields),
+  );
+  return readSavedRecord(record);
+}
+
+/**
+ * Sets the rating of a recipe (1–5 stars) or clears it (undefined) and returns the recipe as saved,
+ * or undefined if there is no recipe with this ID. Writes only that field, like setFavorite.
+ */
+export async function setRating(
+  connection: AirtableConnection,
+  id: RecipeId,
+  rating: Rating | undefined,
+) {
+  if (!(await findRecord(connection, id))) return undefined; // same reason as in update()
+  const fields = { [RECIPE_FIELDS.rating]: rating ?? null };
   const record = await saving(connection, () =>
     updateRecord(connection, RECIPES_TABLE_ID, id, fields),
   );

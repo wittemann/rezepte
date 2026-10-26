@@ -4,7 +4,7 @@ Steps to build v1 as defined in [01-requirements](specs/01-requirements.md), fol
 
 Bugs are not tracked here but in [bugs](bugs.md).
 
-**Status (2026-10-19):** finished for now. Sections 1–12 are done; section 13 (Bring!) is parked and not started.
+**Status (2026-10-26):** sections 1–12 are done; section 13 (Bring!) is parked and not started; section 14 (rating) is in progress.
 
 Legend: **(owner)** = needs the project owner (accounts, secrets, decisions, testing on the phone). `haiku` / `sonnet` / `opus` = the model to use for the sub-agent that builds the item (see "Sub-agents and models").
 
@@ -210,6 +210,17 @@ Send picked ingredients of a recipe to the family's Bring! list, per [ADR 0014](
 - [ ] Placement and look of the button and the sheet (no design; decided by the project owner, noted in [05-design-integration](specs/05-design-integration.md)) **(owner)**
 - [ ] Sheet: ingredient lines with checkboxes (all checked, headings as group titles), button „Zu Bring! hinzufügen“, success and error state · `sonnet`
 - [ ] E2E: the sheet lists the ingredients and unchecking works (no send: read-only) · `sonnet`
+
+## 14. Recipe rating
+
+One shared 1–5 star rating per recipe, for everyone, like the heart: whoever rates last wins, empty = not rated. Design: `design/README.md`, section „8. Bewertung“; brief: [rating](design-briefs/rating.md).
+
+- [x] Data: read and write the field `Meine Bewertung`, action `setRating`, documented in [03-data-model](specs/03-data-model.md) · `sonnet`
+- [ ] Token `star` and the Maulti pose `taste` · `haiku`
+- [ ] Header card: star radiogroup, tap the selected star to remove; on failure back to the old value plus the heart's toast · `sonnet`
+- [ ] Cooking mode: „Wie war’s?“ as the last step; without a photo, rating and photo on one screen instead of the photo step · `opus`
+- [ ] Recipe rows: one small star per point at the start of the meta line · `sonnet`
+- [ ] Filter sheet: „Sortieren“ A–Z / Beste zuerst for the grouped list and the search hits, „Bewertung“ chips (OR) · `opus`
 
 ## Later (not v1)
 

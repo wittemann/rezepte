@@ -6,8 +6,9 @@ import { z } from 'astro/zod';
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
 import { JPEG_BASE64_PREFIX, MAX_PHOTO_BASE64_LENGTH } from '../lib/images/photo.ts';
 import { logInfo, logWarning } from '../lib/monitoring.ts';
+import { RATINGS } from '../lib/recipes/fields.ts';
 import { readFormValues, recipeFormSchema } from '../lib/recipes/form.ts';
-import { addPhoto, create, setFavorite, update } from '../lib/recipes/repository.ts';
+import { addPhoto, create, setFavorite, setRating, update } from '../lib/recipes/repository.ts';
 import { withGenericErrors } from './with-generic-errors.ts';
 
 /** The answer for a recipe ID that doesn't exist (any more), logged as a warning. */
@@ -29,6 +30,24 @@ export const server = {
       if (!recipe) throw notFound('setFavorite', id);
       logInfo(favorite ? 'Recipe favorited' : 'Recipe unfavorited', { 'recipe.record_id': id });
       return { favoritedAt: recipe.favoritedAt };
+    }),
+  }),
+
+  /** Sets the shared rating of a recipe (1–5 stars), or removes it with `null`. */
+  setRating: defineAction({
+    input: z.object({ id: z.string(), rating: z.literal(RATINGS).nullable() }),
+    handler: withGenericErrors('setRating', async ({ id, rating }) => {
+      const recipe = await setRating(
+        { token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID },
+        id,
+        rating ?? undefined,
+      );
+      if (!recipe) throw notFound('setRating', id);
+      logInfo(rating ? 'Recipe rated' : 'Recipe rating removed', {
+        'recipe.record_id': id,
+        'recipe.rating': rating ?? 0,
+      });
+      return { rating: recipe.rating ?? null };
     }),
   }),
 

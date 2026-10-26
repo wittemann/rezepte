@@ -5,7 +5,7 @@
 
 import { z } from 'zod';
 import type { AirtableRecord } from '../airtable/client.ts';
-import { MEALS, RECIPE_FIELDS, type Meal } from './fields.ts';
+import { MEALS, RATINGS, RECIPE_FIELDS, type Meal } from './fields.ts';
 import { parseIngredients } from './ingredients.ts';
 import { parseMethod } from './method.ts';
 import type { Recipe } from './recipe.ts';
@@ -45,6 +45,7 @@ const recordFieldsSchema = z.object({
   [RECIPE_FIELDS.sourceUrl]: z.url({ protocol: /^https?$/ }).optional(),
   [RECIPE_FIELDS.notes]: z.string().optional(),
   [RECIPE_FIELDS.favoritedAt]: z.iso.datetime().optional(),
+  [RECIPE_FIELDS.rating]: z.literal(RATINGS).optional(),
 });
 
 type RecordFields = z.infer<typeof recordFieldsSchema>;
@@ -96,6 +97,7 @@ function toRecipe(record: AirtableRecord, fields: RecordFields) {
     sourceUrl: fields[RECIPE_FIELDS.sourceUrl],
     notes: fields[RECIPE_FIELDS.notes],
     favoritedAt: fields[RECIPE_FIELDS.favoritedAt],
+    rating: fields[RECIPE_FIELDS.rating],
     createdAt: record.createdTime,
   };
 }

@@ -20,6 +20,7 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 - One list with search (name **and** ingredients) and grouping by category
 - Meal filter and a filter sheet: category, "Bis 30 Min.", "Mit Anleitung"
 - Favorites tab (favorites are **shared by everyone**, stored in Airtable)
+- Rating: one 1–5 star rating per recipe, **shared by everyone** like the favorites. Set in the recipe header and at the end of cooking mode, shown in the recipe rows; filter by rating and sort „Beste zuerst“
 
 **Recipe detail**
 

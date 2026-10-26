@@ -20,6 +20,7 @@ export const RECIPE_FIELDS = {
   sourceUrl: 'fldqeCigWMnW400lN', // Original-Link
   notes: 'fldavsvzGmItYK5Va', // Notizen
   favoritedAt: 'fldYS250RG0Aa3mzC', // Favorit seit: dateTime, set = favorite (shared by everyone)
+  rating: 'fldNQWaV85W4mRwgu', // Meine Bewertung: 1–5 stars, empty = not rated (shared by everyone)
 } as const;
 
 /**
@@ -62,6 +63,10 @@ export function mealValue(name: (typeof MEALS)[number]['name']) {
  */
 export const SOURCES = ['Chefkoch', 'YouTube', 'Instagram', 'Webseite', 'Apple Notes'] as const;
 
+/** The ratings a recipe can have: 1 to 5 stars (Airtable's star field allows up to 5). */
+export const RATINGS = [1, 2, 3, 4, 5] as const;
+
 export type Category = (typeof CATEGORIES)[number]['value'];
 export type Meal = (typeof MEALS)[number]['value'];
 export type Source = (typeof SOURCES)[number];
+export type Rating = (typeof RATINGS)[number];

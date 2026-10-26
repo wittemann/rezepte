@@ -11,6 +11,7 @@ import {
   getImageUrl,
   refreshImageUrl,
   setFavorite,
+  setRating,
   update,
 } from './repository.ts';
 import { forgetMemoryCopy, forgetTable } from './table-copy.ts';
@@ -402,6 +403,57 @@ describe('setFavorite', () => {
       jsonResponse({ error: 'ERROR' }, 500),
     );
     await expect(setFavorite(connection, 'recA', true, now)).rejects.toMatchObject({ status: 500 });
+  });
+});
+
+describe('setRating', () => {
+  it('checks the record exists, then patches only "Meine Bewertung"', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse(
+        testRecord('recA', { [RECIPE_FIELDS.title]: 'Testsuppe', [RECIPE_FIELDS.rating]: 4 }),
+      ),
+    );
+
+    const recipe = await setRating(connection, 'recA', 4);
+
+    const patch = requestAt(fetch, 1);
+    expect(patch.method).toBe('PATCH');
+    expect(patch.url.href).toBe(`${TABLE_URL}/recA`);
+    expect(patch.body).toEqual({
+      fields: { [RECIPE_FIELDS.rating]: 4 },
+      typecast: true,
+      returnFieldsByFieldId: true,
+    });
+    expect(recipe?.rating).toBe(4);
+  });
+
+  it('clears the field when removing the rating', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse(titled('recA', 'Testsuppe')),
+    );
+
+    const recipe = await setRating(connection, 'recA', undefined);
+
+    expect(requestAt(fetch, 1).body).toMatchObject({ fields: { [RECIPE_FIELDS.rating]: null } });
+    expect(recipe?.rating).toBeUndefined();
+  });
+
+  it('returns undefined without patching for an unknown record or a bad ID', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse({ records: [] }));
+
+    expect(await setRating(connection, 'recMissing', 3)).toBeUndefined();
+    expect(await setRating(connection, 'recA/../x', 3)).toBeUndefined();
+    expect(fetch).toHaveBeenCalledTimes(1); // only the lookup of the first call
+  });
+
+  it('passes errors of the PATCH on', async () => {
+    const { connection } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse({ error: 'ERROR' }, 500),
+    );
+    await expect(setRating(connection, 'recA', 5)).rejects.toMatchObject({ status: 500 });
   });
 });
 

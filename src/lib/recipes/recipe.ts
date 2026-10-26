@@ -1,7 +1,7 @@
 // The recipe as pages and components see it (docs/specs/03-data-model.md, "Domain types").
 // The Airtable shape stays inside lib/recipes (record.ts).
 
-import type { Meal } from './fields.ts';
+import type { Meal, Rating } from './fields.ts';
 import type { IngredientLine } from './ingredients.ts';
 import type { Method } from './method.ts';
 
@@ -27,6 +27,7 @@ export type Recipe = {
   sourceUrl?: string; // http(s) only
   notes?: string;
   favoritedAt?: string; // ISO timestamp; set = favorite (shared by everyone), newest first
+  rating?: Rating; // 1–5 stars, shared by everyone; missing = not rated
   createdAt: string; // ISO timestamp, when the Airtable record was created
 };
 
