@@ -1,6 +1,6 @@
 ---
 // Header card of the recipe page (design/README.md, "Rezept-Detail"): back, calendar, heart, "Bearbeiten",
-// optional photo, category, title, source and Maulti. The card has the color of the category.
+// optional photo, category, title, source, rating stars and Maulti. The card has the color of the category.
 import type { Recipe } from '../lib/recipes/recipe.ts';
 import { categoryName } from '../lib/recipes/fields.ts';
 import { isFavorite } from '../lib/recipes/favorites.ts';
@@ -11,6 +11,7 @@ import FavoriteButton from './FavoriteButton.tsx';
 import Icon from './Icon.tsx';
 import Maulti from './Maulti.tsx';
 import Pill from './Pill.astro';
+import RecipeRating from './RecipeRating.tsx';
 import { TEXT } from './RecipeHeader.texts.ts';
 
 type Props = {
@@ -64,6 +65,7 @@ const cardColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
       )}
     </p>
   )}
+  <RecipeRating client:load recipeId={recipe.id} rating={recipe.rating} />
   <div class="mascot">
     <Maulti pose={favorite ? 'heart' : 'wave'} size={108} />
   </div>

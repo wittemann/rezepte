@@ -29,6 +29,8 @@
   /* Filled rating star, the same in dark mode (design/README.md, "8. Bewertung") */
   --star: #f2c94c;
   --star-outline: #2b2118;
+  /* Empty rating star on a pastel card */
+  --star-empty-on-pastel: rgb(255 255 255 / 60%);
 
   /*
    * Pastels: oklch(L 0.09 hue), one hue per category and meal.

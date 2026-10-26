@@ -6,7 +6,7 @@ import type { Recipe } from '../lib/recipes/recipe.ts';
 import { makeRecipe } from '../lib/recipes/test-recipe.ts';
 import RecipeHeader from './RecipeHeader.astro';
 
-// The heart is an island; it only needs to render here
+// The heart and the stars are islands; they only need to render here
 vi.mock('astro:actions', () => ({ actions: {} }));
 
 async function renderHeader(overrides: Partial<Recipe> = {}) {
@@ -68,5 +68,16 @@ describe('RecipeHeader', () => {
     );
     expect(heart.querySelector('button[aria-pressed="true"]')).not.toBeNull();
     expect(wave.querySelector('button[aria-pressed="false"]')).not.toBeNull();
+  });
+
+  it('shows the rating stars with the recipe’s rating', async () => {
+    const rated = await renderHeader({ rating: 3 });
+    expect(rated.querySelector('[role="radiogroup"]')?.getAttribute('aria-label')).toBe(
+      'Bewertung: 3 von 5 Sternen',
+    );
+    const unrated = await renderHeader();
+    expect(unrated.querySelector('[role="radiogroup"]')?.getAttribute('aria-label')).toBe(
+      'Bewertung: noch keine',
+    );
   });
 });

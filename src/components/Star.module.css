@@ -1,0 +1,22 @@
+/* Colors of the rating star (design/README.md, "8. Bewertung") */
+
+.star {
+  display: block;
+  flex: none;
+  overflow: visible; /* the outline reaches past the 24×24 grid */
+}
+
+.filled {
+  fill: var(--star);
+  stroke: var(--star-outline);
+}
+
+.emptyOnPastel {
+  fill: var(--star-empty-on-pastel);
+  stroke: var(--star-outline);
+}
+
+.emptyOnSurface {
+  fill: var(--sunk);
+  stroke: var(--muted);
+}

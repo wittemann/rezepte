@@ -1,0 +1,20 @@
+/*
+ * The rating in the recipe header card (design/README.md, "Rezept-Detail: Kopfkarte"): 8px under
+ * the source, the row moved 8px to the left so the first star lines up with the text, and clear
+ * of Maulti on the right like the title.
+ */
+
+.rating {
+  /* The card puts --space-m between its rows; the design has 8px here */
+  margin-top: calc(var(--space-xs) - var(--space-m));
+  padding-right: var(--recipe-title-clearance);
+}
+
+.rating > [role='radiogroup'] {
+  margin-left: calc(-1 * var(--space-xs));
+}
+
+.caption {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 800;
+}
