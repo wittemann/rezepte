@@ -4,4 +4,6 @@ export const TEXT = {
   singleServing: 'Portion',
   servings: 'Portionen',
   favorite: 'Favorit',
+  /** The stars at the start of the meta line, for screen readers */
+  rating: (rating: number) => `${rating} von 5 Sternen`,
 };

@@ -79,4 +79,24 @@ describe('RecipeRow', () => {
     const html = await renderRow({ totalMinutes: undefined, servings: undefined });
     expect(html).not.toContain('class="meta');
   });
+
+  it('starts the meta line with one star per point, read as „4 von 5 Sternen“', async () => {
+    const html = await renderRow({ rating: 4 });
+    expect(html).toMatch(/role="img" aria-label="4 von 5 Sternen"/);
+    expect(html.match(/<svg/g)).toHaveLength(4);
+    expect(html).toMatch(/<span aria-hidden="true"[^>]*>·<\/span>/);
+    expect(html).toContain('1 Std. 5 Min. · 4 Portionen');
+  });
+
+  it('shows nothing extra without a rating', async () => {
+    const html = await renderRow();
+    expect(html).not.toContain('Sternen');
+    expect(html).not.toContain('<svg');
+  });
+
+  it('shows the stars without a separator when there is no other meta', async () => {
+    const html = await renderRow({ rating: 2, servings: undefined, totalMinutes: undefined });
+    expect(html).toContain('aria-label="2 von 5 Sternen"');
+    expect(html).not.toContain('·');
+  });
 });

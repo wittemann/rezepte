@@ -1,5 +1,6 @@
 ---
 // One recipe in a list (design/README.md, "Rezept-Zeile"): photo or initial tile, name, meta, heart.
+// A rated recipe shows one small star per point at the start of the meta line.
 // The whole row links to the recipe. The heart only shows that it is a favorite; toggling happens on
 // the detail page (FavoriteButton).
 import type { Recipe } from '../lib/recipes/recipe.ts';
@@ -7,6 +8,7 @@ import { categoryName } from '../lib/recipes/fields.ts';
 import { isFavorite } from '../lib/recipes/favorites.ts';
 import { sizedImageUrl } from '../lib/recipes/image-source.ts';
 import Icon from './Icon.tsx';
+import Star from './Star.tsx';
 import { recipeRowMeta } from './recipe-row-meta.ts';
 import { TEXT } from './RecipeRow.texts.ts';
 
@@ -24,6 +26,7 @@ const [firstGrapheme] = new Intl.Segmenter('de').segment(recipe.title);
 const initial = firstGrapheme?.segment.toUpperCase() ?? '?';
 const tileColor = `var(--pastel-cat-${categoryName(recipe.category)})`;
 const meta = recipeRowMeta(recipe);
+const stars = Array.from({ length: recipe.rating ?? 0 });
 ---
 
 <a class="row" href={`/recipes/${recipe.id}`} data-recipe-id={recipe.id}>
@@ -36,7 +39,19 @@ const meta = recipeRowMeta(recipe);
   )}
   <span class="text">
     <span class="title">{recipe.title}</span>
-    {meta && <span class="meta">{meta}</span>}
+    {(recipe.rating || meta) && (
+      <span class="meta">
+        {recipe.rating && (
+          <span class="stars" role="img" aria-label={TEXT.rating(recipe.rating)}>
+            {stars.map(() => (
+              <Star size={14} strokeWidth={2.2} />
+            ))}
+          </span>
+        )}
+        {recipe.rating && meta && <span aria-hidden="true">·</span>}
+        {meta && <span>{meta}</span>}
+      </span>
+    )}
   </span>
   {isFavorite(recipe) && (
     <span class="heart" role="img" aria-label={TEXT.favorite}>
@@ -97,9 +112,18 @@ const meta = recipeRowMeta(recipe);
   }
 
   .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.25rem; /* 4px */
     color: var(--muted);
     font-size: 0.8125rem; /* 13px */
     font-weight: 600;
+  }
+
+  .stars {
+    display: inline-flex;
+    gap: 2px;
   }
 
   .heart {
