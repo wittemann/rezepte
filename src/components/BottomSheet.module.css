@@ -61,7 +61,14 @@
 
 .title {
   font-size: var(--sheet-title-size);
-  /* Only focused on open (BottomSheet.tsx), not interactive, so no focus ring */
+}
+
+/*
+ * Only focused on open (BottomSheet.tsx), not interactive, so no focus ring. As :focus-visible,
+ * so it beats the ring in global.css whatever order the build loads the two in (on the edit page
+ * the production build puts global.css last).
+ */
+.title:focus-visible {
   outline: none;
 }
 
