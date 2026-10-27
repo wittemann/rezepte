@@ -3,6 +3,7 @@ import { reportError, reportWarning } from '../monitoring.ts';
 import {
   AirtableError,
   createRecord,
+  deleteRecord,
   getRecord,
   listRecords,
   listTables,
@@ -329,6 +330,40 @@ describe('updateRecord', () => {
     await expect(updateRecord(connection, TABLE_ID, 'recUnknown', {})).rejects.toMatchObject({
       status: 403,
       message: `Airtable PATCH ${TABLE_PATH}/recUnknown failed with 403 (INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND)`,
+    });
+  });
+});
+
+describe('deleteRecord', () => {
+  it('DELETEs one record, without a body', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse({ deleted: true, id: 'recA' }));
+    await deleteRecord(connection, TABLE_ID, 'recA');
+
+    expect(fetch).toHaveBeenCalledOnce();
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(`${TABLE_URL}/recA`);
+    expect(init).toEqual({ method: 'DELETE', headers: { Authorization: `Bearer ${TOKEN}` } });
+  });
+
+  it.each(['', '..', 'recA/../tblOther', 'recA?x=1'])(
+    'refuses "%s" as record ID without sending anything',
+    async (recordId) => {
+      const { connection, fetch } = connectionAnswering();
+      await expect(deleteRecord(connection, TABLE_ID, recordId)).rejects.toThrow(
+        'Not an Airtable record ID',
+      );
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
+  it('names DELETE in the error', async () => {
+    const { connection } = connectionAnswering(
+      jsonResponse({ error: { type: 'INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND' } }, 403),
+    );
+
+    await expect(deleteRecord(connection, TABLE_ID, 'recUnknown')).rejects.toMatchObject({
+      status: 403,
+      message: `Airtable DELETE ${TABLE_PATH}/recUnknown failed with 403 (INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND)`,
     });
   });
 });

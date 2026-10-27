@@ -6,6 +6,7 @@
 
 import {
   createRecord,
+  deleteRecord,
   getRecord,
   isRecordId,
   updateRecord,
@@ -19,7 +20,7 @@ import { findImageUrl, type ImageSize } from './image-source.ts';
 import { toRecordFields, type RecipeInput } from './input.ts';
 import type { Recipe, RecipeId } from './recipe.ts';
 import { readRecord } from './record.ts';
-import { forgetTable, putRecord, readTable, reloadTable } from './table-copy.ts';
+import { forgetTable, putRecord, readTable, reloadTable, removeRecord } from './table-copy.ts';
 
 const byTitle = new Intl.Collator('de').compare;
 
@@ -134,6 +135,22 @@ export async function addPhoto(connection: AirtableConnection, id: RecipeId, bas
     // lists all photos or just the new one. The whole record is one call and leaves no doubt.
     return getRecord(connection, RECIPES_TABLE_ID, id);
   });
+  return true;
+}
+
+/**
+ * Deletes a recipe in Airtable and takes it out of the table copy. Returns false if there is no
+ * recipe with this ID. A failed delete forgets the copy, like a failed write (see saving).
+ */
+export async function remove(connection: AirtableConnection, id: RecipeId) {
+  if (!(await findRecord(connection, id))) return false; // same reason as in update()
+  try {
+    await deleteRecord(connection, RECIPES_TABLE_ID, id);
+  } catch (error) {
+    await forgetTable(connection);
+    throw error;
+  }
+  await removeRecord(connection, id);
   return true;
 }
 

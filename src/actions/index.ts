@@ -8,7 +8,14 @@ import { JPEG_BASE64_PREFIX, MAX_PHOTO_BASE64_LENGTH } from '../lib/images/photo
 import { logInfo, logWarning } from '../lib/monitoring.ts';
 import { RATINGS } from '../lib/recipes/fields.ts';
 import { readFormValues, recipeFormSchema } from '../lib/recipes/form.ts';
-import { addPhoto, create, setFavorite, setRating, update } from '../lib/recipes/repository.ts';
+import {
+  addPhoto,
+  create,
+  remove,
+  setFavorite,
+  setRating,
+  update,
+} from '../lib/recipes/repository.ts';
 import { withGenericErrors } from './with-generic-errors.ts';
 
 /** The answer for a recipe ID that doesn't exist (any more), logged as a warning. */
@@ -91,6 +98,16 @@ export const server = {
       if (!recipe) throw notFound('saveRecipe', id ?? '');
       logInfo(id ? 'Recipe updated' : 'Recipe created', { 'recipe.record_id': recipe.id });
       return { saved: true as const, id: recipe.id };
+    }),
+  }),
+
+  /** Deletes a recipe in Airtable. The edit page asks for confirmation first. */
+  deleteRecipe: defineAction({
+    input: z.object({ id: z.string() }),
+    handler: withGenericErrors('deleteRecipe', async ({ id }) => {
+      const deleted = await remove({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID }, id);
+      if (!deleted) throw notFound('deleteRecipe', id);
+      logInfo('Recipe deleted', { 'recipe.record_id': id });
     }),
   }),
 };

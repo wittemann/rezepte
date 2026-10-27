@@ -10,6 +10,7 @@ import {
   getById,
   getImageUrl,
   refreshImageUrl,
+  remove,
   setFavorite,
   setRating,
   update,
@@ -546,6 +547,36 @@ describe('addPhoto', () => {
   });
 });
 
+describe('remove', () => {
+  it('checks the record exists, then deletes it', async () => {
+    const { connection, fetch } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse({ deleted: true, id: 'recA' }),
+    );
+
+    expect(await remove(connection, 'recA')).toBe(true);
+
+    const [url, init] = fetch.mock.calls[1];
+    expect(String(url)).toBe(`${TABLE_URL}/recA`);
+    expect(init?.method).toBe('DELETE');
+  });
+
+  it('returns false without deleting for an unknown record or a bad ID', async () => {
+    const { connection, fetch } = connectionAnswering(jsonResponse({ records: [] }));
+    expect(await remove(connection, 'recUnknown')).toBe(false);
+    expect(await remove(connection, 'not-an-id')).toBe(false);
+    expect(fetch).toHaveBeenCalledOnce(); // only the lookup
+  });
+
+  it('passes errors of the DELETE on', async () => {
+    const { connection } = connectionAnswering(
+      jsonResponse({ records: [titled('recA', 'Testsuppe')] }),
+      jsonResponse({ error: 'ERROR' }, 500),
+    );
+    await expect(remove(connection, 'recA')).rejects.toMatchObject({ status: 500 });
+  });
+});
+
 // How the copy itself works is tested in table-copy.spec.ts
 describe('table copy', () => {
   const table = () => jsonResponse({ records: [titled('recA', 'Testsuppe')] });
@@ -605,6 +636,34 @@ describe('table copy', () => {
     expect(await getImageUrl(connection, 'recA', 'attNew', 'full')).toBe(
       'https://example.com/a.jpg',
     );
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('leaves a deleted recipe out at once, without loading the table again', async () => {
+    const { connection, fetch } = connectionAnswering(
+      table(),
+      jsonResponse({ deleted: true, id: 'recA' }),
+    );
+
+    await getAll(connection);
+    await remove(connection, 'recA');
+
+    expect(await getAll(connection)).toEqual([]);
+    expect(await getById(connection, 'recA')).toBeUndefined();
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('loads the table again after a failed delete', async () => {
+    const { connection, fetch } = connectionAnswering(
+      table(),
+      jsonResponse({ error: 'ERROR' }, 500),
+      table(),
+    );
+
+    await getAll(connection);
+    await expect(remove(connection, 'recA')).rejects.toMatchObject({ status: 500 });
+    await getAll(connection);
+
     expect(fetch).toHaveBeenCalledTimes(3);
   });
 

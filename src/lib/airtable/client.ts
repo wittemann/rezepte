@@ -84,7 +84,7 @@ async function toAirtableError(response: Response, method: string, url: URL) {
   return new AirtableError(response.status, message);
 }
 
-type HttpMethod = 'GET' | 'POST' | 'PATCH';
+type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
 // Airtable record IDs: "rec" followed by letters and digits.
 const RECORD_ID = /^rec[A-Za-z0-9]+$/;
@@ -223,6 +223,20 @@ export async function updateRecord(
   const url = new URL(`${API_URL}/${connection.baseId}/${tableId}/${recordId}`);
   const body = { fields, typecast: true, returnFieldsByFieldId: true };
   return (await requestJson(connection, 'PATCH', url, body)) as AirtableRecord;
+}
+
+/**
+ * Deletes one record. Throws before sending anything if `recordId` isn't a record ID.
+ * Like updateRecord, Airtable answers an unknown record ID with 403.
+ */
+export async function deleteRecord(
+  connection: AirtableConnection,
+  tableId: string,
+  recordId: string,
+) {
+  if (!isRecordId(recordId)) throw new Error(`Not an Airtable record ID: ${recordId}`);
+  const url = new URL(`${API_URL}/${connection.baseId}/${tableId}/${recordId}`);
+  await requestJson(connection, 'DELETE', url);
 }
 
 // Airtable field IDs: "fld" followed by letters and digits.

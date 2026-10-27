@@ -26,7 +26,7 @@ let memoryCopy: { baseId: string; copy: Promise<TableCopy> } | undefined;
 // The background reload running in this instance, if any; there is never more than one.
 let refreshing: Promise<void> | undefined;
 
-// Counts saved records, so a reload that started before a save doesn't overwrite it
+// Counts saved and deleted records, so a reload that started before one doesn't overwrite it
 let saveCount = 0;
 
 /** All records of the recipe table, from the copy if there is one. */
@@ -43,18 +43,17 @@ export async function readTable(connection: AirtableConnection) {
  * in Airtable still show up with the next reload.
  */
 export async function putRecord(connection: AirtableConnection, record: AirtableRecord) {
-  saveCount++;
-  const copy = await existingCopy(connection);
-  if (!copy) return;
+  await changeCopy(connection, (records) => {
+    const isKnown = records.some((existing) => existing.id === record.id);
+    return isKnown
+      ? records.map((existing) => (existing.id === record.id ? record : existing))
+      : [...records, record];
+  });
+}
 
-  const isKnown = copy.records.some((existing) => existing.id === record.id);
-  const records = isKnown
-    ? copy.records.map((existing) => (existing.id === record.id ? record : existing))
-    : [...copy.records, record];
-  const updated = { loadedAt: copy.loadedAt, records };
-
-  memoryCopy = { baseId: connection.baseId, copy: Promise.resolve(updated) };
-  await storeSharedCopy(connection, updated);
+/** Takes a record Airtable just deleted out of the copy. Otherwise works like putRecord. */
+export async function removeRecord(connection: AirtableConnection, recordId: string) {
+  await changeCopy(connection, (records) => records.filter((record) => record.id !== recordId));
 }
 
 /**
@@ -130,6 +129,20 @@ function refreshInBackground(connection: AirtableConnection, oldCopy: TableCopy)
     });
   // Keeps the function alive on Vercel until the reload is done
   waitUntil(refreshing);
+}
+
+/** Changes the records of the copy, in memory and in the Runtime Cache, keeping its age. */
+async function changeCopy(
+  connection: AirtableConnection,
+  change: (records: AirtableRecord[]) => AirtableRecord[],
+) {
+  saveCount++;
+  const copy = await existingCopy(connection);
+  if (!copy) return;
+
+  const changed = { loadedAt: copy.loadedAt, records: change(copy.records) };
+  memoryCopy = { baseId: connection.baseId, copy: Promise.resolve(changed) };
+  await storeSharedCopy(connection, changed);
 }
 
 /** Loads the whole table from Airtable. */

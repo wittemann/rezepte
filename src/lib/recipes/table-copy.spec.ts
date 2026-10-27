@@ -7,6 +7,7 @@ import {
   readTable,
   REFRESH_AFTER_MS,
   reloadTable,
+  removeRecord,
 } from './table-copy.ts';
 import {
   backgroundWorkDone,
@@ -240,6 +241,42 @@ describe('putRecord', () => {
     await backgroundWorkDone();
 
     expect(titlesOf(await readTable(connection))).toEqual(['Gespeichert']);
+  });
+});
+
+describe('removeRecord', () => {
+  it('takes the record out, in memory and in the Runtime Cache', async () => {
+    const { connection, fetch } = connectionAnswering(table('Weg', 'Bleibt'));
+    await readTable(connection);
+
+    await removeRecord(connection, 'rec0');
+
+    expect(titlesOf(await readTable(connection))).toEqual(['Bleibt']);
+    forgetMemoryCopy();
+    expect(titlesOf(await readTable(connection))).toEqual(['Bleibt']);
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('does nothing without a copy and never asks Airtable', async () => {
+    const { connection, fetch } = connectionAnswering();
+    await removeRecord(connection, 'rec0');
+    expect(fetch).not.toHaveBeenCalled();
+    expect(runtimeCache.size).toBe(0);
+  });
+
+  it('drops a background reload during which a record was deleted', async () => {
+    const reload = Promise.withResolvers<Response>();
+    const { connection, fetch } = connectionAnswering(table('Weg', 'Bleibt'));
+    fetch.mockImplementationOnce(() => reload.promise);
+    await readTable(connection);
+    vi.advanceTimersByTime(REFRESH_AFTER_MS);
+
+    await readTable(connection); // starts the reload, which waits for Airtable
+    await removeRecord(connection, 'rec0');
+    reload.resolve(table('Weg', 'Bleibt'));
+    await backgroundWorkDone();
+
+    expect(titlesOf(await readTable(connection))).toEqual(['Bleibt']);
   });
 });
 
