@@ -227,9 +227,9 @@ One shared 1–5 star rating per recipe, for everyone, like the heart: whoever r
 Delete a recipe from the edit page, after a confirmation. Hard delete in Airtable. No design: built from `Button` and `BottomSheet`, decided by the project owner.
 
 - [x] Data: `deleteRecord` in the Airtable client, `remove` in the repository (takes it out of the table copy), action `deleteRecipe` · `opus`
-- [ ] Edit page: „Rezept löschen“ button, confirmation sheet, then to the list · `opus`
-- [ ] E2E: the sheet opens and „Abbrechen“ closes it (no delete: read-only); requirements and docs updated · `opus`
+- [x] Edit page: „Rezept löschen“ button, confirmation sheet, then to the list · `opus`
+- [x] E2E: the sheet opens and „Abbrechen“ closes it (no delete: read-only); requirements and docs updated · `opus`
 
 ## Later (not v1)
 
-See "Later" in [01-requirements](specs/01-requirements.md): shopping list, deleting recipes in the app, logout button, offline use, a lighter outline for Maulti in dark mode.
+See "Later" in [01-requirements](specs/01-requirements.md): shopping list, logout button, offline use, a lighter outline for Maulti in dark mode.

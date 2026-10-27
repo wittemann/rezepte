@@ -1,0 +1,62 @@
+/*
+ * „Rezept löschen“ and its sheet (owner's choice, docs/specs/05-design-integration.md): the button
+ * is an outline pill in the accent color, set apart below the form; the sheet's buttons are the
+ * primary (medium) and outline buttons of Button.astro.
+ */
+
+.wrapper {
+  padding: 0 var(--space-page) var(--space-page);
+}
+
+.open,
+.cancel {
+  min-height: var(--button-height-outline);
+  padding: 0 var(--space-l);
+  background: var(--surface);
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.open {
+  width: 100%;
+  color: var(--accent);
+}
+
+.question {
+  color: var(--ink);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+  /* Room for the shadow of „Löschen“ */
+  padding-bottom: var(--space-xxs);
+}
+
+.confirm {
+  min-height: var(--button-height-medium);
+  padding: 0 var(--space-xl);
+  background: var(--accent);
+  color: var(--on-accent);
+  border: var(--border-thick);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-m);
+  font-family: var(--font-display);
+  font-size: 1.0625rem; /* 17px */
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel {
+  color: var(--ink);
+}
+
+.confirm:disabled,
+.cancel:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

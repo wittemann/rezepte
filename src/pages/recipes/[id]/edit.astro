@@ -1,8 +1,10 @@
 ---
 // "Bearbeiten" of a recipe (design/README.md, "7. Rezept bearbeiten / neu"). GET shows the form
 // filled from Airtable; the form posts to this page and goes back to the recipe after saving.
+// „Rezept löschen“ below the form deletes it after asking.
 // Airtable errors while loading are not caught: Astro shows the 500 page.
 import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import DeleteRecipe from '../../../components/DeleteRecipe.tsx';
 import ErrorMessage from '../../../components/ErrorMessage.astro';
 import RecipeForm from '../../../components/RecipeForm.tsx';
 import { TEXT as FORM_TEXT } from '../../../components/RecipeForm.texts.ts';
@@ -39,6 +41,7 @@ if (!values) Astro.response.status = 404;
         {saveFailed}
         cancelHref={`/recipes/${id}`}
       />
+      <DeleteRecipe client:load recipeId={id} title={values.title} />
     </main>
   </Base>
 ) : (

@@ -44,7 +44,7 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 **Edit / new**
 
 - One form for both: name, category, meals, servings, times, ingredients, instructions, source, link, notes. Changes are written to Airtable
-- Deleting a recipe is **not** in the app (the design has no delete); delete in Airtable directly
+- „Rezept löschen“ below the form (after v1): asks in a sheet, then deletes the record in Airtable for everyone; there is no undo
 
 **App**
 
@@ -55,7 +55,6 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 ## Later (not v1)
 
 - Shopping list collected from several recipes (not in the design)
-- Deleting recipes in the app
 - Logout button (not needed in v1: sessions last about a year; to log everyone out, rotate `SESSION_SECRET`)
 - Offline use
 - Maulti in dark mode: his dark brown outline and arms are hard to see on the dark background (same in the design). Ask Claude Design for a lighter outline in dark mode
