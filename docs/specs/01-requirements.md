@@ -34,6 +34,11 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 - On the recipe page, buttons Mo–So add the recipe as an all-day event on that day of the coming week to the phone's calendar
 - No menu suggestions and no planner in the app; the week is planned in the calendar
 
+**Shopping list** (after v1, [ADR 0014](../decisions/0014-bring-shopping-list.md))
+
+- On the recipe page, „Auf die Einkaufsliste“ opens a sheet with the ingredients (all checked, amounts for the chosen servings); the unchecked ones stay home, the rest go to the family's Bring! list
+- No shopping list in the app; collecting from several recipes happens in Bring!
+
 **Cooking mode**
 
 - One step at a time, swipe or buttons, progress dots, ingredients sheet
@@ -54,7 +59,6 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 
 ## Later (not v1)
 
-- Shopping list collected from several recipes (not in the design)
 - Logout button (not needed in v1: sessions last about a year; to log everyone out, rotate `SESSION_SECRET`)
 - Offline use
 - Maulti in dark mode: his dark brown outline and arms are hard to see on the dark background (same in the design). Ask Claude Design for a lighter outline in dark mode

@@ -4,7 +4,7 @@ Steps to build v1 as defined in [01-requirements](specs/01-requirements.md), fol
 
 Bugs are not tracked here but in [bugs](bugs.md).
 
-**Status (2026-10-26):** sections 1–12 are done; section 13 (Bring!) is parked and not started; section 14 (rating) is in progress.
+**Status (2026-10-31):** sections 1–15 are done.
 
 Legend: **(owner)** = needs the project owner (accounts, secrets, decisions, testing on the phone). `haiku` / `sonnet` / `opus` = the model to use for the sub-agent that builds the item (see "Sub-agents and models").
 
@@ -232,4 +232,4 @@ Delete a recipe from the edit page, after a confirmation. Hard delete in Airtabl
 
 ## Later (not v1)
 
-See "Later" in [01-requirements](specs/01-requirements.md): shopping list, logout button, offline use, a lighter outline for Maulti in dark mode.
+See "Later" in [01-requirements](specs/01-requirements.md): logout button, offline use, a lighter outline for Maulti in dark mode.
