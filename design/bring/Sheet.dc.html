@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Sheet: Auf die Einkaufsliste</title>
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+@keyframes bring-spin{to{transform:rotate(360deg)}}
+.bring-spinner{animation:bring-spin .8s linear infinite}
+@media (prefers-reduced-motion: reduce){.bring-spinner{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; font-family: Nunito, system-ui, sans-serif; {{ themeVars }}">
+  <div aria-hidden="true" style="position: absolute; inset: 0">
+    <dc-import name="Seite" dark="{{ dark }}" hint-size="390px,844px"></dc-import>
+  </div>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(43,33,24,.45)"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="bring-title" aria-describedby="bring-hint" style="position: absolute; left: 8px; right: 8px; bottom: 8px; max-height: 780px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--ink); border: 2.5px solid var(--outline); border-radius: 30px">
+    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 20px 14px 0 20px">
+      <div style="flex: 1; min-width: 0">
+        <h2 id="bring-title" style="margin: 0; font-family: Fredoka, system-ui, sans-serif; font-size: 26px; font-weight: 600; line-height: 1.15">Auf die Einkaufsliste</h2>
+        <p id="bring-hint" style="margin: 4px 0 0; font-size: 14px; font-weight: 700; color: var(--muted)">Für 4 Portionen. Nimm raus, was du schon zu Hause hast.</p>
+      </div>
+      <button type="button" aria-label="Schließen" disabled="{{ busy }}" style="flex: none; width: 44px; height: 44px; padding: 0; border-radius: 22px; background: var(--sunk); color: var(--ink); border: 0; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="display: block"><path d="M6 6l12 12M18 6L6 18" style="fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round"></path></svg>
+      </button>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 4px; padding: 6px 16px 0 20px">
+      <span aria-live="polite" style="flex: 1; font-size: 14px; font-weight: 800">{{ countLabel }}</span>
+      <button type="button" onClick="{{ checkAll }}" disabled="{{ busy }}" style="height: 44px; padding: 0 8px; border: 0; background: transparent; color: var(--accent); font-family: Nunito, system-ui, sans-serif; font-size: 15px; font-weight: 800; cursor: pointer">Alle</button>
+      <button type="button" onClick="{{ checkNone }}" disabled="{{ busy }}" style="height: 44px; padding: 0 8px; border: 0; background: transparent; color: var(--accent); font-family: Nunito, system-ui, sans-serif; font-size: 15px; font-weight: 800; cursor: pointer">Keine</button>
+    </div>
+
+    <div ref="{{ setList }}" style="flex: 1; min-height: 0; overflow-y: auto; margin: 4px 8px 0; padding: 0 12px; border-top: 2px solid var(--line); opacity: {{ listOpacity }}">
+      <sc-for list="{{ rows }}" as="row" hint-placeholder-count="8">
+        <sc-if value="{{ row.heading }}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 14px 0 2px; color: var(--accent); font-family: Fredoka, system-ui, sans-serif; font-size: 15px; font-weight: 600">{{ row.text }}</div>
+        </sc-if>
+        <sc-if value="{{ row.item }}" hint-placeholder-val="{{ true }}">
+          <label style="position: relative; display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 0; border-bottom: 2px dotted var(--line); line-height: 1.3; color: {{ row.color }}; cursor: pointer">
+            <input type="checkbox" class="visually-hidden" checked="{{ row.checked }}" onChange="{{ row.toggle }}" disabled="{{ busy }}">
+            <span aria-hidden="true" style="flex: none; width: 28px; height: 28px; box-sizing: border-box; border-radius: 9px; border: 2.5px solid var(--outline); background: {{ row.boxBg }}; display: flex; align-items: center; justify-content: center">
+              <svg width="18" height="18" viewBox="0 0 24 24" style="display: {{ row.tick }}"><path d="M5 12.5l4.5 4.5L19 7.5" style="fill: none; stroke: var(--on-accent); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round"></path></svg>
+            </span>
+            <span style="flex: none; width: 64px; font-weight: 800">{{ row.amount }}</span>
+            <span style="flex: 1; min-width: 0">{{ row.text }}</span>
+          </label>
+        </sc-if>
+      </sc-for>
+    </div>
+
+    <div style="padding: 12px 16px 16px; border-top: 2px solid var(--line); margin: 0 8px">
+      <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
+        <div role="alert" style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; padding: 12px 14px; border-radius: 18px; background: var(--sunk); border: 2px dashed var(--accent)">
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="display: block; flex: none; margin-top: 1px"><circle cx="12" cy="12" r="9" style="fill: none; stroke: var(--accent); stroke-width: 2.4"></circle><path d="M12 7.5v5.5M12 16.5h.01" style="fill: none; stroke: var(--accent); stroke-width: 2.6; stroke-linecap: round"></path></svg>
+          <div style="font-size: 14px; font-weight: 700; line-height: 1.35">Bring! ist gerade nicht erreichbar. Deine Auswahl bleibt, versuch es gleich noch mal.</div>
+        </div>
+      </sc-if>
+      <button type="button" disabled="{{ submitDisabled }}" aria-busy="{{ busyAttr }}" style="width: 100%; min-height: 54px; padding: 8px 16px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 27px; background: {{ submitBg }}; color: {{ submitFg }}; border: 2.5px solid {{ submitBorder }}; box-shadow: {{ submitShadow }}; font-family: Fredoka, system-ui, sans-serif; font-size: 17px; font-weight: 600; cursor: pointer">
+        <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}">
+          <svg class="bring-spinner" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="display: block; flex: none"><path d="M12 3a9 9 0 1 1-9 9" style="fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round"></path></svg>
+        </sc-if>
+        {{ submitLabel }}
+      </button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"preset":{"editor":"enum","options":["all","some","none","long"],"default":"all","tsType":"string"},"mode":{"editor":"enum","options":["pick","sending","error"],"default":"pick","tsType":"string"},"scrolled":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+const THEMES = {
+  light: '--bg:#fff6e8;--surface:#ffffff;--sunk:#fbe9cf;--ink:#2b2118;--muted:#6e5e4f;--line:#eddcc3;--accent:oklch(0.56 0.17 30);--on-accent:#ffffff;--outline:#2b2118;',
+  dark: '--bg:#1f1826;--surface:#2b2233;--sunk:#362b40;--ink:#fbf3e6;--muted:#bcaec2;--line:#44394e;--accent:oklch(0.72 0.15 30);--on-accent:#1f1826;--outline:#0c0910;'
+};
+// Made-up example ingredients, not from the family's recipes
+const SHORT = [
+  { amount: '250 g', text: 'Mehl' },
+  { amount: '3', text: 'Eier' },
+  { amount: '500 ml', text: 'Milch' },
+  { amount: '1 Prise', text: 'Salz' },
+  { amount: '2 EL', text: 'Butter zum Braten' },
+  { heading: 'Zum Servieren' },
+  { amount: '1 Glas', text: 'Apfelmus' },
+  { amount: '', text: 'Puderzucker' }
+];
+const LONG = [
+  { heading: 'Für die Soße' },
+  { amount: '500 g', text: 'gemischtes Hackfleisch' },
+  { amount: '1', text: 'Zwiebel' },
+  { amount: '2', text: 'Knoblauchzehen' },
+  { amount: '1', text: 'Möhre' },
+  { amount: '1 Stange', text: 'Staudensellerie' },
+  { amount: '2 EL', text: 'Tomatenmark' },
+  { amount: '800 g', text: 'passierte Tomaten' },
+  { amount: '150 ml', text: 'Rotwein' },
+  { amount: '2 EL', text: 'Olivenöl' },
+  { amount: '', text: 'Salz, Pfeffer' },
+  { amount: '1 TL', text: 'Oregano' },
+  { heading: 'Für die Béchamel' },
+  { amount: '50 g', text: 'Butter' },
+  { amount: '50 g', text: 'Mehl' },
+  { amount: '600 ml', text: 'Milch' },
+  { amount: '1 Prise', text: 'Muskatnuss' },
+  { heading: 'Außerdem' },
+  { amount: '250 g', text: 'Lasagneplatten' },
+  { amount: '150 g', text: 'geriebener Käse' },
+  { amount: '1 Bund', text: 'Basilikum' }
+];
+// Lines unchecked at the start, by text
+const UNCHECKED = {
+  all: [],
+  some: ['Salz', 'Butter zum Braten', 'Puderzucker'],
+  none: null,
+  long: ['Olivenöl', 'Salz, Pfeffer', 'Oregano', 'Mehl', 'Muskatnuss']
+};
+class Component extends DCLogic {
+  isOn(value) {
+    return value === true || value === 'true';
+  }
+  preset() {
+    return this.props.preset || 'all';
+  }
+  lines() {
+    return this.preset() === 'long' ? LONG : SHORT;
+  }
+  initialChecked() {
+    const unchecked = UNCHECKED[this.preset()];
+    return this.lines()
+      .filter((line) => !line.heading)
+      .filter((line) => unchecked && !unchecked.includes(line.text))
+      .map((line) => line.text);
+  }
+  checkedTexts() {
+    if (this.state && this.state.checked) return this.state.checked;
+    return this.initialChecked();
+  }
+  renderVals() {
+    const dark = this.isOn(this.props.dark);
+    const mode = this.props.mode || 'pick';
+    const busy = mode === 'sending';
+    const checked = this.checkedTexts();
+    const items = this.lines().filter((line) => !line.heading);
+    const count = checked.length;
+    const rows = this.lines().map((line) => {
+      if (line.heading) return { heading: true, item: false, text: line.heading };
+      const on = checked.includes(line.text);
+      return {
+        heading: false,
+        item: true,
+        amount: line.amount,
+        text: line.text,
+        checked: on,
+        boxBg: on ? 'var(--accent)' : 'var(--surface)',
+        tick: on ? 'block' : 'none',
+        color: on ? 'var(--ink)' : 'var(--muted)',
+        toggle: () => this.setState({
+          checked: on ? checked.filter((text) => text !== line.text) : checked.concat([line.text])
+        })
+      };
+    });
+    const nothing = count === 0;
+    let submitLabel = (count === 1 ? '1 Zutat' : count + ' Zutaten') + ' zu Bring! hinzufügen';
+    if (nothing) submitLabel = 'Nichts ausgewählt';
+    if (busy) submitLabel = 'Wird hinzugefügt …';
+    if (mode === 'error' && !nothing) submitLabel = 'Noch mal versuchen';
+    const scrolled = this.isOn(this.props.scrolled);
+    return {
+      themeVars: dark ? THEMES.dark : THEMES.light,
+      dark,
+      rows,
+      busy,
+      busyAttr: busy ? 'true' : 'false',
+      error: mode === 'error',
+      listOpacity: busy ? '0.55' : '1',
+      countLabel: count + ' von ' + items.length + ' ausgewählt',
+      submitLabel,
+      submitDisabled: nothing || busy,
+      submitBg: nothing ? 'var(--sunk)' : 'var(--accent)',
+      submitFg: nothing ? 'var(--muted)' : 'var(--on-accent)',
+      submitBorder: nothing ? 'transparent' : 'var(--outline)',
+      submitShadow: nothing ? 'none' : '0 4px 0 var(--outline)',
+      checkAll: () => this.setState({ checked: items.map((line) => line.text) }),
+      checkNone: () => this.setState({ checked: [] }),
+      setList: (element) => {
+        if (element && scrolled) element.scrollTop = 260;
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

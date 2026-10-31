@@ -27,7 +27,7 @@ The options:
 - Everyone using the app writes to the same Bring list
 - Probably not allowed by Bring's terms. The project owner accepts that at family scale
 - A Bring password in Vercel env vars: one more secret, never in the repo
-- The original design has none of this: the entry point and the sheet are designed by Claude Design from a brief ([bring](../design-briefs/bring.md)), noted in [05-design-integration](../specs/05-design-integration.md) once the handoff is in
+- The original design has none of this: the entry point and the sheet are designed by Claude Design from a brief ([bring](../design-briefs/bring.md)), handoff in `design/bring/` (section 9 of `design/README.md`)
 
 ## Spike (2026-10-31)
 

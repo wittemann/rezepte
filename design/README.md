@@ -119,6 +119,27 @@ Eine gemeinsame Bewertung pro Rezept, **1–5 Sterne**, für alle gleich (wie da
 - Beste zuerst **mit** Suche: Namenstreffer bleiben vorn, innerhalb jeder Stufe nach Sternen.
 - Unter dem Titel: „4 Rezepte gefunden · beste zuerst“ bzw. „95 Rezepte · beste zuerst“.
 
+### 9. Einkaufsliste: Zutaten zu Bring! (Ergänzung 2026-10-31)
+Zutaten eines Rezepts auf die gemeinsame Bring!-Liste der Familie schicken. Vorher abwählen, was schon da ist. Nichts wird zwischen Rezepten gemerkt. Design-Dateien: `bring/` (Einstieg `bring/Seite.dc.html`, Sheet `bring/Sheet.dc.html`), Brief: `docs/design-briefs/bring.md`.
+
+#### Einstieg auf der Rezeptseite
+- Unter der Zutaten-Karte, Abstand 12: Button „Auf die Einkaufsliste“, volle Breite, 52px, Radius 26, `surface`, Rand 2.5px `outline`, Schatten `0 3px 0`, Fredoka 17/600, links Einkaufswagen-Icon 22px (Stroke 2.4). Bewusst eine Stufe unter dem Akzent-CTA „Los, wir kochen!“.
+- Rezept ohne Zutaten: kein Button. Öffnet das Sheet (`aria-haspopup="dialog"`).
+
+#### Sheet „Auf die Einkaufsliste“
+- Wie das Filter-Sheet: links/rechts/unten 8px, Radius 30, Rand 2.5px, Hintergrund `surface`, Scrim `rgba(43,33,24,.45)`. Höhe nach Inhalt, höchstens bis 64px unter den oberen Rand.
+- Kopf: Titel Fredoka 26/600, darunter „Für {n} Portionen. Nimm raus, was du schon zu Hause hast.“ (14/700 `muted`; Portionen = gerade gewählte). Rechts „Schließen“ (✕, 44px rund, `sunk`).
+- Zeile darunter: „{x} von {y} ausgewählt“ (14/800, `aria-live`), rechts Textbuttons „Alle“ · „Keine“ (Akzent 15/800, 44px hoch).
+- Liste zwischen zwei Linien (2px `line`), scrollt allein, der Button bleibt sichtbar. Je Zutat eine Zeile, Mengen wie im Zutaten-Abschnitt skaliert: ganze Zeile tippbar (`<label>` mit echter Checkbox), min. 48px, gepunktete Trennlinie wie in der Zutaten-Karte. Box 28px, Radius 9, Rand 2.5px `outline`; an: Fläche Akzent mit Haken in `onAccent`; aus: `surface`, Text der Zeile `muted`. Menge 64px breit, 800.
+- Zwischenüberschriften („Zum Servieren“) als Gruppentitel ohne Box: Akzent, Fredoka 15/600. Beim Öffnen sind alle Zutaten angehakt.
+- Button unten (54px, Radius 27, Akzent, Rand, Schatten `0 4px 0`, Fredoka 17/600): „{n} Zutaten zu Bring! hinzufügen“ (1: „1 Zutat …“). Nichts ausgewählt: „Nichts ausgewählt“, `sunk`/`muted`, ohne Rand und Schatten, deaktiviert.
+
+#### Senden, Erfolg, Fehler
+- Senden: Button zeigt Spinner (dreht nur ohne `prefers-reduced-motion`) und „Wird hinzugefügt …“, `aria-busy`; Liste, „Alle“/„Keine“ und ✕ gesperrt (Liste mit 55 % Deckkraft). Kein doppeltes Senden.
+- Erfolg: Sheet schließt, Toast wie beim Herz (Pille `ink`/`bg`, über dem CTA) mit Haken: „{n} Zutaten sind auf der Einkaufsliste.“ (1: „1 Zutat ist …“).
+- Fehler: Sheet bleibt offen, Auswahl unverändert. Über dem Button eine Box (`sunk`, Rand 2px gestrichelt Akzent, Radius 18, `role="alert"`) mit Ausrufezeichen-Icon: „Bring! ist gerade nicht erreichbar. Deine Auswahl bleibt, versuch es gleich noch mal.“ Button wird „Noch mal versuchen“.
+- Kein Bring!-Logo und kein Bring-Grün: Bring! nur im Text.
+
 ### 0. Login (vor allen anderen Screens)
 Zweck:
 Einfacher Schutz für Familie und Freunde: ein gemeinsames Passwort, kein Benutzername.
@@ -183,6 +204,7 @@ Bewertung (`screenshots/rating/`): 01 Kochmodus „Wie war’s?“ · 02 Bewertu
 - `Kochbuch App.dc.html`: kompletter Prototyp (Logik im `<script data-dc-script>`: Parser, Vorschlagslogik, Timer, Portionsrechner). Relevant: Template-Zweig `isPlay` und das gemeinsame Bearbeiten-Formular.
 - `Maskottchen.dc.html`: Maulti-Komponente.
 - `rating/`: Screens der Bewertung (Abschnitt 8). Die Rezeptnamen darin sind erfunden. `rating/Maulti.dc.html` ist eine Kopie von `Maskottchen.dc.html` für die Imports dort.
+- `bring/`: Screens der Einkaufsliste (Abschnitt 9). Die Zutaten darin sind erfunden. `bring/Sheet.dc.html` ist klickbar (Häkchen, „Alle“/„Keine“); die übrigen Dateien zeigen Zustände des Sheets bzw. der Seite.
 - `Kochbuch Clickdummy.dc.html`: Präsentations-Canvas mit iPhone-Rahmen.
 - `support.js`: Laufzeit für die Prototyp-Dateien (nicht übernehmen).
 - `data/rezepte.json`: aus dem CSV aufbereitete Rezepte inkl. `mahlzeit`.

@@ -207,7 +207,7 @@ Send picked ingredients of a recipe to the family's Bring! list, per [ADR 0014](
 - [x] Bring client (`fetch`): login, add item; unit tests with a mocked `fetch` · `sonnet`
 - [ ] Pure function: picked `IngredientLine`s + servings → Bring items (name, specification), with unit tests · `sonnet`
 - [ ] Action `addToBring`: login, validate recipe id and lines, German error messages · `sonnet`
-- [ ] Design for the entry point and the sheet from Claude Design (brief: [bring](design-briefs/bring.md)), handoff in `design/`, noted in [05-design-integration](specs/05-design-integration.md) **(owner)**
+- [x] Design for the entry point and the sheet from Claude Design (brief: [bring](design-briefs/bring.md)), handoff in `design/`, noted in [05-design-integration](specs/05-design-integration.md) **(owner)**
 - [ ] Sheet: ingredient lines with checkboxes (all checked, headings as group titles), button „Zu Bring! hinzufügen“, success and error state · `sonnet`
 - [ ] E2E: the sheet lists the ingredients and unchecking works (no send: read-only) · `sonnet`
 
