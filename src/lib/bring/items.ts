@@ -7,6 +7,21 @@ import type { IngredientLine } from '../recipes/ingredients.ts';
 import { formatQuantity, scaleQuantity } from '../recipes/servings.ts';
 import type { BringItem } from './client.ts';
 
+/**
+ * The ingredient lines at `indexes` (positions in the recipe's list), or undefined if one of them
+ * doesn't exist or is a heading. The browser sends positions, not texts, so only the recipe's own
+ * lines can reach the shopping list.
+ */
+export function pickLines(lines: IngredientLine[], indexes: number[]) {
+  const picked: IngredientLine[] = [];
+  for (const index of indexes) {
+    const line = lines[index];
+    if (line?.kind !== 'item') return undefined;
+    picked.push(line);
+  }
+  return picked;
+}
+
 /** One Bring item per ingredient line, in order; `factor` scales the amounts (1 = as written). */
 export function toBringItems(lines: IngredientLine[], factor: number) {
   const items: BringItem[] = [];

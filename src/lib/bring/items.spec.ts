@@ -1,8 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import { parseIngredients } from '../recipes/ingredients.ts';
-import { toBringItems } from './items.ts';
+import { pickLines, toBringItems } from './items.ts';
 
 const lines = (...text: string[]) => parseIngredients(text.join('\n'));
+
+describe('pickLines', () => {
+  const recipe = lines('Für den Teig:', '200 g Mehl', '2 Eier', 'Salz');
+
+  it('returns the lines at the positions, in the order asked', () => {
+    expect(pickLines(recipe, [3, 1])?.map((line) => line.text)).toEqual(['Salz', '200 g Mehl']);
+  });
+
+  it('refuses a position outside the list', () => {
+    expect(pickLines(recipe, [1, 4])).toBeUndefined();
+  });
+
+  it('refuses a heading', () => {
+    expect(pickLines(recipe, [0])).toBeUndefined();
+  });
+});
 
 describe('toBringItems', () => {
   it('puts amount and unit into the specification, the rest into the name', () => {

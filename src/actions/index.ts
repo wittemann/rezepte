@@ -3,7 +3,15 @@
 // Each action logs what it did to Sentry Logs, with record IDs only (no recipe names or texts).
 import { ActionError, defineAction } from 'astro:actions';
 import { z } from 'astro/zod';
-import { AIRTABLE_BASE_ID, AIRTABLE_TOKEN } from 'astro:env/server';
+import {
+  AIRTABLE_BASE_ID,
+  AIRTABLE_TOKEN,
+  BRING_EMAIL,
+  BRING_LIST_UUID,
+  BRING_PASSWORD,
+} from 'astro:env/server';
+import { addItems } from '../lib/bring/client.ts';
+import { pickLines, toBringItems } from '../lib/bring/items.ts';
 import { JPEG_BASE64_PREFIX, MAX_PHOTO_BASE64_LENGTH } from '../lib/images/photo.ts';
 import { logInfo, logWarning } from '../lib/monitoring.ts';
 import { RATINGS } from '../lib/recipes/fields.ts';
@@ -11,11 +19,13 @@ import { readFormValues, recipeFormSchema } from '../lib/recipes/form.ts';
 import {
   addPhoto,
   create,
+  getById,
   remove,
   setFavorite,
   setRating,
   update,
 } from '../lib/recipes/repository.ts';
+import { servingsFactor } from '../lib/recipes/servings.ts';
 import { withGenericErrors } from './with-generic-errors.ts';
 
 /** The answer for a recipe ID that doesn't exist (any more), logged as a warning. */
@@ -98,6 +108,41 @@ export const server = {
       if (!recipe) throw notFound('saveRecipe', id ?? '');
       logInfo(id ? 'Recipe updated' : 'Recipe created', { 'recipe.record_id': recipe.id });
       return { saved: true as const, id: recipe.id };
+    }),
+  }),
+
+  /**
+   * Puts picked ingredients of a recipe on the family's Bring list (ADR 0014). `lines` are
+   * positions in the recipe's ingredient list; `servings` are the ones chosen on the page, so the
+   * amounts match what the user sees.
+   */
+  addToBring: defineAction({
+    input: z.object({
+      id: z.string(),
+      servings: z.number().positive().max(1000).optional(),
+      lines: z.array(z.number().int().min(0)).min(1).max(200),
+    }),
+    handler: withGenericErrors('addToBring', async ({ id, servings, lines }) => {
+      const recipe = await getById({ token: AIRTABLE_TOKEN, baseId: AIRTABLE_BASE_ID }, id);
+      if (!recipe) throw notFound('addToBring', id);
+
+      const picked = pickLines(recipe.ingredients, lines);
+      if (!picked) throw new ActionError({ code: 'BAD_REQUEST', message: 'Unknown lines' });
+
+      if (!BRING_EMAIL || !BRING_PASSWORD || !BRING_LIST_UUID) {
+        throw new Error('BRING_EMAIL, BRING_PASSWORD or BRING_LIST_UUID is not set');
+      }
+      const factor = recipe.servings && servings ? servingsFactor(servings, recipe.servings) : 1;
+      const items = toBringItems(picked, factor);
+      await addItems(
+        { email: BRING_EMAIL, password: BRING_PASSWORD, listUuid: BRING_LIST_UUID },
+        items,
+      );
+      logInfo('Ingredients added to Bring', {
+        'recipe.record_id': id,
+        'bring.item_count': items.length,
+      });
+      return { added: items.length };
     }),
   }),
 
