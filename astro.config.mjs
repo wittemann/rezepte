@@ -60,6 +60,11 @@ export default defineConfig({
       SESSION_SECRET: envField.string({ context: 'server', access: 'secret', min: 32 }),
       AIRTABLE_TOKEN: envField.string({ context: 'server', access: 'secret' }),
       AIRTABLE_BASE_ID: envField.string({ context: 'server', access: 'secret', startsWith: 'app' }),
+      // Optional while the Bring spike runs (docs/decisions/0014-bring-shopping-list.md):
+      // required ones would break local dev and the e2e run, which don't set them
+      BRING_EMAIL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      BRING_PASSWORD: envField.string({ context: 'server', access: 'secret', optional: true }),
+      BRING_LIST_UUID: envField.string({ context: 'server', access: 'secret', optional: true }),
       // Public by design: the browser needs it to send errors (docs/decisions/0009-error-monitoring.md)
       SENTRY_DSN: envField.string({ context: 'client', access: 'public', optional: true }),
       // Set by Vercel; separates production from preview errors in Sentry
