@@ -13,10 +13,13 @@ import {
   scaleQuantity,
   servingsFactor,
 } from '../lib/recipes/servings.ts';
+import BringButton from './BringButton.tsx';
 import styles from './Ingredients.module.css';
 import { TEXT } from './Ingredients.texts.ts';
 
 type Props = {
+  /** Given → „Auf die Einkaufsliste“ below the list (BringButton) */
+  recipeId?: string;
   ingredients: IngredientLine[];
   /** What the amounts are written for; missing → no stepper */
   servings?: number;
@@ -24,7 +27,12 @@ type Props = {
   cookHref?: string;
 };
 
-export default function Ingredients({ ingredients, servings: baseServings, cookHref }: Props) {
+export default function Ingredients({
+  recipeId,
+  ingredients,
+  servings: baseServings,
+  cookHref,
+}: Props) {
   const [chosenServings, setChosenServings] = useState(baseServings);
   const factor = baseServings && chosenServings ? servingsFactor(chosenServings, baseServings) : 1;
 
@@ -91,6 +99,14 @@ export default function Ingredients({ ingredients, servings: baseServings, cookH
           ),
         )}
       </ul>
+      {recipeId && (
+        <BringButton
+          recipeId={recipeId}
+          ingredients={ingredients}
+          servings={chosenServings}
+          baseServings={baseServings}
+        />
+      )}
     </section>
   );
 }

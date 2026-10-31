@@ -39,6 +39,7 @@ const steps = recipe ? cookingSteps(recipe.method) : [];
       {recipe.ingredients.length > 0 && (
         <Ingredients
           client:load
+          recipeId={recipe.id}
           ingredients={recipe.ingredients}
           servings={recipe.servings}
           cookHref={recipe.hasInstructions ? `/recipes/${recipe.id}/cook` : undefined}
