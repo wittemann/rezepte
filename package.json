@@ -29,14 +29,14 @@
   },
   "dependencies": {
     "@astrojs/preact": "^6.0.5",
-    "@astrojs/vercel": "^11.0.11",
+    "@astrojs/vercel": "^11.0.17",
     "@sentry/astro": "^11.4.0",
     "@sentry/node": "^11.4.0",
     "@sentry/replay": "^11.4.0",
-    "@vercel/functions": "^3.10.1",
-    "astro": "^7.3.5",
+    "@vercel/functions": "^3.10.5",
+    "astro": "^7.4.4",
     "preact": "^10.29.8",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
@@ -54,5 +54,10 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.70.1",
     "vitest": "^5.0.2"
+  },
+  "overrides": {
+    "@vercel/cli-config": {
+      "zod": "$zod"
+    }
   }
 }
