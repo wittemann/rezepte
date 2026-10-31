@@ -17,16 +17,18 @@
 
 ## Environment variables
 
-| Name                           | Content                                                                                                         | Where                           |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `APP_PASSWORD_HASH`            | scrypt hash of the shared password (`npm run hash-password`)                                                    | Vercel (prod + preview), `.env` |
-| `SESSION_SECRET`               | random, 32+ bytes (`openssl rand -base64 32`)                                                                   | Vercel (prod + preview), `.env` |
-| `AIRTABLE_TOKEN`               | Personal Access Token, scoped to this base only: `data.records:read`, `data.records:write`, `schema.bases:read` | Vercel (prod + preview), `.env` |
-| `AIRTABLE_BASE_ID`             | `app…`                                                                                                          | Vercel (prod + preview), `.env` |
-| `AIRTABLE_E2E_TOKEN`           | read-only token for the e2e tests: `data.records:read` only, this base only                                     | `.env`, GitHub Actions secret   |
-| `SENTRY_DSN`                   | Sentry project key (public by design), read at build time; if unset, Sentry is off and not bundled              | Vercel (prod + preview)         |
-| `SENTRY_AUTH_TOKEN`            | **secret**, for the source-map upload at build time                                                             | Vercel only                     |
-| `SENTRY_ORG`, `SENTRY_PROJECT` | for the source-map upload                                                                                       | Vercel only                     |
+| Name                            | Content                                                                                                                        | Where                           |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
+| `APP_PASSWORD_HASH`             | scrypt hash of the shared password (`npm run hash-password`)                                                                   | Vercel (prod + preview), `.env` |
+| `SESSION_SECRET`                | random, 32+ bytes (`openssl rand -base64 32`)                                                                                  | Vercel (prod + preview), `.env` |
+| `AIRTABLE_TOKEN`                | Personal Access Token, scoped to this base only: `data.records:read`, `data.records:write`, `schema.bases:read`                | Vercel (prod + preview), `.env` |
+| `AIRTABLE_BASE_ID`              | `app…`                                                                                                                         | Vercel (prod + preview), `.env` |
+| `AIRTABLE_E2E_TOKEN`            | read-only token for the e2e tests: `data.records:read` only, this base only                                                    | `.env`, GitHub Actions secret   |
+| `BRING_EMAIL`, `BRING_PASSWORD` | dedicated Bring account, member of the family list ([ADR 0014](../decisions/0014-bring-shopping-list.md)); password **secret** | Vercel (prod + preview), `.env` |
+| `BRING_LIST_UUID`               | UUID of the family list (print it with the account's lists: `GET bringusers/{uuid}/lists`)                                     | Vercel (prod + preview), `.env` |
+| `SENTRY_DSN`                    | Sentry project key (public by design), read at build time; if unset, Sentry is off and not bundled                             | Vercel (prod + preview)         |
+| `SENTRY_AUTH_TOKEN`             | **secret**, for the source-map upload at build time                                                                            | Vercel only                     |
+| `SENTRY_ORG`, `SENTRY_PROJECT`  | for the source-map upload                                                                                                      | Vercel only                     |
 
 ## Secret rules
 

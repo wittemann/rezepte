@@ -202,7 +202,7 @@ Add a recipe to the calendar for a day of the coming week, per [ADR 0013](decisi
 
 Send picked ingredients of a recipe to the family's Bring! list, per [ADR 0014](decisions/0014-bring-shopping-list.md) (Proposed).
 
-- [ ] Dedicated Bring account, member of the family list; `BRING_EMAIL`, `BRING_PASSWORD`, `BRING_LIST_UUID` in Vercel and `.env`, listed in [06-deployment](specs/06-deployment.md) **(owner)**
+- [x] Dedicated Bring account, member of the family list; `BRING_EMAIL`, `BRING_PASSWORD`, `BRING_LIST_UUID` in Vercel and `.env`, listed in [06-deployment](specs/06-deployment.md) **(owner)**
 - [ ] Spike: from a Vercel function, log in and add one item; it shows up in the Bring app; then set ADR 0014 to Accepted (or drop it) **(owner)** · `sonnet`
 - [ ] Bring client (`fetch`): login, add item; unit tests with a mocked `fetch` · `sonnet`
 - [ ] Pure function: picked `IngredientLine`s + servings → Bring items (name, specification), with unit tests · `sonnet`

@@ -32,4 +32,5 @@ The options:
 ## To accept
 
 - Spike: from a Vercel function, log in with the Bring account and add one item to the family list; check it shows up in the app (Bring might block server IPs)
+  - 2026-10-31, pre-check without an account: from a Vercel Sandbox in `fra1` (AWS Frankfurt), `POST bringauth` with made-up credentials got Bring's normal `401` („email password combination not existing“), no firewall page, no timeout. So Bring doesn't block Vercel's network. Still open: a real login and adding an item, from a function
 - Project owner's OK on a dedicated Bring account
