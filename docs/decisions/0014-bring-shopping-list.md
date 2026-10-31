@@ -1,6 +1,6 @@
 # 0014 – Shopping list: send picked ingredients to Bring!
 
-**Status:** Proposed (2026-10-18)
+**Status:** Accepted (2026-10-31, proposed 2026-10-18)
 
 ## Context
 
@@ -29,8 +29,7 @@ The options:
 - A Bring password in Vercel env vars: one more secret, never in the repo
 - The design has none of this: placement and look of the button and sheet are decided by the project owner, noted in [05-design-integration](../specs/05-design-integration.md)
 
-## To accept
+## Spike (2026-10-31)
 
-- Spike: from a Vercel function, log in with the Bring account and add one item to the family list; check it shows up in the app (Bring might block server IPs)
-  - 2026-10-31, pre-check without an account: from a Vercel Sandbox in `fra1` (AWS Frankfurt), `POST bringauth` with made-up credentials got Bring's normal `401` („email password combination not existing“), no firewall page, no timeout. So Bring doesn't block Vercel's network. Still open: a real login and adding an item, from a function
-- Project owner's OK on a dedicated Bring account
+- Pre-check without an account: from a Vercel Sandbox in `fra1` (AWS Frankfurt), `POST bringauth` with made-up credentials got Bring's normal `401` („email password combination not existing“), no firewall page, no timeout. So Bring doesn't block Vercel's network
+- With the dedicated account (the project owner's OK): a temporary endpoint on a Vercel preview (`fra1`) logged in and added an item to the family list; it showed up in the Bring app. Headers as in the community client `bring-shopping` 2.0.1 (the web app's public API key)
