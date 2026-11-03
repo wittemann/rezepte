@@ -14,6 +14,7 @@ import {
   servingsFactor,
 } from '../lib/recipes/servings.ts';
 import BringButton from './BringButton.tsx';
+import ShareButton from './ShareButton.tsx';
 import styles from './Ingredients.module.css';
 import { TEXT } from './Ingredients.texts.ts';
 
@@ -25,6 +26,8 @@ type Props = {
   servings?: number;
   /** Cooking mode of the recipe; links to it on the page get the chosen servings */
   cookHref?: string;
+  /** Given → „Rezept teilen“ next to „Auf die Einkaufsliste“ (ShareButton) */
+  share?: { title: string; text: string };
 };
 
 export default function Ingredients({
@@ -32,6 +35,7 @@ export default function Ingredients({
   ingredients,
   servings: baseServings,
   cookHref,
+  share,
 }: Props) {
   const [chosenServings, setChosenServings] = useState(baseServings);
   const factor = baseServings && chosenServings ? servingsFactor(chosenServings, baseServings) : 1;
@@ -99,13 +103,18 @@ export default function Ingredients({
           ),
         )}
       </ul>
-      {recipeId && (
-        <BringButton
-          recipeId={recipeId}
-          ingredients={ingredients}
-          servings={chosenServings}
-          baseServings={baseServings}
-        />
+      {(recipeId || share) && (
+        <div class={styles.actions}>
+          {recipeId && (
+            <BringButton
+              recipeId={recipeId}
+              ingredients={ingredients}
+              servings={chosenServings}
+              baseServings={baseServings}
+            />
+          )}
+          {share && <ShareButton title={share.title} text={share.text} />}
+        </div>
       )}
     </section>
   );

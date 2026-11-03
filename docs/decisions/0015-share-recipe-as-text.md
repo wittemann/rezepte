@@ -34,4 +34,4 @@ The options:
 
 ## To accept
 
-Spike on the iPhone, in Safari and in the home-screen app (`display: standalone`, [ADR 0012](0012-pwa-and-timers.md)): a hard-coded `navigator.share({ title, text })` with a multi-line text opens the share sheet; the line breaks survive in Messages, WhatsApp and Mail; check whether Mail uses `title` as the subject and whether Messages shows the title twice. If the title shows twice, drop `title` and keep it only in the text.
+Spike on the iPhone, in Safari and in the home-screen app (`display: standalone`, [ADR 0012](0012-pwa-and-timers.md)): with the real button (once deployed; there is no share sheet over the dev server's plain http), the share sheet opens; the line breaks survive in Messages, WhatsApp and Mail; check whether Mail uses `title` as the subject and whether Messages shows the title twice. If the title shows twice, drop `title` and keep it only in the text.

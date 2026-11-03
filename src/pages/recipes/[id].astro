@@ -11,11 +11,13 @@ import Notes from '../../components/Notes.astro';
 import RecipeHeader from '../../components/RecipeHeader.astro';
 import RecipeMeta from '../../components/RecipeMeta.astro';
 import SavedToast, { SAVED_PARAM } from '../../components/SavedToast.tsx';
+import ShareButton from '../../components/ShareButton.tsx';
 import StubNotice from '../../components/StubNotice.astro';
 import Steps from '../../components/Steps.astro';
 import Base from '../../layouts/Base.astro';
 import { cookingSteps } from '../../lib/recipes/cooking-steps.ts';
 import { getById } from '../../lib/recipes/repository.ts';
+import { buildShareText } from '../../lib/recipes/share-text.ts';
 import { TEXT } from './_[id].texts.ts';
 
 const recipe = await getById(
@@ -27,6 +29,8 @@ if (!recipe) Astro.response.status = 404;
 // Set by the edit form after saving
 const justSaved = Astro.url.searchParams.has(SAVED_PARAM);
 const steps = recipe ? cookingSteps(recipe.method) : [];
+// For „Rezept teilen“: original servings, so it doesn't depend on the stepper (ADR 0015)
+const shareText = recipe ? buildShareText(recipe) : '';
 ---
 
 {recipe ? (
@@ -36,14 +40,19 @@ const steps = recipe ? cookingSteps(recipe.method) : [];
       <RecipeHeader {recipe} />
       <RecipeMeta {recipe} />
       {!recipe.hasInstructions && <StubNotice editHref={`/recipes/${recipe.id}/edit`} />}
-      {recipe.ingredients.length > 0 && (
+      {recipe.ingredients.length > 0 ? (
         <Ingredients
           client:load
           recipeId={recipe.id}
           ingredients={recipe.ingredients}
           servings={recipe.servings}
           cookHref={recipe.hasInstructions ? `/recipes/${recipe.id}/cook` : undefined}
+          share={{ title: recipe.title, text: shareText }}
         />
+      ) : (
+        <div class="share">
+          <ShareButton client:load wide title={recipe.title} text={shareText} />
+        </div>
       )}
       {recipe.hasInstructions && <Steps method={recipe.method} category={recipe.category} />}
       {recipe.notes && <Notes notes={recipe.notes} />}
@@ -79,5 +88,10 @@ const steps = recipe ? cookingSteps(recipe.method) : [];
   main {
     padding-top: var(--space-s);
     padding-bottom: var(--space-page);
+  }
+
+  /* Where the ingredients would be, when there are none (design/README.md, "10. Teilen") */
+  .share {
+    padding: 1.625rem var(--space-xl) 0; /* 26px 16px 0, like the ingredients section */
   }
 </style>
