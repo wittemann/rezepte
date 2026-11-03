@@ -30,7 +30,7 @@ The options:
 - No public surface, no change to auth or middleware, no new keys or storage, no Airtable calls beyond loading the page
 - The recipient gets no photo and no design; the text is as tidy as the recipe's free text in Airtable
 - The text contains the notes, which are sometimes personal; whoever shares sees the recipe page and decides
-- The entry point needs a design (header card is full): brief [share](../design-briefs/share.md)
+- The header card is full, so the button sits next to „Auf die Einkaufsliste“ (`design/README.md`, section „10. Teilen“; brief [share](../design-briefs/share.md))
 
 ## To accept
 
