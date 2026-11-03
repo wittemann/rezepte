@@ -110,3 +110,9 @@
   flex: 1;
   min-width: 0;
 }
+
+/* „Auf die Einkaufsliste“ takes the width the round share button leaves (design/README.md, "10. Teilen") */
+.actions {
+  display: flex;
+  gap: var(--space-s);
+}

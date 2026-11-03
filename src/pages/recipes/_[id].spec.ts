@@ -79,6 +79,21 @@ describe('recipe page', () => {
     expect(full.body.textContent).not.toContain('Hier fehlt noch die Anleitung');
   });
 
+  it('offers sharing next to the shopping list, or alone with its label without ingredients', async () => {
+    const ingredients = parseIngredients('200 g Mehl');
+    const full = (await renderPage(makeRecipe({ ingredients }))).document;
+    const round = full.querySelector('button[aria-label="Rezept teilen"]');
+    // Same row: the first button in it is the shopping list's
+    expect(round?.parentElement?.querySelector('button')?.textContent).toContain(
+      'Auf die Einkaufsliste',
+    );
+
+    const none = (await renderPage(makeRecipe())).document;
+    expect(none.querySelector('button[aria-label="Rezept teilen"]')).toBeNull();
+    const buttons = [...none.querySelectorAll('button')].map((button) => button.textContent);
+    expect(buttons).toContain('Rezept teilen');
+  });
+
   it('offers cooking mode only for a recipe with instructions', async () => {
     const full = (await renderPage(makeRecipe({ id: 'recX1' }))).document;
     expect(full.querySelector('a[href="/recipes/recX1/cook"]')?.textContent?.trim()).toBe(
