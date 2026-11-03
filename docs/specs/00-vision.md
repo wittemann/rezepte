@@ -20,4 +20,4 @@ Family and friends: a small, trusted group who all see **and edit** the same coo
 - Public sign-up, user accounts, roles, multi-tenancy
 - Multiple languages (German only)
 - Offline mode or native apps (may be reconsidered later). The web app can be added to the home screen, but needs a connection ([ADR 0012](../decisions/0012-pwa-and-timers.md))
-- Social features (sharing, comments, ratings by others)
+- Social features (comments, ratings by others, public pages or links to recipes). A single recipe can be sent to outsiders as plain text ([ADR 0015](../decisions/0015-share-recipe-as-text.md))

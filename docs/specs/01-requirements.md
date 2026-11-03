@@ -39,6 +39,12 @@ v1 scope decided from the design handoff (2026-09-26). Screen details: `design/R
 - On the recipe page, „Auf die Einkaufsliste“ opens a sheet with the ingredients (all checked, amounts for the chosen servings); the unchecked ones stay home, the rest go to the family's Bring! list
 - No shopping list in the app; collecting from several recipes happens in Bring!
 
+**Share** (after v1, [ADR 0015](../decisions/0015-share-recipe-as-text.md))
+
+- On the recipe page, „Rezept teilen“ (label from the design) opens the iOS share sheet with the recipe as plain text, for people without the password
+- The text: title, servings and times, ingredients as written (original servings), steps with hint (not for ideas), notes, source and link. No photo, calories, link to the app or footer
+- Without a share sheet, the button copies the text and shows a toast. No public pages or links
+
 **Cooking mode**
 
 - One step at a time, swipe or buttons, progress dots, ingredients sheet
