@@ -11,6 +11,7 @@ The visual design is created in **Claude Design**. This spec describes how it be
 - **Not in git:** `design/Rezepte-Grid view.csv`, `design/data/` and `design/Mahlzeit-Zuordnung.csv` contain our recipe data (the full Airtable export with texts partly copied from other sites and signed image URLs; the list of all recipes with their meals). They're in `.gitignore` because the repo is public. The prototype only runs where these files exist locally
 - **Addition (2026-10-26): recipe rating.** Section 8 in `design/README.md`, screens in `design/rating/`, screenshots in `design/screenshots/rating/`, brief in `docs/design-briefs/rating.md`. Adds the token `star` and the Maulti pose `taste`
 - **Addition (2026-10-31): send ingredients to Bring!** Section 9 in `design/README.md`, screens in `design/bring/` (no screenshots), brief in `docs/design-briefs/bring.md`. No new tokens or poses
+- **Addition (2026-11-03): share a recipe.** Section 10 in `design/README.md`, screen in `design/share/` (no screenshots), brief in `docs/design-briefs/share.md`. Made as a Design canvas in Claude (two variants, the project owner chose A: round button next to „Auf die Einkaufsliste“). No new tokens or poses
 - `design/` is excluded from Prettier, ESLint and type checking; it's reference material, not app code
 
 ## Process

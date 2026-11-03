@@ -140,6 +140,20 @@ Zutaten eines Rezepts auf die gemeinsame Bring!-Liste der Familie schicken. Vorh
 - Fehler: Sheet bleibt offen, Auswahl unverändert. Über dem Button eine Box (`sunk`, Rand 2px gestrichelt Akzent, Radius 18, `role="alert"`) mit Ausrufezeichen-Icon: „Bring! ist gerade nicht erreichbar. Deine Auswahl bleibt, versuch es gleich noch mal.“ Button wird „Noch mal versuchen“.
 - Kein Bring!-Logo und kein Bring-Grün: Bring! nur im Text.
 
+### 10. Teilen (Ergänzung 2026-11-03)
+Ein Rezept als Text an jemanden ohne Passwort schicken, über das Teilen-Menü von iOS. Die App zeigt kein eigenes Sheet und keine Vorschau. Design-Datei: `share/Seite.dc.html` (Variante A von zweien), Brief: `docs/design-briefs/share.md`, Entscheidung: ADR 0015.
+
+#### Einstieg auf der Rezeptseite
+- In einer Zeile mit „Auf die Einkaufsliste“, Abstand 10: rechts ein runder Button 52px, `surface`, Rand 2.5px `outline`, Schatten `0 3px 0`, Teilen-Icon 22px (Kasten mit Pfeil nach oben, Stroke 2.4). Der Einkaufslisten-Button nimmt die restliche Breite.
+- Nur Icon, kein Text. Screenreader: „Rezept teilen“.
+- Auf jedem Rezept, auch auf Ideen ohne Anleitung. Rezept ohne Zutaten (kein Einkaufslisten-Button): der Teilen-Button steht allein, volle Breite wie der Einkaufslisten-Button, mit Icon und Text „Rezept teilen“.
+- Nicht in der Kopfkarte: dort ist kein Platz mehr (zurück, Herz, Kalender, „Bearbeiten“).
+
+#### Verhalten
+- Tippen öffnet das Teilen-Menü von iOS mit dem Rezept als Text. Abbrechen: nichts passiert, kein Toast.
+- Ohne Teilen-Menü (manche Desktop-Browser): Text in die Zwischenablage, dann Toast wie beim Herz und bei Bring! (Pille `ink`/`bg`, über dem CTA) mit Haken: „Rezept kopiert. Du kannst es jetzt einfügen.“
+- Kopieren fehlgeschlagen: Toast ohne Haken: „Kopieren hat nicht geklappt. Bitte versuch es noch mal.“
+
 ### 0. Login (vor allen anderen Screens)
 Zweck:
 Einfacher Schutz für Familie und Freunde: ein gemeinsames Passwort, kein Benutzername.
@@ -205,6 +219,7 @@ Bewertung (`screenshots/rating/`): 01 Kochmodus „Wie war’s?“ · 02 Bewertu
 - `Maskottchen.dc.html`: Maulti-Komponente.
 - `rating/`: Screens der Bewertung (Abschnitt 8). Die Rezeptnamen darin sind erfunden. `rating/Maulti.dc.html` ist eine Kopie von `Maskottchen.dc.html` für die Imports dort.
 - `bring/`: Screens der Einkaufsliste (Abschnitt 9). Die Zutaten darin sind erfunden. `bring/Sheet.dc.html` ist klickbar (Häkchen, „Alle“/„Keine“); die übrigen Dateien zeigen Zustände des Sheets bzw. der Seite.
+- `share/`: Screen zum Teilen (Abschnitt 10). Die Zutaten darin sind erfunden. `share/Seite.dc.html` ist klickbar (Tippen auf Teilen zeigt den Kopier-Toast), Tweaks für Toast und Dunkelmodus. Entstanden als Design-Canvas in Claude, nicht im Claude-Design-Projekt.
 - `Kochbuch Clickdummy.dc.html`: Präsentations-Canvas mit iPhone-Rahmen.
 - `support.js`: Laufzeit für die Prototyp-Dateien (nicht übernehmen).
 - `data/rezepte.json`: aus dem CSV aufbereitete Rezepte inkl. `mahlzeit`.
