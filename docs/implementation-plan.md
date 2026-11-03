@@ -4,7 +4,7 @@ Steps to build v1 as defined in [01-requirements](specs/01-requirements.md), fol
 
 Bugs are not tracked here but in [bugs](bugs.md).
 
-**Status (2026-10-31):** sections 1–15 are done.
+**Status (2026-11-03):** sections 1–16 are done.
 
 Legend: **(owner)** = needs the project owner (accounts, secrets, decisions, testing on the phone). `haiku` / `sonnet` / `opus` = the model to use for the sub-agent that builds the item (see "Sub-agents and models").
 
@@ -237,7 +237,7 @@ Send a recipe as plain text to someone without the password, per [ADR 0015](deci
 - [x] Pure function: `Recipe` → share text (order and rules in ADR 0015), with unit tests · `sonnet`
 - [x] Design for the entry point and the toast from Claude Design (brief: [share](design-briefs/share.md)), handoff in `design/`, noted in [05-design-integration](specs/05-design-integration.md) **(owner)**
 - [x] Share button: share sheet, or copy and toast without one; cancel does nothing · `opus`
-- [ ] Check on the iPhone with the real button (once deployed), in Safari and the home-screen app; then set ADR 0015 to Accepted (or adjust it) **(owner)**
+- [x] Check on the iPhone with the real button (once deployed), in Safari and the home-screen app; then set ADR 0015 to Accepted (or adjust it) **(owner)**
 - [x] E2E: with `navigator.share` stubbed, the button passes a text that starts with the page's title and contains „Zutaten“ (read-only) · `sonnet`
 
 ## Later (not v1)

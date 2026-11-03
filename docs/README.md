@@ -33,7 +33,7 @@ Status: **Accepted** = settled · **Proposed** = recommended, awaiting OK · **O
 | [0012](decisions/0012-pwa-and-timers.md)              | Installable web app (manifest), no service worker; no timers                            | Accepted | –          |
 | [0013](decisions/0013-weekly-menu-calendar.md)        | Weekly menu: add a recipe to the calendar as an `.ics` file                             | Accepted | –          |
 | [0014](decisions/0014-bring-shopping-list.md)         | Shopping list: send picked ingredients to Bring! (unofficial API, server side)          | Accepted | –          |
-| [0015](decisions/0015-share-recipe-as-text.md)        | Share a recipe as plain text via the share sheet; no public links                       | Proposed | Spike      |
+| [0015](decisions/0015-share-recipe-as-text.md)        | Share a recipe as plain text via the share sheet; no public links                       | Accepted | –          |
 
 ## ADR format
 
