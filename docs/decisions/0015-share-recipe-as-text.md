@@ -1,6 +1,6 @@
 # 0015 – Share a recipe as text via the share sheet
 
-**Status:** Proposed (2026-11-03)
+**Status:** Accepted (2026-11-03, after the iPhone check)
 
 ## Context
 
@@ -32,6 +32,6 @@ The options:
 - The text contains the notes, which are sometimes personal; whoever shares sees the recipe page and decides
 - The header card is full, so the button sits next to „Auf die Einkaufsliste“ (`design/README.md`, section „10. Teilen“; brief [share](../design-briefs/share.md))
 
-## To accept
+## Check on the iPhone (2026-11-03)
 
-Spike on the iPhone, in Safari and in the home-screen app (`display: standalone`, [ADR 0012](0012-pwa-and-timers.md)): with the real button (once deployed; there is no share sheet over the dev server's plain http), the share sheet opens; the line breaks survive in Messages, WhatsApp and Mail; check whether Mail uses `title` as the subject and whether Messages shows the title twice. If the title shows twice, drop `title` and keep it only in the text.
+With the real button on production, in Safari and in the home-screen app (`display: standalone`, [ADR 0012](0012-pwa-and-timers.md)): the share sheet opens and the text arrives as intended. Tested by the project owner. `title` stays.
