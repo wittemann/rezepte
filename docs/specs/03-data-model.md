@@ -118,9 +118,9 @@ The app keeps a copy of the recipe table ([ADR 0003](../decisions/0003-rendering
 **Zutaten** (one ingredient per line)
 
 - Amount first, then unit, then the rest: `250 g Mehl`, `1,5 EL Zucker`, `0,5 TL Salz`, `2–3 Zehen Knoblauch`, `ca. 200 g Kartoffeln`
-- Amounts: whole numbers or decimal comma (`1,5`, `0,5`); no fractions (`½`, `1/2`): such lines are shown as written and not scaled. Ranges with an en dash `2–3`, optional prefix `ca.`, `knapp`, `etwa`
-- Amount and unit are separated by a space (`250 g`, not `250g`)
-- Units shown with the amount: `g kg ml l EL TL Päckchen Prise(n) Tasse Becher Dose Bund Beutel Topf Schuss Spritzer Klecks Handvoll Zweige Stangen`. Other words after the amount are fine; the amount still scales
+- Amounts: whole numbers or decimal comma (`1,5`, `0,5`) preferred; the fractions `½ ¼ ¾` and `1/2 1/4 3/4` are read too, also after a whole number (`1 1/2`, `1½`). Other fractions (`⅓`, `1/3`): such lines are shown as written and not scaled. Ranges with an en dash `2–3`, optional prefix `ca.`, `knapp`, `etwa`
+- Amount and unit are separated by a space (`250 g`); `250g` is read too
+- Units shown with the amount, in any case (`tl` shows as `TL`): `g kg ml l EL TL Päckchen Fixpäckchen Prise(n) Tasse Becher Dose(n) Glas Würfel Scheibe(n) Stiel(e) Paar Bund Beutel Topf Schuss Spritzer Klecks Handvoll Zweige Stangen`, optionally after a size word (`1 kleine Prise`, `1 großes Glas`). Other words after the amount are fine; the amount still scales
 - Lines without an amount (`Salz, Pfeffer`) are fine; they're never scaled
 - A line ending in `:` is a sub-heading: `Für den Teig:`
 - Equipment (form, pan, machine) goes at the end under `Außerdem:`, not into Zubereitung

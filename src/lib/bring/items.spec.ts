@@ -43,9 +43,9 @@ describe('toBringItems', () => {
   });
 
   it('sends lines without a readable amount whole as the name', () => {
-    expect(toBringItems(lines('Salz, Pfeffer', '½ TL Zimt'), 2)).toEqual([
+    expect(toBringItems(lines('Salz, Pfeffer', '⅓ TL Zimt'), 2)).toEqual([
       { name: 'Salz, Pfeffer' },
-      { name: '½ TL Zimt' },
+      { name: '⅓ TL Zimt' },
     ]);
   });
 
