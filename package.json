@@ -34,7 +34,7 @@
     "@sentry/node": "^11.4.0",
     "@sentry/replay": "^11.4.0",
     "@vercel/functions": "^3.10.5",
-    "astro": "^7.4.4",
+    "astro": "^7.4.12",
     "preact": "^10.29.8",
     "zod": "^4.6.7"
   },
